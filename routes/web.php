@@ -21,9 +21,11 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/address', 'AddressController@getAddress');
 
-Route::get('/addform', 'FormController@add');
-Route::get('/deleteform/{id}', 'FormController@delete');
-Route::get('/updateform/{id}', 'FormController@update');
-Route::get('/getform/{id}', 'FormController@get');
-Route::get('/search', 'FormController@search');
-Route::get('/allforms', 'FormController@getAll');
+// Route::get('/addform', 'FormController@add');
+// Route::get('/deleteform/{id}', 'FormController@delete');
+// Route::get('/updateform/{id}', 'FormController@update');
+// Route::get('/getform/{id}', 'FormController@get');
+// Route::get('/search', 'FormController@search');
+// Route::get('/allforms', 'FormController@getAll');
+
+Route::resource('project', 'ProjectController');

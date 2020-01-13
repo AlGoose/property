@@ -47,7 +47,7 @@
             :rules="[v => !!v || 'Contacts are required']"
           ></v-text-field>
           <v-text-field
-            v-model="form_time"
+            v-model="form_date"
             label="Срок реализации проекта"
             hint="Срок реализации проекта"
             outlined
@@ -85,7 +85,7 @@
             <p>Заказчик: {{ form_customer }}</p>
             <p>Конкуренты: {{ form_opponents }}</p>
             <p>Контактные данные: {{ form_contacts }}</p>
-            <p>Срок реализации проекта: {{ form_time }}</p>
+            <p>Срок реализации проекта: {{ form_date }}</p>
             <p>Менеджер: {{ form_manager }}</p>
             <p>ДОБАВИТЬ ОСТАЛЬНОЕ</p>
           </v-card-text>
@@ -111,13 +111,31 @@ export default {
     form_customer: "",
     form_opponents: "",
     form_contacts: "",
-    form_time: "",
-    form_manager: "",
+    form_date: "",
+    form_manager: ""
   }),
 
   methods: {
     addForm() {
-      this.dialog = false;
+      // this.dialog = false;
+      let newThis = this;
+      axios
+        .post("http://property.test/project", {
+          name: this.form_name,
+          address: this.form_address,
+          customer: this.form_customer,
+          opponents: this.form_opponents,
+          contacts: this.form_contacts,
+          date: this.form_date,
+          manager: this.form_manager
+        })
+        .then(function(response) {
+          console.log(response);
+          newThis.dialog = false;
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
     },
 
     validate() {
