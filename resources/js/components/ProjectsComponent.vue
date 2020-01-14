@@ -3,12 +3,11 @@
     <v-data-table
       :headers="headers"
       :items="fruits"
-      :page.sync="page"
       :items-per-page="itemsPerPage"
       hide-default-footer
-      class="elevation-1"
-      @page-count="pageCount = $event"
-    ></v-data-table>
+      class="elevation-3"
+    >
+    </v-data-table>
   </div>
 </template>
 
@@ -18,7 +17,7 @@ export default {
   mounted: function() {
     let data = JSON.parse(this.projects)["data"];
     for (let i = 0; i < data.length; i++) {
-        this.fruits.push(data[i]);
+      this.fruits.push(data[i]);
     }
   },
 
@@ -26,14 +25,11 @@ export default {
 
   data() {
     return {
-      page: 1,
-      pageCount: 0,
       itemsPerPage: 5,
       headers: [
         {
           text: "Name",
           align: "left",
-          sortable: false,
           value: "name"
         },
         { text: "Address", value: "address" },
@@ -47,12 +43,18 @@ export default {
       ],
       fruits: []
     };
+  },
+
+  methods: {
+    clickRow(value) {
+      console.log(value);
+    }
   }
 };
 </script>
 
 <style scoped>
- * {
-     padding-bottom: 14px;
- }
+* {
+  padding-bottom: 14px;
+}
 </style>

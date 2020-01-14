@@ -14,8 +14,8 @@
                             {{ session('status') }}
                         </div>
                     @endif
-                    
-                    <projects-component projects='@json($projects)'></projects-component>
+                    //TODO: КАК БЫТЬ С АДРЕСАЦИЕЙ ВЦЕЛОМ? КАК ОТКРЫТЬ "ТАБЛИЦУ"?
+                    <projects-component projects='@json($projects)'></projects-component> 
                     <div>
                         {{$projects->links()}}
                     </div>

@@ -15,8 +15,6 @@
                         </div>
                     @endif
 
-                    
-
                     @if ($errors->any())
                     <div class="alert alert-danger">
                             @foreach ($errors->all() as $error)
@@ -24,17 +22,23 @@
                             @endforeach
                     </div>
                     @else
-                    <div>
-                        <p>Имя: {{$project->name}}</p>
-                        <p>Адрес: {{$project->address}}</p>
-                        <p>Заказчик: {{$project->customer}}</p>
-                        <p>Конкуренты: {{$project->opponents}}</p>
-                        <p>Контакты: {{$project->contacts}}</p>
-                        <p>Дата: {{$project->date}}</p>
-                        <p>Менеджер: {{$project->manager}}</p>
-                    </div>
+                        @if(!Auth::guest())
+                            <div>
+                                <p>Имя: {{$project->name}}</p>
+                                <p>Адрес: {{$project->address}}</p>
+                                <p>Заказчик: {{$project->customer}}</p>
+                                <p>Конкуренты: {{$project->opponents}}</p>
+                                <p>Контакты: {{$project->contacts}}</p>
+                                <p>Дата: {{$project->date}}</p>
+                                <p>Менеджер: {{$project->manager}}</p>
+                            </div>
+                            <a href="/project" class="btn btn-primary" style="color: white;">Назад</a>
+                            @if(Auth::user()->id == $project->id)
+                                <a href="" class="btn btn-primary" style="color: white;">Редактировать</a>
+                                <button type="button" class="btn btn-danger">Удалить</button>
+                            @endif
+                        @endif
                     @endif
-                    
                 </div>
             </div>
         </div>

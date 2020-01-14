@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Project;
 use Illuminate\Http\Request;
 use App\Http\Requests\ProjectRequest;
+use DebugBar\DebugBar;
 
 class ProjectController extends Controller
 {
@@ -47,7 +48,6 @@ class ProjectController extends Controller
      */
     public function store(ProjectRequest $request)
     {
-        \Debugbar::info($request->all());
         Project::create($request->all());
     }
 
@@ -60,12 +60,11 @@ class ProjectController extends Controller
     public function show($id)
     {
         $project = Project::find($id);
-        // dd($project);
         if ($project == null) {
             return view('show')->withErrors('
             Inget sådant projekt!');
         } else {
-        return view('show')->with('project', $project);
+            return view('show')->with('project', $project);
         }
     }
 
@@ -75,9 +74,15 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id) //TODO: Добавить view
     {
-        //
+        $project = Project::find($id);
+        if ($project == null) {
+            return view('edit')->withErrors('
+            Inget sådant projekt!');
+        } else {
+            return view('edit')->with('project', $project);
+        }
     }
 
     /**
@@ -89,7 +94,12 @@ class ProjectController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $project = Project::find($id);
+        $project = $request->all();
+        $project->save();
+        //TODO: Так можно?
+        $project->name = $request->namespace
+        //... или таким образом? Или еще как?
     }
 
     /**
@@ -101,6 +111,6 @@ class ProjectController extends Controller
     public function destroy($id)
     {
         Project::destroy($id);
-        dd('Deleted');
+        \Debugbar::info('Deleted');
     }
 }

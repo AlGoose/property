@@ -2166,7 +2166,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     var data = JSON.parse(this.projects)["data"];
@@ -2178,13 +2177,10 @@ __webpack_require__.r(__webpack_exports__);
   props: ["projects"],
   data: function data() {
     return {
-      page: 1,
-      pageCount: 0,
       itemsPerPage: 5,
       headers: [{
         text: "Name",
         align: "left",
-        sortable: false,
         value: "name"
       }, {
         text: "Address",
@@ -2213,6 +2209,11 @@ __webpack_require__.r(__webpack_exports__);
       }],
       fruits: []
     };
+  },
+  methods: {
+    clickRow: function clickRow(value) {
+      console.log(value);
+    }
   }
 });
 
@@ -6761,7 +6762,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n*[data-v-20cb5d70] {\n    padding-bottom: 14px;\n}\n", ""]);
+exports.push([module.i, "\n*[data-v-20cb5d70] {\r\n  padding-bottom: 14px;\n}\r\n", ""]);
 
 // exports
 
@@ -38664,21 +38665,12 @@ var render = function() {
     "div",
     [
       _c("v-data-table", {
-        staticClass: "elevation-1",
+        staticClass: "elevation-3",
         attrs: {
           headers: _vm.headers,
           items: _vm.fruits,
-          page: _vm.page,
           "items-per-page": _vm.itemsPerPage,
           "hide-default-footer": ""
-        },
-        on: {
-          "update:page": function($event) {
-            _vm.page = $event
-          },
-          "page-count": function($event) {
-            _vm.pageCount = $event
-          }
         }
       })
     ],
