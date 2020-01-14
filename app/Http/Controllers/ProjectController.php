@@ -48,7 +48,7 @@ class ProjectController extends Controller
      */
     public function store(ProjectRequest $request)
     {
-        Project::create($request->all());
+        Project::create($request->all()); //TODO: Изменить надо
     }
 
     /**

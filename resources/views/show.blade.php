@@ -23,6 +23,7 @@
                     </div>
                     @else
                         @if(!Auth::guest())
+                        //TODO: Сделать компонент или через bootstrap
                             <div>
                                 <p>Имя: {{$project->name}}</p>
                                 <p>Адрес: {{$project->address}}</p>
