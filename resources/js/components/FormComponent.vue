@@ -65,6 +65,7 @@
             :rules="[v => !!v || 'Manager is required']"
           ></v-text-field>
           <v-btn block color="indigo" outlined @click="validate">Добавить форму</v-btn>
+          <v-btn block color="indigo" outlined @click="test">Проверка</v-btn>
         </v-form>
       </v-col>
     </v-row>
@@ -131,6 +132,7 @@ export default {
         })
         .then(function(response) {
           console.log(response);
+          newThis.$refs.form.reset();
           newThis.dialog = false;
         })
         .catch(function(error) {
@@ -140,9 +142,11 @@ export default {
 
     validate() {
       if (this.$refs.form.validate()) {
-        // this.snackbar = true;
         this.dialog = true;
       }
+    },
+
+    test() {
     }
   }
 };

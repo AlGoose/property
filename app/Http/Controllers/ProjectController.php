@@ -25,7 +25,8 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        return view('project'); //TODO: Таблица со всеми проектами?
+        $projects = \DB::table('projects')->paginate(5);
+        return view('projects')->with('projects', $projects);
     }
 
     /**
@@ -35,7 +36,7 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        return view('project');
+        return view('form');
     }
 
     /**

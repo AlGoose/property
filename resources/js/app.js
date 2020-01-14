@@ -24,6 +24,7 @@ window.Vue.use(Vuetify);
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('form-component', require('./components/FormComponent.vue').default);
 Vue.component('home-component', require('./components/HomeComponent.vue').default);
+Vue.component('projects-component', require('./components/ProjectsComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
