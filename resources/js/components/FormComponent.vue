@@ -65,18 +65,12 @@
             :rules="[v => !!v || 'Manager is required']"
           ></v-text-field>
           <v-btn block color="indigo" outlined @click="validate">Добавить форму</v-btn>
-          <v-btn block color="indigo" outlined @click="test">Проверка</v-btn>
         </v-form>
       </v-col>
     </v-row>
 
     <v-row justify="center">
       <v-dialog v-model="dialog" persistent scrollable width="600px">
-        <template v-slot:activator="{ on }">
-          <!-- <v-btn block color="indigo" outlined v-on="on">Добавить форму</v-btn> -->
-          <v-btn block color="indigo" outlined v-on="on">Добавить форму</v-btn>
-          <!-- TODO: Как кнопку лучше сделать? -->
-        </template>
         <v-card>
           <v-card-title>Все верно?</v-card-title>
           <v-divider></v-divider>

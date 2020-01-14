@@ -9,9 +9,6 @@
       class="elevation-1"
       @page-count="pageCount = $event"
     ></v-data-table>
-    <div class="text-center pt-2">
-      <v-pagination v-model="page" :length="pageCount"></v-pagination>
-    </div>
   </div>
 </template>
 
@@ -53,3 +50,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+ * {
+     padding-bottom: 14px;
+ }
+</style>
