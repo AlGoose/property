@@ -48,7 +48,7 @@ class ProjectController extends Controller
      */
     public function store(ProjectRequest $request)
     {
-        Project::create($request->all()); //TODO: Изменить надо
+        $user = \Auth::user()->projects()->create($request->all());
     }
 
     /**
@@ -57,15 +57,10 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Project $project)
     {
-        $project = Project::find($id);
-        if ($project == null) {
-            return view('show')->withErrors('
-            Inget sådant projekt!');
-        } else {
-            return view('show')->with('project', $project);
-        }
+        // dd(\Auth::user()->projects()->get());
+        return view('show')->with('project', $project);
     }
 
     /**
@@ -98,7 +93,7 @@ class ProjectController extends Controller
         $project = $request->all();
         $project->save();
         //TODO: Так можно?
-        $project->name = $request->namespace
+        $project->name = $request->namespace;
         //... или таким образом? Или еще как?
     }
 

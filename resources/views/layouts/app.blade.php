@@ -51,6 +51,7 @@
                             @endif
                         @else
                             <a class="navbar-brand" href="{{ url('/project') }}">Projektlista</a>
+                            <a class="navbar-brand" href="{{ url('/home') }}">Home</a>
 
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>

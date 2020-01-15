@@ -6,6 +6,7 @@
       :items-per-page="itemsPerPage"
       hide-default-footer
       class="elevation-3"
+      @click:row="openProject"
     >
     </v-data-table>
   </div>
@@ -46,8 +47,8 @@ export default {
   },
 
   methods: {
-    clickRow(value) {
-      console.log(value);
+    openProject(value) {
+      window.location = '/project/' + value.id;
     }
   }
 };

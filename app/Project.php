@@ -20,6 +20,10 @@ class Project extends Model
         'date',
         'work',
         'products',
-        'manager'
     ];
+
+    public function manager()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

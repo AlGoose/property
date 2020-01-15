@@ -23,7 +23,7 @@ class CreateProjectsTable extends Migration
             $table->string('date'); //Срок реализации проекта
             $table->json('work')->nullable(); //Работа, проведенная и ведущаяся диллером. Массив/Map/Объект вида "дата - событие" в JSON
             $table->json('products')->nullable(); //Применяемая продукция. Массив в JSON. Как лучше сделать:с ссылками на сами объекты или без?
-            $table->string('manager'); //Менеджер, принявший заявку
+            $table->bigInteger('user_id'); //Менеджер, принявший заявку
             $table->timestamps();
         });
     }

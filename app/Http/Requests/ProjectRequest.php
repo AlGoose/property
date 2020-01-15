@@ -30,7 +30,6 @@ class ProjectRequest extends FormRequest
             'opponents' => 'required|string|max:50',
             'contacts' => 'required|string|max:50',
             'date' => 'required|string|max:50',
-            'manager' => 'required|string|max:50',
         ];
     }
 }

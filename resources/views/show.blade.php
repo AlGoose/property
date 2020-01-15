@@ -23,20 +23,8 @@
                     </div>
                     @else
                         @if(!Auth::guest())
-                        //TODO: Сделать компонент или через bootstrap
-                            <div>
-                                <p>Имя: {{$project->name}}</p>
-                                <p>Адрес: {{$project->address}}</p>
-                                <p>Заказчик: {{$project->customer}}</p>
-                                <p>Конкуренты: {{$project->opponents}}</p>
-                                <p>Контакты: {{$project->contacts}}</p>
-                                <p>Дата: {{$project->date}}</p>
-                                <p>Менеджер: {{$project->manager}}</p>
-                            </div>
-                            <a href="/project" class="btn btn-primary" style="color: white;">Назад</a>
-                            @if(Auth::user()->id == $project->id)
-                                <a href="" class="btn btn-primary" style="color: white;">Редактировать</a>
-                                <button type="button" class="btn btn-danger">Удалить</button>
+                            <show-component project='@json($project)' auth_id={{Auth::user()->id}} user_id={{$project->user_id}} project_id={{$project->id}}></show-component>
+                            @if(Auth::user()->id == $project->user_id)
                             @endif
                         @endif
                     @endif
