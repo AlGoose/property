@@ -106,7 +106,7 @@ export default {
       if (this.$refs.form.validate()) {
         this.dialog = true;
       }
-    },
+    }
   }
 };
 </script>

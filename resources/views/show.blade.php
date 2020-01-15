@@ -15,18 +15,8 @@
                         </div>
                     @endif
 
-                    @if ($errors->any())
-                    <div class="alert alert-danger">
-                            @foreach ($errors->all() as $error)
-                                <h1>{{ $error }}</h1>
-                            @endforeach
-                    </div>
-                    @else
-                        @if(!Auth::guest())
-                            <show-component project='@json($project)' auth_id={{Auth::user()->id}} user_id={{$project->user_id}} project_id={{$project->id}}></show-component>
-                            @if(Auth::user()->id == $project->user_id)
-                            @endif
-                        @endif
+                    @if(!Auth::guest())
+                        <show-component project='@json($project)' auth_id={{Auth::user()->id}} user_id={{$project->user_id}} project_id={{$project->id}}></show-component>
                     @endif
                 </div>
             </div>
