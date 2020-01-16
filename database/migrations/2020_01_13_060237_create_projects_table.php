@@ -18,12 +18,11 @@ class CreateProjectsTable extends Migration
             $table->string('name'); //Название объекта
             $table->string('address')->unique(); //Адрес объекта
             $table->string('customer'); //Заказчик
-            $table->json('opponents')->nullable(); //Если есть, то массив в JSON
-            $table->json('contacts'); //Контактные данные лица на объекте
+            $table->longText('contacts'); //Контактные данные лица на объекте
             $table->string('date'); //Срок реализации проекта
-            $table->json('work')->nullable(); //Работа, проведенная и ведущаяся диллером. Массив/Map/Объект вида "дата - событие" в JSON
-            $table->json('products')->nullable(); //Применяемая продукция. Массив в JSON. Как лучше сделать:с ссылками на сами объекты или без?
+            $table->longText('work')->nullable(); //Работа, проведенная и ведущаяся диллером. Массив/Map/Объект вида "дата - событие" в JSON
             $table->bigInteger('user_id'); //Менеджер, принявший заявку
+            $table->bigInteger('dealer_id')->default(1); //TODO: Не работает вставка если убрать default
             $table->timestamps();
         });
     }

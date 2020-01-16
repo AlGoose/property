@@ -14,6 +14,19 @@
             ></v-text-field>
           </div>
 
+          <v-text-field v-model="opponent" label="Конкуренты" outlined clearable v-on:keyup.enter="test"></v-text-field>
+          <v-card v-if="opponents.length" outlined>
+            <v-list flat>
+              <v-list-item-group v-model="model" mandatory color="indigo">
+                <v-list-item v-for="(item, i) in opponents" :key="i">
+                  <v-list-item-content>
+                    <v-list-item-title v-text="item"></v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
+          </v-card>
+
           <v-btn block color="indigo" outlined @click="validate">Добавить форму</v-btn>
         </v-form>
       </v-col>
@@ -47,6 +60,7 @@
 export default {
   data: () => ({
     dialog: false,
+    model: 1,
     valid: true,
     form: {
       name: {
@@ -64,11 +78,6 @@ export default {
         label: "Заказчик",
         rules: [v => !!v || "customer is required"]
       },
-      opponents: {
-        data: "",
-        label: "Конкуренты",
-        rules: []
-      },
       contacts: {
         data: "",
         label: "Контактные данные",
@@ -78,8 +87,20 @@ export default {
         data: "",
         label: "Срок реализации проекта",
         rules: [v => !!v || "date is required"]
+      },
+      dealer_name: {
+        data: "",
+        label: "ФИО Дилера",
+        rules: [v => !!v || "Name is required"]
+      },
+      dealer_phone: {
+        data: "",
+        label: "Мобильный телефон",
+        rules: [v => !!v || "Phone is required"]
       }
-    }
+    },
+    opponent: "",
+    opponents: []
   }),
 
   methods: {
@@ -90,11 +111,14 @@ export default {
       for (let prop in this.form) {
         res[prop] = this.form[prop].data;
       }
+      res['opponents'] = this.opponents;
 
       axios
         .post("http://property.test/project", res)
         .then(function(response) {
           newThis.$refs.form.reset();
+          newThis.opponent = "";
+          newThis.opponents = [];
           newThis.dialog = false;
         })
         .catch(function(error) {
@@ -106,6 +130,18 @@ export default {
       if (this.$refs.form.validate()) {
         this.dialog = true;
       }
+    },
+
+    test() {
+      if (this.opponent === "") return;
+
+      if (this.opponents.includes(this.opponent)) {
+        this.opponent = "";
+        return;
+      }
+
+      this.opponents.push(this.opponent);
+      this.opponent = "";
     }
   }
 };

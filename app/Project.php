@@ -22,8 +22,23 @@ class Project extends Model
         'products',
     ];
 
-    public function manager()
+    public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function dealer()
+    {
+        return $this->belongsTo(Dealer::class);
+    }
+
+    public function opponents()
+    {
+        return $this->belongsToMany(Opponent::class);
+    }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class);
     }
 }

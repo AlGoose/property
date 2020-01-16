@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Project;
+use App\Dealer;
 use Illuminate\Http\Request;
 use App\Http\Requests\ProjectRequest;
-use DebugBar\DebugBar;
+use App\Opponent;
+use App\Product;
 
 class ProjectController extends Controller
 {
@@ -48,7 +50,37 @@ class ProjectController extends Controller
      */
     public function store(ProjectRequest $request)
     {
-        $user = \Auth::user()->projects()->create($request->all());
+        // \Debugbar::info($request->all());
+
+        $project = new Project;
+        $project->name = $request->name;
+        $project->address = $request->address;
+        $project->customer = $request->customer;
+        $project->contacts = $request->contacts;
+        $project->date = $request->date;
+        \Debugbar::info($project);
+        $project->user()->associate(\Auth::user())->save();
+        
+        $dealer = Dealer::firstOrCreate(
+            ['name' => $request->dealer_name],
+            ['phone' => $request->dealer_phone]
+        );
+        $project->dealer()->associate($dealer)->save();
+
+        foreach($request->opponents as $name) {
+            \Debugbar::info($name);
+
+            $opponent = Opponent::firstOrCreate(
+                ['name' => $name]
+            );
+            $project->opponents()->attach($opponent->id);
+        }
+
+        $product = Product::firstOrCreate(
+            ['code' => 'CODE'],
+            ['name' => 'NAME']
+        );
+        $project->products()->attach($product->id, ['count' => 5]);
     }
 
     /**
