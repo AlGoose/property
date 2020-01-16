@@ -33,7 +33,32 @@
               </v-list-item-group>
             </v-list>
           </v-card>
-
+          
+          <v-menu
+            ref="menu"
+            v-model="menu"
+            :close-on-content-click="false"
+            :return-value.sync="date"
+            transition="scale-transition"
+            offset-y
+            min-width="290px"
+          >
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                v-model="date"
+                label="Срок реализации проекта"
+                readonly
+                outlined
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker v-model="date" no-title scrollable>
+              <v-spacer></v-spacer>
+              <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+              <v-btn text color="primary" @click="$refs.menu.save(date)">OK</v-btn>
+            </v-date-picker>
+          </v-menu>
+          
           <v-btn block color="indigo" outlined @click="validate">Добавить форму</v-btn>
         </v-form>
       </v-col>
@@ -107,7 +132,9 @@ export default {
       }
     },
     opponent: "",
-    opponents: []
+    opponents: [],
+    date: new Date().toISOString().substr(0, 10),
+    menu: false
   }),
 
   methods: {
