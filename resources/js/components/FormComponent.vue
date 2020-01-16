@@ -14,14 +14,21 @@
             ></v-text-field>
           </div>
 
-          <v-text-field v-model="opponent" label="Конкуренты" outlined clearable v-on:keyup.enter="test"></v-text-field>
-          <v-card v-if="opponents.length" outlined>
+          <v-text-field
+            v-model="opponent"
+            label="Конкуренты"
+            outlined
+            clearable
+            v-on:keyup.enter="input"
+          ></v-text-field>
+          <v-card v-if="opponents.length" outlined class="card">
             <v-list flat>
               <v-list-item-group v-model="model" mandatory color="indigo">
                 <v-list-item v-for="(item, i) in opponents" :key="i">
                   <v-list-item-content>
                     <v-list-item-title v-text="item"></v-list-item-title>
                   </v-list-item-content>
+                  <v-btn @click="remove(item)">Убрать</v-btn>
                 </v-list-item>
               </v-list-item-group>
             </v-list>
@@ -111,7 +118,7 @@ export default {
       for (let prop in this.form) {
         res[prop] = this.form[prop].data;
       }
-      res['opponents'] = this.opponents;
+      res["opponents"] = this.opponents;
 
       axios
         .post("http://property.test/project", res)
@@ -132,7 +139,7 @@ export default {
       }
     },
 
-    test() {
+    input() {
       if (this.opponent === "") return;
 
       if (this.opponents.includes(this.opponent)) {
@@ -142,7 +149,19 @@ export default {
 
       this.opponents.push(this.opponent);
       this.opponent = "";
+    },
+
+    remove(item) {
+      console.log(item);
+      this.opponents.splice(this.opponents.indexOf(item), 1);
+      this.opponents = [...this.opponents];
     }
   }
 };
 </script>
+
+<style scoped>
+.card {
+  margin-bottom: 14px;
+}
+</style>

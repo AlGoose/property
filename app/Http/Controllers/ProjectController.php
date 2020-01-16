@@ -58,7 +58,7 @@ class ProjectController extends Controller
         $project->customer = $request->customer;
         $project->contacts = $request->contacts;
         $project->date = $request->date;
-        \Debugbar::info($project);
+        // \Debugbar::info($project);
         $project->user()->associate(\Auth::user())->save();
         
         $dealer = Dealer::firstOrCreate(
@@ -68,7 +68,7 @@ class ProjectController extends Controller
         $project->dealer()->associate($dealer)->save();
 
         foreach($request->opponents as $name) {
-            \Debugbar::info($name);
+            // \Debugbar::info($name);
 
             $opponent = Opponent::firstOrCreate(
                 ['name' => $name]
@@ -101,15 +101,9 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id) //TODO: Добавить view
+    public function edit(Project $project) //TODO: Добавить view
     {
-        $project = Project::find($id);
-        if ($project == null) {
-            return view('edit')->withErrors('
-            Inget sådant projekt!');
-        } else {
-            return view('edit')->with('project', $project);
-        }
+        return view('edit')->with('project', $project);
     }
 
     /**
@@ -138,6 +132,5 @@ class ProjectController extends Controller
     public function destroy($id)
     {
         Project::destroy($id);
-        \Debugbar::info('Deleted');
     }
 }
