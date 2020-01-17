@@ -21,10 +21,16 @@ class CreateProjectsTable extends Migration
             $table->longText('contacts'); //Контактные данные лица на объекте
             $table->string('date'); //Срок реализации проекта
             $table->longText('work')->nullable(); //Работа, проведенная и ведущаяся диллером. Массив/Map/Объект вида "дата - событие" в JSON
-            $table->bigInteger('user_id'); //Менеджер, принявший заявку
-            $table->bigInteger('dealer_id')->default(1); //TODO: Не работает вставка если убрать default
+            $table->bigInteger('user_id')->unsigned(); //Менеджер, принявший заявку
+            $table->bigInteger('dealer_id')->unsigned();
             $table->timestamps();
+            $table->softDeletes();
         });
+        Schema::table('projects', function (Blueprint $table) {
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('dealer_id')->references('id')->on('dealers')->onDelete('cascade');
+        });
+        
     }
 
     /**

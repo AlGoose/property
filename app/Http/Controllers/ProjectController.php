@@ -28,7 +28,7 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = \DB::table('projects')->paginate(5);
+        $projects = Project::paginate(5);
         return view('projects')->with('projects', $projects);
     }
 
@@ -58,8 +58,7 @@ class ProjectController extends Controller
         $project->customer = $request->customer;
         $project->contacts = $request->contacts;
         $project->date = $request->date;
-        // \Debugbar::info($project);
-        $project->user()->associate(\Auth::user())->save();
+        $project->user()->associate(\Auth::user());
         
         $dealer = Dealer::firstOrCreate(
             ['name' => $request->dealer_name],
@@ -68,8 +67,6 @@ class ProjectController extends Controller
         $project->dealer()->associate($dealer)->save();
 
         foreach($request->opponents as $name) {
-            // \Debugbar::info($name);
-
             $opponent = Opponent::firstOrCreate(
                 ['name' => $name]
             );
@@ -91,7 +88,6 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        // dd(\Auth::user()->projects()->get());
         return view('show')->with('project', $project);
     }
 

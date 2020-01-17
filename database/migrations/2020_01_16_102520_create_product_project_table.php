@@ -15,10 +15,15 @@ class CreateProductProjectTable extends Migration
     {
         Schema::create('product_project', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('product_id');
-            $table->bigInteger('project_id');
+            $table->bigInteger('product_id')->unsigned();
+            $table->bigInteger('project_id')->unsigned();
             $table->integer('count')->nullable();
             $table->timestamps();
+        });
+
+        Schema::table('product_project', function (Blueprint $table) {
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+            $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
         });
     }
 

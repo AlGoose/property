@@ -5,6 +5,7 @@
         <v-form ref="form" v-model="valid" lazy-validation>
           <div v-for="item in form" :key="item.id">
             <v-text-field
+              v-if="item.type === 'v-text-field'"
               v-model="item.data"
               :label="item.label"
               outlined
@@ -12,53 +13,64 @@
               required
               :rules="item.rules"
             ></v-text-field>
+
+            <v-text-field
+              v-else-if="item.type === 'phoneNumber'"
+              v-model="item.data"
+              :label="item.label"
+              outlined
+              clearable
+              required
+              :rules="item.rules"
+              v-mask="item.mask"
+            ></v-text-field>
+
+            <template v-else-if="item.type === 'opponentsField'">
+              <v-text-field
+                v-model="item.opponent"
+                :label="item.label"
+                outlined
+                clearable
+                v-on:keyup.enter="input"
+                append-icon="mdi-plus"
+                @click:append="input"
+              ></v-text-field>
+              <v-card v-if="item.data.length" outlined class="card">
+                <v-list flat>
+                  <v-list-item-group v-model="model" mandatory color="indigo">
+                    <v-list-item v-for="(item, i) in item.data" :key="i">
+                      <v-list-item-content>
+                        <v-list-item-title v-text="item"></v-list-item-title>
+                      </v-list-item-content>
+                      <v-icon @click="remove(item)">mdi-minus-circle-outline</v-icon>
+                    </v-list-item>
+                  </v-list-item-group>
+                </v-list>
+              </v-card>
+            </template>
+
+            <template v-else>
+              <v-menu
+                ref="menu"
+                v-model="menu"
+                :close-on-content-click="false"
+                :return-value.sync="item.data"
+                transition="scale-transition"
+                offset-y
+                min-width="290px"
+              >
+                <template v-slot:activator="{ on }">
+                  <v-text-field v-model="item.data" :label="item.label" readonly outlined v-on="on"></v-text-field>
+                </template>
+                <v-date-picker v-model="item.data" no-title scrollable locale="Rus">
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="menu = false">Отмена</v-btn>
+                  <v-btn text color="primary" @click="$refs.menu[0].save(item.data)">Выбрать</v-btn>
+                </v-date-picker>
+              </v-menu>
+            </template>
           </div>
 
-          <v-text-field
-            v-model="opponent"
-            label="Конкуренты"
-            outlined
-            clearable
-            v-on:keyup.enter="input"
-          ></v-text-field>
-          <v-card v-if="opponents.length" outlined class="card">
-            <v-list flat>
-              <v-list-item-group v-model="model" mandatory color="indigo">
-                <v-list-item v-for="(item, i) in opponents" :key="i">
-                  <v-list-item-content>
-                    <v-list-item-title v-text="item"></v-list-item-title>
-                  </v-list-item-content>
-                  <v-btn @click="remove(item)">Убрать</v-btn>
-                </v-list-item>
-              </v-list-item-group>
-            </v-list>
-          </v-card>
-          
-          <v-menu
-            ref="menu"
-            v-model="menu"
-            :close-on-content-click="false"
-            :return-value.sync="date"
-            transition="scale-transition"
-            offset-y
-            min-width="290px"
-          >
-            <template v-slot:activator="{ on }">
-              <v-text-field
-                v-model="date"
-                label="Срок реализации проекта"
-                readonly
-                outlined
-                v-on="on"
-              ></v-text-field>
-            </template>
-            <v-date-picker v-model="date" no-title scrollable>
-              <v-spacer></v-spacer>
-              <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
-              <v-btn text color="primary" @click="$refs.menu.save(date)">OK</v-btn>
-            </v-date-picker>
-          </v-menu>
-          
           <v-btn block color="indigo" outlined @click="validate">Добавить форму</v-btn>
         </v-form>
       </v-col>
@@ -89,52 +101,68 @@
 </template>
 
 <script>
+import { mask } from "vue-the-mask";
+
 export default {
+  directives: {
+    mask
+  },
+
   data: () => ({
     dialog: false,
+    menu: false,
     model: 1,
     valid: true,
     form: {
       name: {
+        type: "v-text-field",
         data: "",
         label: "Название объекта",
-        rules: [v => !!v || "Name is required"]
+        rules: [v => !!v || "Name is required"],
       },
       address: {
+        type: "v-text-field",
         data: "",
         label: "Адрес объекта",
-        rules: [v => !!v || "address is required"]
+        rules: [v => !!v || "address is required"],
       },
       customer: {
+        type: "v-text-field",
         data: "",
         label: "Заказчик",
-        rules: [v => !!v || "customer is required"]
+        rules: [v => !!v || "customer is required"],
       },
       contacts: {
+        type: "v-text-field",
         data: "",
         label: "Контактные данные",
-        rules: [v => !!v || "contacts is required"]
-      },
-      date: {
-        data: "",
-        label: "Срок реализации проекта",
-        rules: [v => !!v || "date is required"]
+        rules: [v => !!v || "contacts is required"],
       },
       dealer_name: {
+        type: "v-text-field",
         data: "",
         label: "ФИО Дилера",
-        rules: [v => !!v || "Name is required"]
+        rules: [v => !!v || "Name is required"],
       },
       dealer_phone: {
+        type: "phoneNumber",
         data: "",
         label: "Мобильный телефон",
-        rules: [v => !!v || "Phone is required"]
+        rules: [v => !!v || "Phone is required"],
+        mask: '# (###) ### ####',
+      },
+      opponents: {
+        type: "opponentsField",
+        opponent: "",
+        data: [],
+        label: "Конкуренты",
+      },
+      date: {
+        type: "datePicker",
+        data: new Date().toISOString().substr(0, 10),
+        label: "Срок реализации проекта"
       }
     },
-    opponent: "",
-    opponents: [],
-    date: new Date().toISOString().substr(0, 10),
-    menu: false
   }),
 
   methods: {
@@ -145,7 +173,6 @@ export default {
       for (let prop in this.form) {
         res[prop] = this.form[prop].data;
       }
-      res["opponents"] = this.opponents;
 
       axios
         .post("http://property.test/project", res)
@@ -167,21 +194,23 @@ export default {
     },
 
     input() {
-      if (this.opponent === "") return;
+      if (this.form.opponents.opponent === "") return;
 
-      if (this.opponents.includes(this.opponent)) {
-        this.opponent = "";
+      if (this.form.opponents.data.includes(this.form.opponents.opponent)) {
+        this.form.opponents.opponent = "";
         return;
       }
 
-      this.opponents.push(this.opponent);
-      this.opponent = "";
+      this.form.opponents.data.push(this.form.opponents.opponent);
+      this.form.opponents.opponent = "";
     },
 
     remove(item) {
-      console.log(item);
-      this.opponents.splice(this.opponents.indexOf(item), 1);
-      this.opponents = [...this.opponents];
+      this.form.opponents.data.splice(
+        this.form.opponents.data.indexOf(item),
+        1
+      );
+      this.form.opponents.data = [...this.form.opponents.data];
     }
   }
 };
@@ -189,6 +218,6 @@ export default {
 
 <style scoped>
 .card {
-  margin-bottom: 14px;
+  margin-bottom: 30px;
 }
 </style>

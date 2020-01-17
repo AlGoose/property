@@ -35,11 +35,11 @@ export default {
         },
         { text: "Address", value: "address" },
         { text: "Customer", value: "customer" },
-        { text: "Opponents", value: "opponents" },
+        // { text: "Opponents", value: "opponents" },
         { text: "Contacts", value: "contacts" },
         { text: "Date", value: "date" },
-        { text: "Work", value: "work" },
-        { text: "Products", value: "products" },
+        // { text: "Work", value: "work" },
+        // { text: "Products", value: "products" },
         { text: "Manager", value: "manager" }
       ],
       fruits: []

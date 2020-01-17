@@ -15,9 +15,14 @@ class CreateOpponentProjectTable extends Migration
     {
         Schema::create('opponent_project', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('opponent_id');
-            $table->bigInteger('project_id');
+            $table->bigInteger('opponent_id')->unsigned();
+            $table->bigInteger('project_id')->unsigned();
             $table->timestamps();
+        });
+
+        Schema::table('opponent_project', function (Blueprint $table) {
+            $table->foreign('opponent_id')->references('id')->on('opponents')->onDelete('cascade');
+            $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
         });
     }
 
