@@ -20,6 +20,7 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/address', 'AddressController@getAddress');
+Route::get('/addresses', 'ProjectController@addresses');
 
 // Route::get('/addform', 'FormController@add');
 // Route::get('/deleteform/{id}', 'FormController@delete');

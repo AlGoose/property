@@ -59,14 +59,14 @@ class ProjectController extends Controller
         $project->contacts = $request->contacts;
         $project->date = $request->date;
         $project->user()->associate(\Auth::user());
-        
+
         $dealer = Dealer::firstOrCreate(
             ['name' => $request->dealer_name],
             ['phone' => $request->dealer_phone]
         );
         $project->dealer()->associate($dealer)->save();
 
-        foreach($request->opponents as $name) {
+        foreach ($request->opponents as $name) {
             $opponent = Opponent::firstOrCreate(
                 ['name' => $name]
             );
@@ -128,5 +128,15 @@ class ProjectController extends Controller
     public function destroy($id)
     {
         Project::destroy($id);
+    }
+
+    public function addresses(Request $request)
+    {
+        if ($request->address == '') {
+            return array();
+        } else {
+            $projects = Project::where('address', 'like', '%' . $request->address . '%')->get();
+            return $projects;
+        }
     }
 }

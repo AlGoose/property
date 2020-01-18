@@ -2188,11 +2188,54 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      address: ""
+      address: "",
+      textLimit: 60,
+      entries: [],
+      isLoading: false,
+      model: null,
+      search: null
     };
+  },
+  computed: {
+    items: function items() {
+      var _this = this;
+
+      return this.entries.map(function (entry) {
+        var Address = entry.address.length > _this.textLimit ? entry.address.slice(0, _this.textLimit) + "..." : entry.address;
+        return Object.assign({}, entry, {
+          Address: Address
+        });
+      });
+    }
+  },
+  watch: {
+    search: function search(val) {
+      var _this2 = this;
+
+      if (this.isLoading) return;
+      this.isLoading = true;
+      fetch("/addresses?address=" + val).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        console.log(res);
+        _this2.entries = res;
+      })["catch"](function (err) {
+        console.log(err);
+      })["finally"](function () {
+        return _this2.isLoading = false;
+      });
+    }
   },
   methods: {}
 });
@@ -2279,11 +2322,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
-//
 //
 //
 //
@@ -38901,19 +38939,35 @@ var render = function() {
             "v-col",
             { attrs: { cols: "12", sm: "12" } },
             [
-              _c("v-text-field", {
+              _c("v-autocomplete", {
                 attrs: {
-                  label: "Введите адрес объекта",
-                  hint: "Адрес объекта",
+                  items: _vm.items,
+                  loading: _vm.isLoading,
+                  "search-input": _vm.search,
+                  color: "grey",
+                  "hide-no-data": "",
+                  "hide-selected": "",
                   outlined: "",
-                  clearable: ""
+                  "item-text": "Address",
+                  "item-value": "API",
+                  label: "Адрес объекта",
+                  placeholder: "Вводите адрес для поиска",
+                  "return-object": ""
+                },
+                on: {
+                  "update:searchInput": function($event) {
+                    _vm.search = $event
+                  },
+                  "update:search-input": function($event) {
+                    _vm.search = $event
+                  }
                 },
                 model: {
-                  value: _vm.address,
+                  value: _vm.model,
                   callback: function($$v) {
-                    _vm.address = $$v
+                    _vm.model = $$v
                   },
-                  expression: "address"
+                  expression: "model"
                 }
               }),
               _vm._v(" "),

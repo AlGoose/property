@@ -13,12 +13,7 @@
 
     <v-card-actions>
       <v-btn class="ma-2" outlined color="indigo" @click="back">Назад</v-btn>
-      <v-btn
-        class="ma-2"
-        outlined
-        color="teal"
-        v-if="this.user_id === this.auth_id"
-      >Редактировать</v-btn>
+      <v-btn class="ma-2" outlined color="teal" v-if="this.user_id === this.auth_id">Редактировать</v-btn>
       <v-btn
         class="ma-2"
         outlined
@@ -50,7 +45,7 @@ export default {
       axios
         .delete("/project/" + this.project_id)
         .then(function(response) {
-            window.location = "/project";
+          window.location = "/project";
         })
         .catch(function(error) {
           console.log(error);
