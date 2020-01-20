@@ -7,6 +7,9 @@
 require('./bootstrap');
 import Vuetify from 'vuetify';
 
+import Routes from './routes';
+import App from './App.vue';
+
 window.Vue = require('vue');
 window.Vue.use(Vuetify);
 
@@ -21,10 +24,10 @@ window.Vue.use(Vuetify);
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('form-component', require('./components/FormComponent.vue').default);
-Vue.component('home-component', require('./components/HomeComponent.vue').default);
-Vue.component('projects-component', require('./components/ProjectsComponent.vue').default);
-Vue.component('show-component', require('./components/ShowComponent.vue').default);
+// Vue.component('form-component', require('./components/FormComponent.vue').default);
+// Vue.component('home-component', require('./components/HomeComponent.vue').default);
+// Vue.component('projects-component', require('./components/ProjectsComponent.vue').default);
+// Vue.component('show-component', require('./components/ShowComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -34,5 +37,9 @@ Vue.component('show-component', require('./components/ShowComponent.vue').defaul
 
 const app = new Vue({
     vuetify: new Vuetify,
+    router: Routes,
     el: '#app',
+    render: h => h(App),
 });
+
+export default app;
