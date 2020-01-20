@@ -32,6 +32,7 @@ class ProjectController extends Controller
 
 
         if ($request->ajax()) return $projects;
+
         return view('projects')->with('projects', $projects);
     }
 
@@ -42,7 +43,7 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        return view('form');
+        return view('welcome');
     }
 
     /**
@@ -89,9 +90,11 @@ class ProjectController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Project $project)
+    public function show(Request $request, Project $project)
     {
-        return view('welcome');
+        if ($request->ajax()) return $project;
+        
+        return view('show')->with('project', $project);
     }
 
     /**

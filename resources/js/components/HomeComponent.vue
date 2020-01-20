@@ -36,15 +36,15 @@ export default {
 
   computed: {
     items() {
-        return ['1','123','111','121'];
-      return this.entries.map(entry => {
-        const Address =
-          entry.address.length > this.textLimit
-            ? entry.address.slice(0, this.textLimit) + "..."
-            : entry.address;
+      return ["1", "123", "111", "121"];
+      // return this.entries.map(entry => {
+      //   const Address =
+      //     entry.address.length > this.textLimit
+      //       ? entry.address.slice(0, this.textLimit) + "..."
+      //       : entry.address;
 
-        return Object.assign({}, entry, { Address });
-      });
+      //   return Object.assign({}, entry, { Address });
+      // });
     }
   },
 
@@ -68,10 +68,12 @@ export default {
   },
 
   methods: {
-      createForm(){
-          this.$router.push( {
-              name: 'form', params:{ address: this.model}} )
-      }
+    createForm() {
+      this.$router.push({
+        name: "form",
+        params: { address: this.model }
+      });
+    }
   }
 };
 </script>
