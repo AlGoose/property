@@ -17,7 +17,7 @@
           placeholder="Вводите адрес для поиска"
           return-object
         ></v-autocomplete>
-        <v-btn block color="indigo" outlined href="./project/create">Добавить форму</v-btn>
+        <v-btn block color="indigo" outlined href="createForm">Добавить форму</v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -36,6 +36,7 @@ export default {
 
   computed: {
     items() {
+        return ['1','123','111','121'];
       return this.entries.map(entry => {
         const Address =
           entry.address.length > this.textLimit
@@ -66,6 +67,10 @@ export default {
     }
   },
 
-  methods: {}
+  methods: {
+      createForm(){
+          this.$router.push( {name: 'form', params: { address: this.address}} )
+      }
+  }
 };
 </script>

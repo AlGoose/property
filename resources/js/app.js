@@ -35,11 +35,10 @@ window.Vue.use(Vuetify);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-const app = new Vue({
+window.vueApp = new Vue({
     vuetify: new Vuetify,
     router: Routes,
     el: '#app',
-    render: h => h(App),
+ //   render: h => h(App),
 });
 
-export default app;

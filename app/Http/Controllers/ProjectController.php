@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Project;
 use App\Dealer;
-use Illuminate\Http\Request;
 use App\Http\Requests\ProjectRequest;
 use App\Opponent;
 use App\Product;
+use App\Project;
+use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
@@ -26,9 +26,12 @@ class ProjectController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $projects = Project::paginate(5);
+
+
+        if ($request->ajax()) return $projects;
         return view('projects')->with('projects', $projects);
     }
 
@@ -45,7 +48,7 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(ProjectRequest $request)
@@ -83,18 +86,18 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show(Project $project)
     {
-        return view('show')->with('project', $project);
+        return view('welcome');
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit(Project $project) //TODO: Добавить view
@@ -105,8 +108,8 @@ class ProjectController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -122,7 +125,7 @@ class ProjectController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

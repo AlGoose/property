@@ -17,15 +17,16 @@ const router = new VueRouter({
             component: Home
         },
         {
-            path: '/project/:id',
-            name: 'show',
-            component: Show,
-        },
-        {
             path: '/project/create',
             name: 'form',
             component: Form,
         },
+        {
+            path: '/project/:id',
+            name: 'show',
+            component: Show,
+        },
+
         {
             path: '/project',
             name: 'project',

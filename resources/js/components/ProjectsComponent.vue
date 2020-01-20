@@ -16,13 +16,13 @@
 <script>
 export default {
   mounted: function() {
-    let data = JSON.parse(this.projects)["data"];
-    for (let i = 0; i < data.length; i++) {
+  //  let data = JSON.parse(this.projects)["data"];
+   /* for (let i = 0; i < data.length; i++) {
       this.fruits.push(data[i]);
-    }
+    }*/
+    axios.get('/project').then((data)=>{ console.log(data)})
   },
 
-  props: ["projects"],
 
   data() {
     return {
