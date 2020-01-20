@@ -17,7 +17,7 @@
           placeholder="Вводите адрес для поиска"
           return-object
         ></v-autocomplete>
-        <v-btn block color="indigo" outlined href="createForm">Добавить форму</v-btn>
+        <v-btn block color="indigo" outlined @click="createForm">Добавить форму</v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -69,7 +69,8 @@ export default {
 
   methods: {
       createForm(){
-          this.$router.push( {name: 'form', params: { address: this.address}} )
+          this.$router.push( {
+              name: 'form', params:{ address: this.model}} )
       }
   }
 };
