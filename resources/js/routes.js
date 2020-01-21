@@ -22,6 +22,11 @@ const router = new VueRouter({
             component: Form,
         },
         {
+            path: '/project/:id/edit',
+            name: 'edit',
+            component: Form,
+        },
+        {
             path: '/project/:id',
             name: 'show',
             component: Show,

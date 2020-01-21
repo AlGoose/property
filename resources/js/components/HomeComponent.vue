@@ -71,7 +71,7 @@ export default {
     createForm() {
       this.$router.push({
         name: "form",
-        params: { address: this.model }
+        params: { address: this.model, mode: "create" }
       });
     }
   }

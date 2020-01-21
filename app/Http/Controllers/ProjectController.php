@@ -29,6 +29,15 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
         $projects = Project::paginate(5);
+        $dealer = Dealer::find(3);
+        \Debugbar::info($dealer->contacts()->get()[0]->name);
+        // \Debugbar::info($projects->all());
+
+        foreach ($projects as $item) {
+            // \Debugbar::info($item->user()->get()[0]->name);
+            $item->manager = $item->user()->get()[0]->name;
+            $item->dealer = $item->dealer()->get()[0]->name;
+        }
 
 
         if ($request->ajax()) return $projects;
@@ -54,32 +63,36 @@ class ProjectController extends Controller
      */
     public function store(ProjectRequest $request)
     {
-        // \Debugbar::info($request->all());
+        \Debugbar::info($request->all());
+        \Debugbar::info($request->dealer);
 
         $project = new Project;
-        $project->name = $request->name;
-        $project->address = $request->address;
-        $project->customer = $request->customer;
-        $project->contacts = $request->contacts;
-        $project->date = $request->date;
+        $project->name = $request->project['name'];
+        $project->address = $request->project['address'];
+        $project->customer = $request->project['customer'];
+        $project->date = $request->project['date'];
+        $project->work = $request->project['work'];
         $project->user()->associate(\Auth::user());
 
         $dealer = Dealer::firstOrCreate(
-            ['name' => $request->dealer_name],
-            ['phone' => $request->dealer_phone]
+            ['name' => $request->dealer['name']],
+            ['address' =>  'ADDRESS'],
+            ['inn' =>  intval($request->dealer['inn'])]
         );
         $project->dealer()->associate($dealer)->save();
-
-        foreach ($request->opponents as $name) {
+        
+        foreach ($request->project['opponents'] as $name) {
+            \Debugbar::info($name);
             $opponent = Opponent::firstOrCreate(
                 ['name' => $name]
             );
             $project->opponents()->attach($opponent->id);
         }
-
+        
         $product = Product::firstOrCreate(
             ['code' => 'CODE'],
-            ['name' => 'NAME']
+            ['name' => 'NAME'],
+            ['price' => intval('10')]
         );
         $project->products()->attach($product->id, ['count' => 5]);
     }
@@ -93,7 +106,7 @@ class ProjectController extends Controller
     public function show(Request $request, Project $project)
     {
         if ($request->ajax()) return $project;
-        
+
         return view('show')->with('project', $project);
     }
 
@@ -103,9 +116,14 @@ class ProjectController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Project $project) //TODO: Добавить view
+    public function edit(Request $request, Project $project) //TODO: Добавить view
     {
-        return view('edit')->with('project', $project);
+        $project->dealer = $project->dealer()->get()[0];
+        $project->opponents = $project->opponents()->get();
+
+        if ($request->ajax()) return $project;
+
+        return view('form')->with('project', $project);
     }
 
     /**

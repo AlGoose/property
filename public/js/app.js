@@ -2092,18 +2092,75 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   directives: {
     mask: vue_the_mask__WEBPACK_IMPORTED_MODULE_0__["mask"]
   },
   mounted: function mounted() {
-    if (this.$route.params.address) {
-      this.form.address.data = this.$route.params.address;
+    var newThis = this;
+
+    if (this.$route.name === "edit") {
+      if (window.project == undefined) {
+        axios.get("/project/" + this.$route.params.id + "/edit").then(function (response) {
+          console.log("AXIOS");
+          console.log(response);
+
+          for (var prop in newThis.dealer) {
+            newThis.dealer[prop].data = response.data.dealer[prop];
+          }
+
+          for (var _prop in newThis.form) {
+            if (_prop === "opponents") {
+              response.data.opponents.forEach(function (item) {
+                newThis.form.opponents.data.push(item.name);
+              });
+            } else {
+              newThis.form[_prop].data = response.data[_prop];
+            }
+          }
+        })["catch"](function (error) {
+          console.log(error);
+        });
+      } else {
+        console.log("BLADE");
+        console.log(window.project);
+
+        for (var prop in newThis.dealer) {
+          newThis.dealer[prop].data = window.project.dealer[prop];
+        }
+
+        for (var _prop2 in newThis.form) {
+          if (_prop2 === "opponents") {
+            window.project.opponents.forEach(function (item) {
+              newThis.form.opponents.data.push(item.name);
+            });
+          } else {
+            newThis.form[_prop2].data = window.project[_prop2];
+          }
+        }
+
+        window.project = undefined;
+      }
+    } else {
+      if (this.$route.params.address) {
+        this.form.address.data = this.$route.params.address;
+      }
     }
   },
   data: function data() {
     return {
+      mode: "create",
       dialog: false,
       menu: false,
       model: 1,
@@ -2215,16 +2272,23 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   methods: {
     addForm: function addForm() {
       var newThis = this;
-      var res = {};
+      var res = {
+        dealer: {},
+        project: {}
+      };
 
-      for (var prop in this.form) {
-        res[prop] = this.form[prop].data;
+      for (var prop in this.dealer) {
+        res.dealer[prop] = this.dealer[prop].data;
+      }
+
+      for (var _prop3 in this.form) {
+        res.project[_prop3] = this.form[_prop3].data;
       }
 
       axios.post("http://property.test/project", res).then(function (response) {
         newThis.$refs.form.reset();
-        newThis.opponent = "";
-        newThis.opponents = [];
+        newThis.form.opponents.opponent = "";
+        newThis.form.opponents.data = [];
         newThis.dialog = false;
       })["catch"](function (error) {
         console.log(error);
@@ -2334,7 +2398,8 @@ __webpack_require__.r(__webpack_exports__);
       this.$router.push({
         name: "form",
         params: {
-          address: this.model
+          address: this.model,
+          mode: "create"
         }
       });
     }
@@ -2395,8 +2460,8 @@ __webpack_require__.r(__webpack_exports__);
         text: "Customer",
         value: "customer"
       }, {
-        text: "Contacts",
-        value: "contacts"
+        text: "Dealer",
+        value: "dealer"
       }, {
         text: "Date",
         value: "date"
@@ -2409,7 +2474,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     openProject: function openProject(value) {
-      // window.location = "/project/" + value.id;
       this.$router.push({
         name: "show",
         params: {
@@ -2503,6 +2567,12 @@ __webpack_require__.r(__webpack_exports__);
     },
     edit: function edit() {
       console.log(window.project);
+      this.$router.push({
+        name: "edit",
+        params: {
+          mode: "edit"
+        }
+      });
     },
     back: function back() {
       this.$router.push("/project");
@@ -38629,6 +38699,14 @@ var render = function() {
     "v-container",
     { attrs: { fluid: "" } },
     [
+      _vm.$route.name === "edit"
+        ? _c("h3", { attrs: { align: "center" } }, [
+            _vm._v("Изменение проекта")
+          ])
+        : _c("h3", { attrs: { align: "center" } }, [
+            _vm._v("Создание проекта")
+          ]),
+      _vm._v(" "),
       _c(
         "v-form",
         {
@@ -39093,14 +39171,23 @@ var render = function() {
                     )
                   }),
                   _vm._v(" "),
-                  _c(
-                    "v-btn",
-                    {
-                      attrs: { block: "", color: "indigo", outlined: "" },
-                      on: { click: _vm.validate }
-                    },
-                    [_vm._v("Добавить форму")]
-                  )
+                  _vm.$route.name === "edit"
+                    ? _c(
+                        "v-btn",
+                        {
+                          attrs: { block: "", color: "indigo", outlined: "" },
+                          on: { click: _vm.validate }
+                        },
+                        [_vm._v("Изменить форму")]
+                      )
+                    : _c(
+                        "v-btn",
+                        {
+                          attrs: { block: "", color: "indigo", outlined: "" },
+                          on: { click: _vm.validate }
+                        },
+                        [_vm._v("Добавить форму")]
+                      )
                 ],
                 2
               )
@@ -96066,6 +96153,10 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
   }, {
     path: '/project/create',
     name: 'form',
+    component: _components_FormComponent__WEBPACK_IMPORTED_MODULE_4__["default"]
+  }, {
+    path: '/project/:id/edit',
+    name: 'edit',
     component: _components_FormComponent__WEBPACK_IMPORTED_MODULE_4__["default"]
   }, {
     path: '/project/:id',

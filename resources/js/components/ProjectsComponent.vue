@@ -43,7 +43,7 @@ export default {
         },
         { text: "Address", value: "address" },
         { text: "Customer", value: "customer" },
-        { text: "Contacts", value: "contacts" },
+        { text: "Dealer", value: "dealer" },
         { text: "Date", value: "date" },
         { text: "Manager", value: "manager" }
       ],
@@ -53,7 +53,6 @@ export default {
 
   methods: {
     openProject(value) {
-      // window.location = "/project/" + value.id;
       this.$router.push({
         name: "show",
         params: { id: value.id }

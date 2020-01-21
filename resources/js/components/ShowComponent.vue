@@ -81,6 +81,10 @@ export default {
 
     edit() {
       console.log(window.project);
+      this.$router.push({
+        name: "edit",
+        params: { mode: "edit" }
+      });
     },
 
     back() {

@@ -1,5 +1,8 @@
 <template>
   <v-container fluid>
+    <h3 align="center" v-if="$route.name === 'edit'">Изменение проекта</h3>
+    <h3 align="center" v-else>Создание проекта</h3>
+
     <v-form ref="form" v-model="valid" lazy-validation>
       <h3>Дилер</h3>
 
@@ -119,7 +122,14 @@
             </template>
           </div>
 
-          <v-btn block color="indigo" outlined @click="validate">Добавить форму</v-btn>
+          <v-btn
+            v-if="$route.name === 'edit'"
+            block
+            color="indigo"
+            outlined
+            @click="validate"
+          >Изменить форму</v-btn>
+          <v-btn v-else block color="indigo" outlined @click="validate">Добавить форму</v-btn>
         </v-col>
       </v-row>
     </v-form>
@@ -156,11 +166,56 @@ export default {
     mask
   },
   mounted() {
-    if (this.$route.params.address) {
-      this.form.address.data = this.$route.params.address;
+    let newThis = this;
+    if (this.$route.name === "edit") {
+      if (window.project == undefined) {
+        axios
+          .get("/project/" + this.$route.params.id + "/edit")
+          .then(function(response) {
+            console.log("AXIOS");
+            console.log(response);
+            for (let prop in newThis.dealer) {
+              newThis.dealer[prop].data = response.data.dealer[prop];
+            }
+            for (let prop in newThis.form) {
+              if (prop === "opponents") {
+                response.data.opponents.forEach(item => {
+                  newThis.form.opponents.data.push(item.name);
+                });
+              } else {
+                newThis.form[prop].data = response.data[prop];
+              }
+            }
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
+      } else {
+        console.log("BLADE");
+        console.log(window.project);
+        for (let prop in newThis.dealer) {
+          newThis.dealer[prop].data = window.project.dealer[prop];
+        }
+        for (let prop in newThis.form) {
+          if (prop === "opponents") {
+            window.project.opponents.forEach(item => {
+              newThis.form.opponents.data.push(item.name);
+            });
+          } else {
+            newThis.form[prop].data = window.project[prop];
+          }
+        }
+        window.project = undefined;
+      }
+    } else {
+      if (this.$route.params.address) {
+        this.form.address.data = this.$route.params.address;
+      }
     }
   },
+
   data: () => ({
+    mode: "create",
     dialog: false,
     menu: false,
     model: 1,
@@ -259,17 +314,23 @@ export default {
     addForm() {
       let newThis = this;
 
-      let res = {};
+      let res = {
+        dealer: {},
+        project: {}
+      };
+      for (let prop in this.dealer) {
+        res.dealer[prop] = this.dealer[prop].data;
+      }
       for (let prop in this.form) {
-        res[prop] = this.form[prop].data;
+        res.project[prop] = this.form[prop].data;
       }
 
       axios
         .post("http://property.test/project", res)
         .then(function(response) {
           newThis.$refs.form.reset();
-          newThis.opponent = "";
-          newThis.opponents = [];
+          newThis.form.opponents.opponent = "";
+          newThis.form.opponents.data = [];
           newThis.dialog = false;
         })
         .catch(function(error) {
