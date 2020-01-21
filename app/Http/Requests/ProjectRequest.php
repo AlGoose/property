@@ -27,7 +27,6 @@ class ProjectRequest extends FormRequest
             'name' => 'required|string|max:50',
             'address' => 'required|string|max:50',
             'customer' => 'required|string|max:50',
-            'contacts' => 'required|string|max:50',
             'date' => 'required|string|max:50',
         ];
     }

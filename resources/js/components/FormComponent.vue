@@ -1,8 +1,45 @@
 <template>
   <v-container fluid>
-    <v-row>
-      <v-col cols="12" sm="12">
-        <v-form ref="form" v-model="valid" lazy-validation>
+    <v-form ref="form" v-model="valid" lazy-validation>
+      <h3>Дилер</h3>
+
+      <v-row>
+        <v-col cols="12" md="6">
+          <v-text-field v-model="dealer.inn.data" v-mask="dealer.inn.mask" label="ИНН" outlined></v-text-field>
+        </v-col>
+
+        <v-col cols="12" md="6">
+          <v-text-field v-model="dealer.kpp.data" v-mask="dealer.kpp.mask" label="КПП" outlined></v-text-field>
+        </v-col>
+
+        <v-col cols="12" md="12">
+          <v-text-field v-model="dealer.name.data" label="Название" outlined></v-text-field>
+        </v-col>
+
+        <v-col cols="12" md="7">
+          <v-text-field
+            v-model="dealer.agent.data"
+            :rules="dealer.agent.rules"
+            label="Имя представителя"
+            outlined
+          ></v-text-field>
+        </v-col>
+
+        <v-col cols="12" md="5">
+          <v-text-field
+            v-model="dealer.phone.data"
+            :rules="dealer.phone.rules"
+            v-mask="dealer.phone.mask"
+            label="Телефон"
+            outlined
+          ></v-text-field>
+        </v-col>
+      </v-row>
+
+      <h3>Проект</h3>
+
+      <v-row>
+        <v-col cols="12" sm="12">
           <div v-for="item in form" :key="item.id">
             <v-text-field
               v-if="item.type === 'v-text-field'"
@@ -49,6 +86,17 @@
               </v-card>
             </template>
 
+            <template v-else-if="item.type === 'work'">
+              <v-textarea
+                v-model="item.data"
+                height="200"
+                no-resize
+                outlined
+                name="input-7-4"
+                label="Проделанная работа"
+              ></v-textarea>
+            </template>
+
             <template v-else>
               <v-menu
                 ref="menu"
@@ -72,9 +120,9 @@
           </div>
 
           <v-btn block color="indigo" outlined @click="validate">Добавить форму</v-btn>
-        </v-form>
-      </v-col>
-    </v-row>
+        </v-col>
+      </v-row>
+    </v-form>
 
     <v-row justify="center">
       <v-dialog v-model="dialog" persistent scrollable width="600px">
@@ -117,6 +165,41 @@ export default {
     menu: false,
     model: 1,
     valid: true,
+    dealer: {
+      inn: {
+        type: "withMask",
+        data: "",
+        label: "ИНН",
+        rules: [],
+        mask: "##########"
+      },
+      kpp: {
+        type: "withMask",
+        data: "",
+        label: "КПП",
+        rules: [],
+        mask: "#########"
+      },
+      name: {
+        type: "v-text-field",
+        data: "",
+        label: "Название",
+        rules: []
+      },
+      agent: {
+        type: "v-text-field",
+        data: "",
+        label: "Имя представителя",
+        rules: [v => !!v || "Name is required"]
+      },
+      phone: {
+        type: "withMask",
+        data: "",
+        label: "Мобильный телефон",
+        rules: [v => !!v || "Phone is required"],
+        mask: "(###) ### ## ##"
+      }
+    },
     form: {
       name: {
         type: "v-text-field",
@@ -130,6 +213,12 @@ export default {
         label: "Адрес объекта",
         rules: [v => !!v || "address is required"]
       },
+      inn: {
+        type: "v-text-field",
+        data: "",
+        label: "ИНН",
+        rules: [v => !!v || "ИНН is required"]
+      },
       customer: {
         type: "v-text-field",
         data: "",
@@ -142,19 +231,6 @@ export default {
         label: "Контактные данные",
         rules: [v => !!v || "contacts is required"]
       },
-      dealer_name: {
-        type: "v-text-field",
-        data: "",
-        label: "ФИО Дилера",
-        rules: [v => !!v || "Name is required"]
-      },
-      dealer_phone: {
-        type: "phoneNumber",
-        data: "",
-        label: "Мобильный телефон",
-        rules: [v => !!v || "Phone is required"],
-        mask: "# (###) ### ####"
-      },
       opponents: {
         type: "opponentsField",
         opponent: "",
@@ -165,7 +241,17 @@ export default {
         type: "datePicker",
         data: new Date().toISOString().substr(0, 10),
         label: "Срок реализации проекта"
+      },
+      work: {
+        type: "work",
+        data: [],
+        label: "Конкуренты"
       }
+      // time: {
+      //   type: "datePicker",
+      //   data: new Date().toISOString().substr(0, 10),
+      //   label: "Дата"
+      // }
     }
   }),
 

@@ -31,4 +31,9 @@ class Dealer extends Model
     {
         return $this->hasMany(Project::class);
     }
+
+    public function contacts()
+    {
+        return $this->morphMany('App\Staff', 'entity');
+    }
 }

@@ -52,4 +52,9 @@ class Project extends Model
     {
         return $this->belongsToMany(Product::class)->withTimestamps();
     }
+
+    public function contacts()
+    {
+        return $this->morphMany('App\Staff', 'entity');
+    }
 }

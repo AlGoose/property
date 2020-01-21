@@ -2044,6 +2044,54 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   directives: {
@@ -2060,6 +2108,45 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       menu: false,
       model: 1,
       valid: true,
+      dealer: {
+        inn: {
+          type: "withMask",
+          data: "",
+          label: "ИНН",
+          rules: [],
+          mask: "##########"
+        },
+        kpp: {
+          type: "withMask",
+          data: "",
+          label: "КПП",
+          rules: [],
+          mask: "#########"
+        },
+        name: {
+          type: "v-text-field",
+          data: "",
+          label: "Название",
+          rules: []
+        },
+        agent: {
+          type: "v-text-field",
+          data: "",
+          label: "Имя представителя",
+          rules: [function (v) {
+            return !!v || "Name is required";
+          }]
+        },
+        phone: {
+          type: "withMask",
+          data: "",
+          label: "Мобильный телефон",
+          rules: [function (v) {
+            return !!v || "Phone is required";
+          }],
+          mask: "(###) ### ## ##"
+        }
+      },
       form: {
         name: {
           type: "v-text-field",
@@ -2075,6 +2162,14 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
           label: "Адрес объекта",
           rules: [function (v) {
             return !!v || "address is required";
+          }]
+        },
+        inn: {
+          type: "v-text-field",
+          data: "",
+          label: "ИНН",
+          rules: [function (v) {
+            return !!v || "ИНН is required";
           }]
         },
         customer: {
@@ -2093,23 +2188,6 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             return !!v || "contacts is required";
           }]
         },
-        dealer_name: {
-          type: "v-text-field",
-          data: "",
-          label: "ФИО Дилера",
-          rules: [function (v) {
-            return !!v || "Name is required";
-          }]
-        },
-        dealer_phone: {
-          type: "phoneNumber",
-          data: "",
-          label: "Мобильный телефон",
-          rules: [function (v) {
-            return !!v || "Phone is required";
-          }],
-          mask: "# (###) ### ####"
-        },
         opponents: {
           type: "opponentsField",
           opponent: "",
@@ -2120,7 +2198,17 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
           type: "datePicker",
           data: new Date().toISOString().substr(0, 10),
           label: "Срок реализации проекта"
-        }
+        },
+        work: {
+          type: "work",
+          data: [],
+          label: "Конкуренты"
+        } // time: {
+        //   type: "datePicker",
+        //   data: new Date().toISOString().substr(0, 10),
+        //   label: "Дата"
+        // }
+
       }
     };
   },
@@ -38542,25 +38630,157 @@ var render = function() {
     { attrs: { fluid: "" } },
     [
       _c(
-        "v-row",
+        "v-form",
+        {
+          ref: "form",
+          attrs: { "lazy-validation": "" },
+          model: {
+            value: _vm.valid,
+            callback: function($$v) {
+              _vm.valid = $$v
+            },
+            expression: "valid"
+          }
+        },
         [
+          _c("h3", [_vm._v("Дилер")]),
+          _vm._v(" "),
           _c(
-            "v-col",
-            { attrs: { cols: "12", sm: "12" } },
+            "v-row",
             [
               _c(
-                "v-form",
-                {
-                  ref: "form",
-                  attrs: { "lazy-validation": "" },
-                  model: {
-                    value: _vm.valid,
-                    callback: function($$v) {
-                      _vm.valid = $$v
+                "v-col",
+                { attrs: { cols: "12", md: "6" } },
+                [
+                  _c("v-text-field", {
+                    directives: [
+                      {
+                        name: "mask",
+                        rawName: "v-mask",
+                        value: _vm.dealer.inn.mask,
+                        expression: "dealer.inn.mask"
+                      }
+                    ],
+                    attrs: { label: "ИНН", outlined: "" },
+                    model: {
+                      value: _vm.dealer.inn.data,
+                      callback: function($$v) {
+                        _vm.$set(_vm.dealer.inn, "data", $$v)
+                      },
+                      expression: "dealer.inn.data"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "6" } },
+                [
+                  _c("v-text-field", {
+                    directives: [
+                      {
+                        name: "mask",
+                        rawName: "v-mask",
+                        value: _vm.dealer.kpp.mask,
+                        expression: "dealer.kpp.mask"
+                      }
+                    ],
+                    attrs: { label: "КПП", outlined: "" },
+                    model: {
+                      value: _vm.dealer.kpp.data,
+                      callback: function($$v) {
+                        _vm.$set(_vm.dealer.kpp, "data", $$v)
+                      },
+                      expression: "dealer.kpp.data"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "12" } },
+                [
+                  _c("v-text-field", {
+                    attrs: { label: "Название", outlined: "" },
+                    model: {
+                      value: _vm.dealer.name.data,
+                      callback: function($$v) {
+                        _vm.$set(_vm.dealer.name, "data", $$v)
+                      },
+                      expression: "dealer.name.data"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "7" } },
+                [
+                  _c("v-text-field", {
+                    attrs: {
+                      rules: _vm.dealer.agent.rules,
+                      label: "Имя представителя",
+                      outlined: ""
                     },
-                    expression: "valid"
-                  }
-                },
+                    model: {
+                      value: _vm.dealer.agent.data,
+                      callback: function($$v) {
+                        _vm.$set(_vm.dealer.agent, "data", $$v)
+                      },
+                      expression: "dealer.agent.data"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "5" } },
+                [
+                  _c("v-text-field", {
+                    directives: [
+                      {
+                        name: "mask",
+                        rawName: "v-mask",
+                        value: _vm.dealer.phone.mask,
+                        expression: "dealer.phone.mask"
+                      }
+                    ],
+                    attrs: {
+                      rules: _vm.dealer.phone.rules,
+                      label: "Телефон",
+                      outlined: ""
+                    },
+                    model: {
+                      value: _vm.dealer.phone.data,
+                      callback: function($$v) {
+                        _vm.$set(_vm.dealer.phone, "data", $$v)
+                      },
+                      expression: "dealer.phone.data"
+                    }
+                  })
+                ],
+                1
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c("h3", [_vm._v("Проект")]),
+          _vm._v(" "),
+          _c(
+            "v-row",
+            [
+              _c(
+                "v-col",
+                { attrs: { cols: "12", sm: "12" } },
                 [
                   _vm._l(_vm.form, function(item) {
                     return _c(
@@ -38726,6 +38946,25 @@ var render = function() {
                                     1
                                   )
                                 : _vm._e()
+                            ]
+                          : item.type === "work"
+                          ? [
+                              _c("v-textarea", {
+                                attrs: {
+                                  height: "200",
+                                  "no-resize": "",
+                                  outlined: "",
+                                  name: "input-7-4",
+                                  label: "Проделанная работа"
+                                },
+                                model: {
+                                  value: item.data,
+                                  callback: function($$v) {
+                                    _vm.$set(item, "data", $$v)
+                                  },
+                                  expression: "item.data"
+                                }
+                              })
                             ]
                           : [
                               _c(

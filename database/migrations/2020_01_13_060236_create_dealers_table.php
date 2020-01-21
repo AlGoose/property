@@ -16,7 +16,8 @@ class CreateDealersTable extends Migration
         Schema::create('dealers', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->string('phone');
+            $table->string('address');
+            $table->integer('inn')->unsigned();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -17,7 +17,8 @@ class CreateProductProjectTable extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('product_id')->unsigned();
             $table->bigInteger('project_id')->unsigned();
-            $table->integer('count')->nullable();
+            $table->integer('count')->unsigned()->nullable();
+            $table->integer('total')->unsigned()->nullable();
             $table->timestamps();
         });
 

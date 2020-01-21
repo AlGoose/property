@@ -16,9 +16,8 @@ class CreateProjectsTable extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name'); //Название объекта
-            $table->string('address')->unique(); //Адрес объекта
+            $table->string('address'); //Адрес объекта
             $table->string('customer'); //Заказчик
-            $table->longText('contacts'); //Контактные данные лица на объекте
             $table->string('date'); //Срок реализации проекта
             $table->longText('work')->nullable(); //Работа, проведенная и ведущаяся диллером. Массив/Map/Объект вида "дата - событие" в JSON
             $table->bigInteger('user_id')->unsigned(); //Менеджер, принявший заявку
