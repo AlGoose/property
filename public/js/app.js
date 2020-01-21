@@ -2531,6 +2531,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     var newThis = this;
@@ -2539,23 +2542,123 @@ __webpack_require__.r(__webpack_exports__);
 
     if (window.project == undefined) {
       axios.get("/project/" + this.project_id).then(function (response) {
-        newThis.data = response.data;
-        newThis.user_id = newThis.data.user_id;
+        console.log(response);
+
+        for (var prop in newThis.dealer) {
+          newThis.dealer[prop].data = response.data.dealer[prop];
+        }
+
+        for (var _prop in newThis.form) {
+          if (_prop === "opponents") {
+            response.data.opponents.forEach(function (item) {
+              console.log(item.name);
+              newThis.form.opponents.data.push(item.name);
+            });
+          } else {
+            newThis.form[_prop].data = response.data[_prop];
+          }
+        }
+
+        newThis.user_id = response.data.user_id;
       })["catch"](function (error) {
         console.log(error);
       });
     } else {
-      this.data = window.project;
-      this.user_id = this.data.user_id;
+      console.log(window.project);
+
+      for (var prop in newThis.dealer) {
+        newThis.dealer[prop].data = window.project.dealer[prop];
+      }
+
+      for (var _prop2 in newThis.form) {
+        if (_prop2 === "opponents") {
+          window.project.opponents.forEach(function (item) {
+            console.log(item.name);
+            newThis.form.opponents.data.push(item.name);
+          });
+        } else {
+          newThis.form[_prop2].data = window.project[_prop2];
+        }
+      }
+
+      this.user_id = window.project.user_id;
       window.project = undefined;
     }
   },
   data: function data() {
     return {
-      data: "",
       auth_id: "",
       user_id: "",
-      project_id: ""
+      project_id: "",
+      dealer: {
+        inn: {
+          label: "ИНН",
+          data: ""
+        },
+        kpp: {
+          label: "КПП",
+          data: ""
+        },
+        name: {
+          label: "Имя",
+          data: ""
+        },
+        agent: {
+          label: "Представитель",
+          data: ""
+        },
+        phone: {
+          label: "Телефон",
+          data: ""
+        } // inn: "",
+        // kpp: "",
+        // name: "",
+        // agent: "",
+        // phone: ""
+
+      },
+      form: {
+        name: {
+          label: "Название",
+          data: ""
+        },
+        address: {
+          label: "Адрес",
+          data: ""
+        },
+        inn: {
+          label: "ИНН",
+          data: ""
+        },
+        customer: {
+          label: "Заказчик",
+          data: ""
+        },
+        contacts: {
+          label: "Контакты",
+          data: ""
+        },
+        opponents: {
+          label: "Конкуренты",
+          data: []
+        },
+        date: {
+          label: "Дата",
+          data: ""
+        },
+        work: {
+          label: "Работа",
+          data: ""
+        } // name: "",
+        // address: "",
+        // inn: "",
+        // customer: "",
+        // contacts: "",
+        // opponents: [],
+        // date: "",
+        // work: ""
+
+      }
     };
   },
   methods: {
@@ -7163,7 +7266,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n*[data-v-59cc4a25] {\r\n  padding-bottom: 14px;\n}\r\n", ""]);
+exports.push([module.i, "\n*[data-v-59cc4a25] {\r\n  padding-bottom: 14px;\n}\n.list[data-v-59cc4a25] {\r\n  height: 30px;\n}\r\n", ""]);
 
 // exports
 
@@ -39439,61 +39542,27 @@ var render = function() {
               _c(
                 "v-list-item-content",
                 [
-                  _c("v-text-field", {
-                    attrs: {
-                      value: _vm.data.name,
-                      label: "Имя",
-                      outlined: "",
-                      readonly: ""
-                    }
+                  _c("h4", [_vm._v("Дилер")]),
+                  _vm._v(" "),
+                  _vm._l(_vm.dealer, function(item, i) {
+                    return _c("div", { key: "A" + i, staticClass: "list" }, [
+                      _c("p", [
+                        _vm._v(_vm._s(item.label) + " : " + _vm._s(item.data))
+                      ])
+                    ])
                   }),
                   _vm._v(" "),
-                  _c("v-text-field", {
-                    attrs: {
-                      value: _vm.data.address,
-                      label: "Адрес",
-                      outlined: "",
-                      readonly: ""
-                    }
-                  }),
+                  _c("h4", [_vm._v("Проект")]),
                   _vm._v(" "),
-                  _c("v-text-field", {
-                    attrs: {
-                      value: _vm.data.customer,
-                      label: "Заказчик",
-                      outlined: "",
-                      readonly: ""
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("v-text-field", {
-                    attrs: {
-                      value: _vm.data.opponents,
-                      label: "Конкуренты",
-                      outlined: "",
-                      readonly: ""
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("v-text-field", {
-                    attrs: {
-                      value: _vm.data.contacts,
-                      label: "Контакты",
-                      outlined: "",
-                      readonly: ""
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("v-text-field", {
-                    attrs: {
-                      value: _vm.data.date,
-                      label: "Дата",
-                      outlined: "",
-                      readonly: ""
-                    }
+                  _vm._l(_vm.form, function(item, i) {
+                    return _c("div", { key: "B" + i, staticClass: "list" }, [
+                      _c("p", [
+                        _vm._v(_vm._s(item.label) + " : " + _vm._s(item.data))
+                      ])
+                    ])
                   })
                 ],
-                1
+                2
               )
             ],
             1

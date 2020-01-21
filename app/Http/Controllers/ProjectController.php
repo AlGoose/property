@@ -77,7 +77,7 @@ class ProjectController extends Controller
         $dealer = Dealer::firstOrCreate(
             ['name' => $request->dealer['name']],
             ['address' =>  'ADDRESS'],
-            ['inn' =>  intval($request->dealer['inn'])]
+            ['inn' =>  intval($request->dealer['inn'])] //TODO: ПОЧЕМУ ЗАПИСЫВАЕТСЯ NULL?
         );
         $project->dealer()->associate($dealer)->save();
         
@@ -105,6 +105,9 @@ class ProjectController extends Controller
      */
     public function show(Request $request, Project $project)
     {
+        $project->dealer = $project->dealer()->get()[0];
+        $project->opponents = $project->opponents()->get();
+        
         if ($request->ajax()) return $project;
 
         return view('show')->with('project', $project);

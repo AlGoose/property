@@ -3,12 +3,15 @@
     <v-card max-width="800" outlined>
       <v-list-item three-line>
         <v-list-item-content>
-          <v-text-field :value="data.name" label="Имя" outlined readonly></v-text-field>
-          <v-text-field :value="data.address" label="Адрес" outlined readonly></v-text-field>
-          <v-text-field :value="data.customer" label="Заказчик" outlined readonly></v-text-field>
-          <v-text-field :value="data.opponents" label="Конкуренты" outlined readonly></v-text-field>
-          <v-text-field :value="data.contacts" label="Контакты" outlined readonly></v-text-field>
-          <v-text-field :value="data.date" label="Дата" outlined readonly></v-text-field>
+          <h4>Дилер</h4>
+          <div class="list" v-for="(item, i) in dealer" :key="'A'+ i">
+            <p>{{item.label}} : {{item.data}}</p>
+          </div>
+
+          <h4>Проект</h4>
+          <div class="list" v-for="(item, i) in form" :key="'B'+ i">
+            <p>{{item.label}} : {{item.data}}</p>
+          </div>
         </v-list-item-content>
       </v-list-item>
 
@@ -45,25 +48,119 @@ export default {
       axios
         .get("/project/" + this.project_id)
         .then(function(response) {
-          newThis.data = response.data;
-          newThis.user_id = newThis.data.user_id;
+          console.log(response);
+          for (let prop in newThis.dealer) {
+            newThis.dealer[prop].data = response.data.dealer[prop];
+          }
+          for (let prop in newThis.form) {
+            if (prop === "opponents") {
+              response.data.opponents.forEach(item => {
+                console.log(item.name);
+                newThis.form.opponents.data.push(item.name);
+              });
+            } else {
+              newThis.form[prop].data = response.data[prop];
+            }
+          }
+          newThis.user_id = response.data.user_id;
         })
         .catch(function(error) {
           console.log(error);
         });
     } else {
-      this.data = window.project;
-      this.user_id = this.data.user_id;
+      console.log(window.project);
+      for (let prop in newThis.dealer) {
+        newThis.dealer[prop].data = window.project.dealer[prop];
+      }
+      for (let prop in newThis.form) {
+        if (prop === "opponents") {
+          window.project.opponents.forEach(item => {
+            console.log(item.name);
+            newThis.form.opponents.data.push(item.name);
+          });
+        } else {
+          newThis.form[prop].data = window.project[prop];
+        }
+      }
+      this.user_id = window.project.user_id;
       window.project = undefined;
     }
   },
 
   data() {
     return {
-      data: "",
       auth_id: "",
       user_id: "",
-      project_id: ""
+      project_id: "",
+      dealer: {
+        inn: {
+          label: "ИНН",
+          data: ""
+        },
+        kpp: {
+          label: "КПП",
+          data: ""
+        },
+        name: {
+          label: "Имя",
+          data: ""
+        },
+        agent: {
+          label: "Представитель",
+          data: ""
+        },
+        phone: {
+          label: "Телефон",
+          data: ""
+        }
+        // inn: "",
+        // kpp: "",
+        // name: "",
+        // agent: "",
+        // phone: ""
+      },
+      form: {
+        name: {
+          label: "Название",
+          data: ""
+        },
+        address: {
+          label: "Адрес",
+          data: ""
+        },
+        inn: {
+          label: "ИНН",
+          data: ""
+        },
+        customer: {
+          label: "Заказчик",
+          data: ""
+        },
+        contacts: {
+          label: "Контакты",
+          data: ""
+        },
+        opponents: {
+          label: "Конкуренты",
+          data: []
+        },
+        date: {
+          label: "Дата",
+          data: ""
+        },
+        work: {
+          label: "Работа",
+          data: ""
+        }
+        // name: "",
+        // address: "",
+        // inn: "",
+        // customer: "",
+        // contacts: "",
+        // opponents: [],
+        // date: "",
+        // work: ""
+      }
     };
   },
 
@@ -97,5 +194,9 @@ export default {
 <style scoped>
 * {
   padding-bottom: 14px;
+}
+
+.list {
+  height: 30px;
 }
 </style>
