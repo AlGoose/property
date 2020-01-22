@@ -2100,8 +2100,6 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   directives: {
@@ -2162,110 +2160,230 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     return {
       mode: "create",
       dialog: false,
-      menu: false,
-      model: 1,
       valid: true,
-      dealer: {
-        inn: {
-          type: "withMask",
-          data: "",
-          label: "ИНН",
-          rules: [],
-          mask: "##########"
-        },
-        kpp: {
-          type: "withMask",
-          data: "",
-          label: "КПП",
-          rules: [],
-          mask: "#########"
-        },
-        name: {
-          type: "v-text-field",
-          data: "",
-          label: "Название",
-          rules: []
-        },
-        agent: {
-          type: "v-text-field",
-          data: "",
-          label: "Имя представителя",
-          rules: [function (v) {
-            return !!v || "Name is required";
-          }]
-        },
-        phone: {
-          type: "withMask",
-          data: "",
-          label: "Мобильный телефон",
-          rules: [function (v) {
-            return !!v || "Phone is required";
-          }],
-          mask: "(###) ### ## ##"
-        }
-      },
       form: {
-        name: {
-          type: "v-text-field",
-          data: "",
-          label: "Название объекта",
-          rules: [function (v) {
-            return !!v || "Name is required";
-          }]
-        },
-        address: {
-          type: "v-text-field",
-          data: "",
-          label: "Адрес объекта",
-          rules: [function (v) {
-            return !!v || "address is required";
-          }]
-        },
-        inn: {
-          type: "v-text-field",
-          data: "",
-          label: "ИНН",
-          rules: [function (v) {
-            return !!v || "ИНН is required";
-          }]
+        dealer: {
+          title: "Диллер",
+          items: {
+            inn: {
+              sizes: {
+                cols: 12,
+                md: 6
+              },
+              type: "v-text-field",
+              data: "",
+              label: "ИНН",
+              rules: [],
+              mask: "##########"
+            },
+            kpp: {
+              sizes: {
+                cols: 12,
+                md: 6
+              },
+              type: "v-text-field",
+              data: "",
+              label: "КПП",
+              rules: [],
+              mask: "#########",
+              readonly: true
+            },
+            name: {
+              sizes: {
+                cols: 12,
+                md: 12
+              },
+              type: "v-text-field",
+              data: "",
+              label: "Название",
+              rules: [],
+              readonly: true
+            },
+            agent: {
+              sizes: {
+                cols: 12,
+                md: 12
+              },
+              type: "v-text-field",
+              data: "",
+              label: "Имя представителя",
+              rules: [function (v) {
+                return !!v || "Name is required";
+              }]
+            },
+            phone: {
+              sizes: {
+                cols: 12,
+                md: 6
+              },
+              type: "v-text-field",
+              data: "",
+              label: "Телефон представителя",
+              rules: [],
+              mask: "(###) ### ## ##"
+            },
+            email: {
+              sizes: {
+                cols: 12,
+                md: 6
+              },
+              type: "v-text-field",
+              data: "",
+              label: "Почта представителя",
+              rules: []
+            }
+          }
         },
         customer: {
-          type: "v-text-field",
-          data: "",
-          label: "Заказчик",
-          rules: [function (v) {
-            return !!v || "customer is required";
-          }]
-        },
-        contacts: {
-          type: "v-text-field",
-          data: "",
-          label: "Контактные данные",
-          rules: [function (v) {
-            return !!v || "contacts is required";
-          }]
-        },
-        opponents: {
-          type: "opponentsField",
-          opponent: "",
-          data: [],
-          label: "Конкуренты"
-        },
-        date: {
-          type: "datePicker",
-          data: new Date().toISOString().substr(0, 10),
-          label: "Срок реализации проекта"
-        },
-        work: {
-          type: "work",
-          data: [],
-          label: "Конкуренты"
-        } // time: {
-        //   type: "datePicker",
-        //   data: new Date().toISOString().substr(0, 10),
-        //   label: "Дата"
-        // }
-
+          title: "Заказчик",
+          items: {
+            name: {
+              sizes: {
+                cols: 12,
+                md: 12
+              },
+              type: "v-text-field",
+              data: "",
+              label: "Название объекта",
+              rules: [function (v) {
+                return !!v || "Name is required";
+              }]
+            },
+            address: {
+              sizes: {
+                cols: 12,
+                md: 12
+              },
+              type: "v-text-field",
+              data: "",
+              label: "Адрес объекта",
+              rules: [function (v) {
+                return !!v || "address is required";
+              }]
+            },
+            inn: {
+              type: "v-text-field",
+              data: "",
+              label: "ИНН",
+              rules: [function (v) {
+                return !!v || "ИНН is required";
+              }]
+            },
+            customer: {
+              type: "v-text-field",
+              data: "",
+              label: "Заказчик",
+              rules: [],
+              readonly: true
+            },
+            phone: {
+              sizes: {
+                cols: 12,
+                md: 6
+              },
+              type: "v-text-field",
+              data: "",
+              label: "Телефон представителя",
+              rules: [],
+              mask: "(###) ### ## ##"
+            },
+            email: {
+              sizes: {
+                cols: 12,
+                md: 6
+              },
+              type: "v-text-field",
+              data: "",
+              label: "Почта представителя",
+              rules: []
+            },
+            opponents: {
+              type: "opponentsField",
+              opponent: "",
+              data: [],
+              label: "Конкуренты"
+            },
+            date: {
+              type: "datePicker",
+              data: new Date().toISOString().substr(0, 10),
+              label: "Срок реализации проекта",
+              menu: false
+            },
+            work: {
+              type: "work",
+              data: [],
+              label: "Конкуренты"
+            },
+            time: {
+              type: "datePicker",
+              data: new Date().toISOString().substr(0, 10),
+              label: "Дата заполнения бланка",
+              menu: false
+            },
+            product_code: {
+              sizes: {
+                cols: 12,
+                md: 4
+              },
+              type: "v-text-field",
+              data: [],
+              label: "Артикул товара"
+            },
+            product_name: {
+              sizes: {
+                cols: 12,
+                md: 8
+              },
+              type: "v-text-field",
+              data: [],
+              label: "Наименование товара",
+              readonly: true
+            },
+            product_count: {
+              sizes: {
+                cols: 12,
+                md: 4
+              },
+              type: "v-text-field",
+              data: [],
+              label: "Количество"
+            },
+            product_price: {
+              sizes: {
+                cols: 12,
+                md: 4
+              },
+              type: "v-text-field",
+              data: [],
+              label: "Цена за единицу"
+            },
+            product_total: {
+              sizes: {
+                cols: 12,
+                md: 4
+              },
+              type: "v-text-field",
+              data: [],
+              label: "Общая сумма"
+            },
+            product_table: {
+              type: "table",
+              data: [{
+                code: "123",
+                name: "Деталь 1",
+                count: 10,
+                price: 100,
+                total: 1000
+              }, {
+                code: "456",
+                name: "Деталь 2",
+                count: 2,
+                price: 4,
+                total: 8
+              }]
+            }
+          }
+        }
       }
     };
   },
@@ -2273,8 +2391,22 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     addForm: function addForm() {
       var newThis = this;
       var res = {
-        dealer: {},
-        project: {}
+        dealer: 1,
+        project: {
+          name: "",
+          address: ""
+        },
+        products: {
+          1: {
+            count: 5,
+            price: 100
+          },
+          25: {
+            count: 5,
+            price: 100
+          }
+        },
+        oponents: [1, 2, 3]
       };
 
       for (var prop in this.dealer) {
@@ -2299,20 +2431,20 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         this.dialog = true;
       }
     },
-    input: function input() {
-      if (this.form.opponents.opponent === "") return;
+    input: function input(value) {
+      if (value === "") return;
 
-      if (this.form.opponents.data.includes(this.form.opponents.opponent)) {
-        this.form.opponents.opponent = "";
+      if (this.form.customer.items.opponents.data.includes(value)) {
+        this.form.customer.items.opponents.opponent = "";
         return;
       }
 
-      this.form.opponents.data.push(this.form.opponents.opponent);
-      this.form.opponents.opponent = "";
+      this.form.customer.items.opponents.data.push(value);
+      this.form.customer.items.opponents.opponent = "";
     },
     remove: function remove(item) {
-      this.form.opponents.data.splice(this.form.opponents.data.indexOf(item), 1);
-      this.form.opponents.data = _toConsumableArray(this.form.opponents.data);
+      this.form.customer.items.opponents.data.splice(this.form.customer.items.opponents.data.indexOf(item), 1);
+      this.form.customer.items.opponents.data = _toConsumableArray(this.form.customer.items.opponents.data);
     }
   }
 });
@@ -38824,481 +38956,422 @@ var render = function() {
           }
         },
         [
-          _c("h3", [_vm._v("Дилер")]),
-          _vm._v(" "),
-          _c(
-            "v-row",
-            [
-              _c(
-                "v-col",
-                { attrs: { cols: "12", md: "6" } },
-                [
-                  _c("v-text-field", {
-                    directives: [
-                      {
-                        name: "mask",
-                        rawName: "v-mask",
-                        value: _vm.dealer.inn.mask,
-                        expression: "dealer.inn.mask"
-                      }
-                    ],
-                    attrs: { label: "ИНН", outlined: "" },
-                    model: {
-                      value: _vm.dealer.inn.data,
-                      callback: function($$v) {
-                        _vm.$set(_vm.dealer.inn, "data", $$v)
-                      },
-                      expression: "dealer.inn.data"
-                    }
-                  })
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "v-col",
-                { attrs: { cols: "12", md: "6" } },
-                [
-                  _c("v-text-field", {
-                    directives: [
-                      {
-                        name: "mask",
-                        rawName: "v-mask",
-                        value: _vm.dealer.kpp.mask,
-                        expression: "dealer.kpp.mask"
-                      }
-                    ],
-                    attrs: { label: "КПП", outlined: "" },
-                    model: {
-                      value: _vm.dealer.kpp.data,
-                      callback: function($$v) {
-                        _vm.$set(_vm.dealer.kpp, "data", $$v)
-                      },
-                      expression: "dealer.kpp.data"
-                    }
-                  })
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "v-col",
-                { attrs: { cols: "12", md: "12" } },
-                [
-                  _c("v-text-field", {
-                    attrs: { label: "Название", outlined: "" },
-                    model: {
-                      value: _vm.dealer.name.data,
-                      callback: function($$v) {
-                        _vm.$set(_vm.dealer.name, "data", $$v)
-                      },
-                      expression: "dealer.name.data"
-                    }
-                  })
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "v-col",
-                { attrs: { cols: "12", md: "7" } },
-                [
-                  _c("v-text-field", {
-                    attrs: {
-                      rules: _vm.dealer.agent.rules,
-                      label: "Имя представителя",
-                      outlined: ""
-                    },
-                    model: {
-                      value: _vm.dealer.agent.data,
-                      callback: function($$v) {
-                        _vm.$set(_vm.dealer.agent, "data", $$v)
-                      },
-                      expression: "dealer.agent.data"
-                    }
-                  })
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "v-col",
-                { attrs: { cols: "12", md: "5" } },
-                [
-                  _c("v-text-field", {
-                    directives: [
-                      {
-                        name: "mask",
-                        rawName: "v-mask",
-                        value: _vm.dealer.phone.mask,
-                        expression: "dealer.phone.mask"
-                      }
-                    ],
-                    attrs: {
-                      rules: _vm.dealer.phone.rules,
-                      label: "Телефон",
-                      outlined: ""
-                    },
-                    model: {
-                      value: _vm.dealer.phone.data,
-                      callback: function($$v) {
-                        _vm.$set(_vm.dealer.phone, "data", $$v)
-                      },
-                      expression: "dealer.phone.data"
-                    }
-                  })
-                ],
-                1
-              )
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c("h3", [_vm._v("Проект")]),
-          _vm._v(" "),
-          _c(
-            "v-row",
-            [
-              _c(
-                "v-col",
-                { attrs: { cols: "12", sm: "12" } },
-                [
-                  _vm._l(_vm.form, function(item) {
-                    return _c(
-                      "div",
-                      { key: item.id },
-                      [
-                        item.type === "v-text-field"
-                          ? _c("v-text-field", {
-                              attrs: {
-                                label: item.label,
-                                outlined: "",
-                                clearable: "",
-                                required: "",
-                                rules: item.rules
-                              },
-                              model: {
-                                value: item.data,
-                                callback: function($$v) {
-                                  _vm.$set(item, "data", $$v)
-                                },
-                                expression: "item.data"
-                              }
-                            })
-                          : item.type === "phoneNumber"
-                          ? _c("v-text-field", {
-                              directives: [
-                                {
-                                  name: "mask",
-                                  rawName: "v-mask",
-                                  value: item.mask,
-                                  expression: "item.mask"
-                                }
-                              ],
-                              attrs: {
-                                label: item.label,
-                                outlined: "",
-                                clearable: "",
-                                required: "",
-                                rules: item.rules
-                              },
-                              model: {
-                                value: item.data,
-                                callback: function($$v) {
-                                  _vm.$set(item, "data", $$v)
-                                },
-                                expression: "item.data"
-                              }
-                            })
-                          : item.type === "opponentsField"
-                          ? [
-                              _c("v-text-field", {
-                                attrs: {
-                                  label: item.label,
-                                  outlined: "",
-                                  clearable: "",
-                                  "append-icon": "mdi-plus"
-                                },
-                                on: {
-                                  keyup: function($event) {
-                                    if (
-                                      !$event.type.indexOf("key") &&
-                                      _vm._k(
-                                        $event.keyCode,
-                                        "enter",
-                                        13,
-                                        $event.key,
-                                        "Enter"
-                                      )
-                                    ) {
-                                      return null
-                                    }
-                                    return _vm.input($event)
-                                  },
-                                  "click:append": _vm.input
-                                },
-                                model: {
-                                  value: item.opponent,
-                                  callback: function($$v) {
-                                    _vm.$set(item, "opponent", $$v)
-                                  },
-                                  expression: "item.opponent"
-                                }
-                              }),
-                              _vm._v(" "),
-                              item.data.length
-                                ? _c(
-                                    "v-card",
+          _vm._l(_vm.form, function(group, key) {
+            return _c(
+              "v-card",
+              { key: key, staticClass: "card" },
+              [
+                _c("v-card-title", [_c("h3", [_vm._v(_vm._s(group.title))])]),
+                _vm._v(" "),
+                _c(
+                  "v-card-text",
+                  [
+                    _c(
+                      "v-row",
+                      _vm._l(group.items, function(item) {
+                        return _c(
+                          "v-col",
+                          {
+                            key: item.id,
+                            attrs: {
+                              cols:
+                                item.sizes !== undefined ? item.sizes.cols : 12,
+                              md: item.sizes !== undefined ? item.sizes.md : 12
+                            }
+                          },
+                          [
+                            item.type === "v-text-field"
+                              ? _c("v-text-field", {
+                                  directives: [
                                     {
-                                      staticClass: "card",
-                                      attrs: { outlined: "" }
+                                      name: "mask",
+                                      rawName: "v-mask",
+                                      value: item.mask,
+                                      expression: "item.mask"
+                                    }
+                                  ],
+                                  attrs: {
+                                    label: item.label,
+                                    outlined: "",
+                                    clearable: "",
+                                    required: "",
+                                    rules: item.rules,
+                                    readonly: item.readonly
+                                  },
+                                  model: {
+                                    value: item.data,
+                                    callback: function($$v) {
+                                      _vm.$set(item, "data", $$v)
                                     },
-                                    [
-                                      _c(
-                                        "v-list",
-                                        { attrs: { flat: "" } },
+                                    expression: "item.data"
+                                  }
+                                })
+                              : item.type === "opponentsField"
+                              ? [
+                                  _c("v-text-field", {
+                                    attrs: {
+                                      label: item.label,
+                                      outlined: "",
+                                      clearable: "",
+                                      "append-icon": "mdi-plus"
+                                    },
+                                    on: {
+                                      keyup: function($event) {
+                                        if (
+                                          !$event.type.indexOf("key") &&
+                                          _vm._k(
+                                            $event.keyCode,
+                                            "enter",
+                                            13,
+                                            $event.key,
+                                            "Enter"
+                                          )
+                                        ) {
+                                          return null
+                                        }
+                                        return _vm.input(item.opponent)
+                                      },
+                                      "click:append": function($event) {
+                                        return _vm.input(item.opponent)
+                                      }
+                                    },
+                                    model: {
+                                      value: item.opponent,
+                                      callback: function($$v) {
+                                        _vm.$set(item, "opponent", $$v)
+                                      },
+                                      expression: "item.opponent"
+                                    }
+                                  }),
+                                  _vm._v(" "),
+                                  item.data.length
+                                    ? _c(
+                                        "v-card",
+                                        {
+                                          staticClass: "card",
+                                          attrs: { outlined: "" }
+                                        },
                                         [
                                           _c(
-                                            "v-list-item-group",
-                                            {
-                                              attrs: {
-                                                mandatory: "",
-                                                color: "indigo"
-                                              },
-                                              model: {
-                                                value: _vm.model,
-                                                callback: function($$v) {
-                                                  _vm.model = $$v
+                                            "v-list",
+                                            { attrs: { flat: "" } },
+                                            [
+                                              _c(
+                                                "v-list-item-group",
+                                                {
+                                                  attrs: {
+                                                    mandatory: "",
+                                                    color: "indigo"
+                                                  },
+                                                  model: {
+                                                    value: _vm.model,
+                                                    callback: function($$v) {
+                                                      _vm.model = $$v
+                                                    },
+                                                    expression: "model"
+                                                  }
                                                 },
-                                                expression: "model"
-                                              }
-                                            },
-                                            _vm._l(item.data, function(
-                                              item,
-                                              i
-                                            ) {
-                                              return _c(
-                                                "v-list-item",
-                                                { key: i },
-                                                [
-                                                  _c(
-                                                    "v-list-item-content",
+                                                _vm._l(item.data, function(
+                                                  item,
+                                                  i
+                                                ) {
+                                                  return _c(
+                                                    "v-list-item",
+                                                    { key: i },
                                                     [
-                                                      _c("v-list-item-title", {
-                                                        domProps: {
-                                                          textContent: _vm._s(
-                                                            item
+                                                      _c(
+                                                        "v-list-item-content",
+                                                        [
+                                                          _c(
+                                                            "v-list-item-title",
+                                                            {
+                                                              domProps: {
+                                                                textContent: _vm._s(
+                                                                  item
+                                                                )
+                                                              }
+                                                            }
                                                           )
-                                                        }
-                                                      })
+                                                        ],
+                                                        1
+                                                      ),
+                                                      _vm._v(" "),
+                                                      _c(
+                                                        "v-icon",
+                                                        {
+                                                          on: {
+                                                            click: function(
+                                                              $event
+                                                            ) {
+                                                              return _vm.remove(
+                                                                item
+                                                              )
+                                                            }
+                                                          }
+                                                        },
+                                                        [
+                                                          _vm._v(
+                                                            "mdi-minus-circle-outline"
+                                                          )
+                                                        ]
+                                                      )
                                                     ],
                                                     1
-                                                  ),
-                                                  _vm._v(" "),
-                                                  _c(
-                                                    "v-icon",
-                                                    {
-                                                      on: {
-                                                        click: function(
-                                                          $event
-                                                        ) {
-                                                          return _vm.remove(
-                                                            item
-                                                          )
-                                                        }
-                                                      }
-                                                    },
-                                                    [
-                                                      _vm._v(
-                                                        "mdi-minus-circle-outline"
-                                                      )
-                                                    ]
                                                   )
-                                                ],
+                                                }),
                                                 1
                                               )
-                                            }),
+                                            ],
                                             1
                                           )
                                         ],
                                         1
                                       )
-                                    ],
-                                    1
-                                  )
-                                : _vm._e()
-                            ]
-                          : item.type === "work"
-                          ? [
-                              _c("v-textarea", {
-                                attrs: {
-                                  height: "200",
-                                  "no-resize": "",
-                                  outlined: "",
-                                  name: "input-7-4",
-                                  label: "Проделанная работа"
-                                },
-                                model: {
-                                  value: item.data,
-                                  callback: function($$v) {
-                                    _vm.$set(item, "data", $$v)
-                                  },
-                                  expression: "item.data"
-                                }
-                              })
-                            ]
-                          : [
-                              _c(
-                                "v-menu",
-                                {
-                                  ref: "menu",
-                                  refInFor: true,
-                                  attrs: {
-                                    "close-on-content-click": false,
-                                    "return-value": item.data,
-                                    transition: "scale-transition",
-                                    "offset-y": "",
-                                    "min-width": "290px"
-                                  },
-                                  on: {
-                                    "update:returnValue": function($event) {
-                                      return _vm.$set(item, "data", $event)
+                                    : _vm._e()
+                                ]
+                              : item.type === "work"
+                              ? [
+                                  _c("v-textarea", {
+                                    attrs: {
+                                      height: "200",
+                                      "no-resize": "",
+                                      outlined: "",
+                                      name: "input-7-4",
+                                      label: "Проделанная работа"
                                     },
-                                    "update:return-value": function($event) {
-                                      return _vm.$set(item, "data", $event)
+                                    model: {
+                                      value: item.data,
+                                      callback: function($$v) {
+                                        _vm.$set(item, "data", $$v)
+                                      },
+                                      expression: "item.data"
                                     }
-                                  },
-                                  scopedSlots: _vm._u(
-                                    [
-                                      {
-                                        key: "activator",
-                                        fn: function(ref) {
-                                          var on = ref.on
-                                          return [
-                                            _c(
-                                              "v-text-field",
-                                              _vm._g(
-                                                {
-                                                  attrs: {
-                                                    label: item.label,
-                                                    readonly: "",
-                                                    outlined: ""
-                                                  },
-                                                  model: {
-                                                    value: item.data,
-                                                    callback: function($$v) {
-                                                      _vm.$set(
-                                                        item,
-                                                        "data",
-                                                        $$v
-                                                      )
-                                                    },
-                                                    expression: "item.data"
-                                                  }
-                                                },
-                                                on
-                                              )
-                                            )
-                                          ]
-                                        }
-                                      }
-                                    ],
-                                    null,
-                                    true
-                                  ),
-                                  model: {
-                                    value: _vm.menu,
-                                    callback: function($$v) {
-                                      _vm.menu = $$v
-                                    },
-                                    expression: "menu"
-                                  }
-                                },
-                                [
-                                  _vm._v(" "),
+                                  })
+                                ]
+                              : item.type === "datePicker"
+                              ? [
                                   _c(
-                                    "v-date-picker",
+                                    "v-menu",
                                     {
                                       attrs: {
-                                        "no-title": "",
-                                        scrollable: "",
-                                        locale: "Rus"
+                                        "close-on-content-click": false,
+                                        "nudge-right": 40,
+                                        transition: "scale-transition",
+                                        "offset-y": "",
+                                        "min-width": "290px"
                                       },
+                                      scopedSlots: _vm._u(
+                                        [
+                                          {
+                                            key: "activator",
+                                            fn: function(ref) {
+                                              var on = ref.on
+                                              return [
+                                                _c(
+                                                  "v-text-field",
+                                                  _vm._g(
+                                                    {
+                                                      attrs: {
+                                                        label: item.label,
+                                                        readonly: "",
+                                                        outlined: ""
+                                                      },
+                                                      model: {
+                                                        value: item.data,
+                                                        callback: function(
+                                                          $$v
+                                                        ) {
+                                                          _vm.$set(
+                                                            item,
+                                                            "data",
+                                                            $$v
+                                                          )
+                                                        },
+                                                        expression: "item.data"
+                                                      }
+                                                    },
+                                                    on
+                                                  )
+                                                )
+                                              ]
+                                            }
+                                          }
+                                        ],
+                                        null,
+                                        true
+                                      ),
                                       model: {
-                                        value: item.data,
+                                        value: item.menu,
                                         callback: function($$v) {
-                                          _vm.$set(item, "data", $$v)
+                                          _vm.$set(item, "menu", $$v)
                                         },
-                                        expression: "item.data"
+                                        expression: "item.menu"
                                       }
                                     },
                                     [
-                                      _c("v-spacer"),
                                       _vm._v(" "),
-                                      _c(
-                                        "v-btn",
-                                        {
-                                          attrs: { text: "", color: "primary" },
-                                          on: {
-                                            click: function($event) {
-                                              _vm.menu = false
-                                            }
+                                      _c("v-date-picker", {
+                                        attrs: {
+                                          "no-title": "",
+                                          scrollable: "",
+                                          locale: "Rus"
+                                        },
+                                        on: {
+                                          input: function($event) {
+                                            item.menu = false
                                           }
                                         },
-                                        [_vm._v("Отмена")]
-                                      ),
-                                      _vm._v(" "),
-                                      _c(
-                                        "v-btn",
-                                        {
-                                          attrs: { text: "", color: "primary" },
-                                          on: {
-                                            click: function($event) {
-                                              return _vm.$refs.menu[0].save(
-                                                item.data
-                                              )
-                                            }
-                                          }
-                                        },
-                                        [_vm._v("Выбрать")]
-                                      )
+                                        model: {
+                                          value: item.data,
+                                          callback: function($$v) {
+                                            _vm.$set(item, "data", $$v)
+                                          },
+                                          expression: "item.data"
+                                        }
+                                      })
                                     ],
                                     1
                                   )
-                                ],
-                                1
-                              )
-                            ]
-                      ],
-                      2
+                                ]
+                              : item.type === "table"
+                              ? [
+                                  _c(
+                                    "v-btn",
+                                    {
+                                      attrs: {
+                                        block: "",
+                                        color: "red",
+                                        outlined: ""
+                                      }
+                                    },
+                                    [_vm._v("Добавить товар")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c("v-simple-table", {
+                                    scopedSlots: _vm._u(
+                                      [
+                                        {
+                                          key: "default",
+                                          fn: function() {
+                                            return [
+                                              _c("thead", [
+                                                _c("tr", [
+                                                  _c(
+                                                    "th",
+                                                    {
+                                                      staticClass: "text-left"
+                                                    },
+                                                    [_vm._v("Артикул")]
+                                                  ),
+                                                  _vm._v(" "),
+                                                  _c(
+                                                    "th",
+                                                    {
+                                                      staticClass: "text-left"
+                                                    },
+                                                    [_vm._v("Наименование")]
+                                                  ),
+                                                  _vm._v(" "),
+                                                  _c(
+                                                    "th",
+                                                    {
+                                                      staticClass: "text-left"
+                                                    },
+                                                    [_vm._v("Количество")]
+                                                  ),
+                                                  _vm._v(" "),
+                                                  _c(
+                                                    "th",
+                                                    {
+                                                      staticClass: "text-left"
+                                                    },
+                                                    [_vm._v("Цена")]
+                                                  ),
+                                                  _vm._v(" "),
+                                                  _c(
+                                                    "th",
+                                                    {
+                                                      staticClass: "text-left"
+                                                    },
+                                                    [_vm._v("Итог")]
+                                                  )
+                                                ])
+                                              ]),
+                                              _vm._v(" "),
+                                              _c(
+                                                "tbody",
+                                                _vm._l(item.data, function(
+                                                  item,
+                                                  i
+                                                ) {
+                                                  return _c("tr", { key: i }, [
+                                                    _c("td", [
+                                                      _vm._v(_vm._s(item.code))
+                                                    ]),
+                                                    _vm._v(" "),
+                                                    _c("td", [
+                                                      _vm._v(_vm._s(item.name))
+                                                    ]),
+                                                    _vm._v(" "),
+                                                    _c("td", [
+                                                      _vm._v(_vm._s(item.count))
+                                                    ]),
+                                                    _vm._v(" "),
+                                                    _c("td", [
+                                                      _vm._v(_vm._s(item.price))
+                                                    ]),
+                                                    _vm._v(" "),
+                                                    _c("td", [
+                                                      _vm._v(_vm._s(item.total))
+                                                    ])
+                                                  ])
+                                                }),
+                                                0
+                                              )
+                                            ]
+                                          },
+                                          proxy: true
+                                        }
+                                      ],
+                                      null,
+                                      true
+                                    )
+                                  })
+                                ]
+                              : _vm._e()
+                          ],
+                          2
+                        )
+                      }),
+                      1
                     )
-                  }),
-                  _vm._v(" "),
-                  _vm.$route.name === "edit"
-                    ? _c(
-                        "v-btn",
-                        {
-                          attrs: { block: "", color: "indigo", outlined: "" },
-                          on: { click: _vm.validate }
-                        },
-                        [_vm._v("Изменить форму")]
-                      )
-                    : _c(
-                        "v-btn",
-                        {
-                          attrs: { block: "", color: "indigo", outlined: "" },
-                          on: { click: _vm.validate }
-                        },
-                        [_vm._v("Добавить форму")]
-                      )
-                ],
-                2
+                  ],
+                  1
+                )
+              ],
+              1
+            )
+          }),
+          _vm._v(" "),
+          _vm.$route.name === "edit"
+            ? _c(
+                "v-btn",
+                {
+                  attrs: { block: "", color: "indigo", outlined: "" },
+                  on: { click: _vm.validate }
+                },
+                [_vm._v("Изменить форму")]
               )
-            ],
-            1
-          )
+            : _c(
+                "v-btn",
+                {
+                  attrs: { block: "", color: "indigo", outlined: "" },
+                  on: { click: _vm.validate }
+                },
+                [_vm._v("Добавить форму")]
+              )
         ],
-        1
+        2
       ),
       _vm._v(" "),
       _c(

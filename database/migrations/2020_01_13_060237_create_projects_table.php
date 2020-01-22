@@ -15,19 +15,26 @@ class CreateProjectsTable extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name'); //Название объекта
-            $table->string('address'); //Адрес объекта
-            $table->string('customer'); //Заказчик
-            $table->string('date'); //Срок реализации проекта
-            $table->longText('work')->nullable(); //Работа, проведенная и ведущаяся диллером. Массив/Map/Объект вида "дата - событие" в JSON
-            $table->bigInteger('user_id')->unsigned(); //Менеджер, принявший заявку
+            $table->string('name');
+            $table->string('address');
+            $table->string('customer');
+            $table->string('date'); //FIXME: в timestamp перевести
+            $table->string('time');
+            $table->longText('work')->nullable();
+            $table->bigInteger('user_id')->unsigned();
+            $table->bigInteger('customer_id')->unsigned();
+            $table->bigInteger('customer_staff_id')->unsigned();
             $table->bigInteger('dealer_id')->unsigned();
+            $table->bigInteger('dealer_staff_id')->unsigned();
             $table->timestamps();
             $table->softDeletes();
         });
         Schema::table('projects', function (Blueprint $table) {
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('dealer_id')->references('id')->on('dealers')->onDelete('cascade');
+            $table->foreign('dealer_staff_id')->references('id')->on('staff')->onDelete('cascade');
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
+            $table->foreign('customer_staff_id')->references('id')->on('staff')->onDelete('cascade');
         });
         
     }
