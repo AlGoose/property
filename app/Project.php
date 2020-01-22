@@ -55,6 +55,6 @@ class Project extends Model
 
     public function contacts()
     {
-        return $this->morphMany('App\Staff', 'entity');
+        return $this->morphMany(Staff::class, 'entity');
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Requests\ProjectRequest;
 use App\Opponent;
 use App\Product;
 use App\Project;
+use App\Staff;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
@@ -18,7 +19,20 @@ class ProjectController extends Controller
      */
     public function __construct()
     {
+
         $this->middleware('auth');
+    }
+
+    public function savestaff(Request $request)
+    {
+        $request = ['name' => 'Name1'];
+
+        $dealer_staff = new Staff($request);
+
+        $dealer = Dealer::find(2);
+        $dealer_staff->entity()->associate($dealer);
+        dd($dealer_staff, $dealer);
+        $dealer_staff->save();
     }
 
     /**
@@ -107,7 +121,7 @@ class ProjectController extends Controller
     {
         $project->dealer = $project->dealer()->get()[0];
         $project->opponents = $project->opponents()->get();
-        
+
         if ($request->ajax()) return $project;
 
         return view('show')->with('project', $project);

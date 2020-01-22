@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 
+
 class Dealer extends Model
 {
     use SoftDeletes;
@@ -24,7 +25,7 @@ class Dealer extends Model
      */
     protected $fillable = [
         'name',
-        'phone',
+        'inn'
     ];
 
     public function projects()
@@ -34,6 +35,6 @@ class Dealer extends Model
 
     public function contacts()
     {
-        return $this->morphMany('App\Staff', 'entity');
+        return $this->morphMany(Staff::class, 'entity');
     }
 }

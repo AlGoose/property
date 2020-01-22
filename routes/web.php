@@ -16,5 +16,6 @@ Auth::routes();
 Route::get('/addresses', 'ProjectController@addresses');
 
 Route::resource('/project', 'ProjectController');
+Route::get('/test', 'ProjectController@savestaff');
 
 Route::get('/{any}', 'SinglePageController@index')->middleware('auth')->where(['any' => '.*']);
