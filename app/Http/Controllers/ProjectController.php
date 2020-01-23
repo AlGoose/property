@@ -43,8 +43,8 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
         $projects = Project::paginate(5);
-        $dealer = Dealer::find(3);
-        \Debugbar::info($dealer->contacts()->get()[0]->name);
+        // $dealer = Dealer::find(3);
+        // \Debugbar::info($dealer->contacts()->get()[0]->name);
         // \Debugbar::info($projects->all());
 
         foreach ($projects as $item) {

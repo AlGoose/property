@@ -1,13 +1,18 @@
 <template>
-  <div class="row justify-content-center">
-    <v-data-table
-      :headers="headers"
-      :items="fruits"
-      :items-per-page="itemsPerPage"
-      hide-default-footer
-      class="elevation-3"
-      @click:row="openProject"
-    ></v-data-table>
+  <div>
+    <div class="row justify-content-center">
+      <v-data-table
+        :headers="headers"
+        :items="fruits"
+        :items-per-page="itemsPerPage"
+        hide-default-footer
+        class="elevation-3"
+        @click:row="openProject"
+      ></v-data-table>
+    </div>
+    <div class="text-center">
+      <v-pagination v-model="page" :length="length" :total-visible="7"></v-pagination>
+    </div>
   </div>
 </template>
 
@@ -21,12 +26,18 @@ export default {
       axios
         .get("/project")
         .then(function(response) {
+          newThis.itemsPerPage = response.data.per_page;
+          newThis.length = Math.ceil(
+            response.data.total / response.data.per_page
+          );
           newThis.fruits = response.data.data;
         })
         .catch(function(error) {
           console.log(error);
         });
     } else {
+      newThis.itemsPerPage = window.projects.per_page;
+      newThis.length = Math.ceil(window.projects.total / window.projects.per_page);
       this.fruits = window.projects.data;
       window.projects = undefined;
     }
@@ -34,7 +45,9 @@ export default {
 
   data() {
     return {
-      itemsPerPage: 5,
+      itemsPerPage: 1,
+      page: 1,
+      length: 1,
       headers: [
         {
           text: "Name",
@@ -49,6 +62,24 @@ export default {
       ],
       fruits: []
     };
+  },
+
+  watch: {
+    page: function(val) {
+      let newThis = this;
+      axios
+        .get("/project?page=" + val)
+        .then(function(response) {
+          newThis.itemsPerPage = response.data.per_page;
+          newThis.length = Math.ceil(
+            response.data.total / response.data.per_page
+          );
+          newThis.fruits = response.data.data;
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
   },
 
   methods: {

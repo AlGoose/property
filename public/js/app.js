@@ -2563,24 +2563,35 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     var newThis = this;
 
     if (window.projects == undefined) {
       axios.get("/project").then(function (response) {
+        newThis.itemsPerPage = response.data.per_page;
+        newThis.length = Math.ceil(response.data.total / response.data.per_page);
         newThis.fruits = response.data.data;
       })["catch"](function (error) {
         console.log(error);
       });
     } else {
+      newThis.itemsPerPage = window.projects.per_page;
+      newThis.length = Math.ceil(window.projects.total / window.projects.per_page);
       this.fruits = window.projects.data;
       window.projects = undefined;
     }
   },
   data: function data() {
     return {
-      itemsPerPage: 5,
+      itemsPerPage: 1,
+      page: 1,
+      length: 1,
       headers: [{
         text: "Name",
         align: "left",
@@ -2603,6 +2614,18 @@ __webpack_require__.r(__webpack_exports__);
       }],
       fruits: []
     };
+  },
+  watch: {
+    page: function page(val) {
+      var newThis = this;
+      axios.get("/project?page=" + val).then(function (response) {
+        newThis.itemsPerPage = response.data.per_page;
+        newThis.length = Math.ceil(response.data.total / response.data.per_page);
+        newThis.fruits = response.data.data;
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    }
   },
   methods: {
     openProject: function openProject(value) {
@@ -39560,23 +39583,43 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "row justify-content-center" },
-    [
-      _c("v-data-table", {
-        staticClass: "elevation-3",
-        attrs: {
-          headers: _vm.headers,
-          items: _vm.fruits,
-          "items-per-page": _vm.itemsPerPage,
-          "hide-default-footer": ""
-        },
-        on: { "click:row": _vm.openProject }
-      })
-    ],
-    1
-  )
+  return _c("div", [
+    _c(
+      "div",
+      { staticClass: "row justify-content-center" },
+      [
+        _c("v-data-table", {
+          staticClass: "elevation-3",
+          attrs: {
+            headers: _vm.headers,
+            items: _vm.fruits,
+            "items-per-page": _vm.itemsPerPage,
+            "hide-default-footer": ""
+          },
+          on: { "click:row": _vm.openProject }
+        })
+      ],
+      1
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "text-center" },
+      [
+        _c("v-pagination", {
+          attrs: { length: _vm.length, "total-visible": 7 },
+          model: {
+            value: _vm.page,
+            callback: function($$v) {
+              _vm.page = $$v
+            },
+            expression: "page"
+          }
+        })
+      ],
+      1
+    )
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
