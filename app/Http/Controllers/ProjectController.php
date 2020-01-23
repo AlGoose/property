@@ -120,6 +120,7 @@ class ProjectController extends Controller
     public function show(Request $request, Project $project)
     {
         $project->dealer = $project->dealer()->get()[0];
+        \Debugbar::info($project->opponents()->get());
         $project->opponents = $project->opponents()->get();
 
         if ($request->ajax()) return $project;

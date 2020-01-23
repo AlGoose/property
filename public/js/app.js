@@ -2139,15 +2139,6 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   directives: {
@@ -2801,6 +2792,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
 //
 //
 //
@@ -39812,7 +39804,7 @@ var render = function() {
           _c(
             "v-dialog",
             {
-              attrs: { persistent: "", scrollable: "", width: "600px" },
+              attrs: { width: "210px" },
               model: {
                 value: _vm.dialog,
                 callback: function($$v) {
@@ -39827,28 +39819,9 @@ var render = function() {
                 [
                   _c("v-card-title", [_vm._v("Все верно?")]),
                   _vm._v(" "),
-                  _c("v-divider"),
-                  _vm._v(" "),
-                  _c(
-                    "v-card-text",
-                    { staticStyle: { height: "300px" } },
-                    _vm._l(_vm.form, function(item) {
-                      return _c("div", { key: item.id }, [
-                        _c("p", [
-                          _vm._v(_vm._s(item.label) + ": " + _vm._s(item.data))
-                        ])
-                      ])
-                    }),
-                    0
-                  ),
-                  _vm._v(" "),
-                  _c("v-divider"),
-                  _vm._v(" "),
                   _c(
                     "v-card-actions",
                     [
-                      _c("v-spacer"),
-                      _vm._v(" "),
                       _c(
                         "v-btn",
                         {
@@ -40178,8 +40151,6 @@ var render = function() {
                   _c(
                     "v-card-actions",
                     [
-                      _c("v-spacer"),
-                      _vm._v(" "),
                       _c(
                         "v-btn",
                         {

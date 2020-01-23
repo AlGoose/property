@@ -181,26 +181,17 @@
     </v-form>
 
     <v-row justify="center">
-      <v-dialog v-model="dialog" persistent scrollable width="600px">
+      <v-dialog v-model="dialog" width="210px">
         <v-card>
           <v-card-title>Все верно?</v-card-title>
-          <v-divider></v-divider>
-
-          <v-card-text style="height: 300px;">
-            <div v-for="item in form" :key="item.id">
-              <p>{{item.label}}: {{item.data}}</p>
-            </div>
-          </v-card-text>
-
-          <v-divider></v-divider>
           <v-card-actions>
-            <v-spacer></v-spacer>
             <v-btn depressed color="error" @click="dialog = false">Отмена</v-btn>
             <v-btn depressed color="success" @click="addForm">Добавить</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
     </v-row>
+    
   </v-container>
 </template>
 
