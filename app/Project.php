@@ -25,12 +25,9 @@ class Project extends Model
     protected $fillable = [
         'name',
         'address',
-        'customer',
-        'opponents',
-        'contacts',
         'date',
+        'time',
         'work',
-        'products',
     ];
 
     public function user()

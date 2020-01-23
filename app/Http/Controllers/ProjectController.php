@@ -180,4 +180,43 @@ class ProjectController extends Controller
             return $projects;
         }
     }
+
+    public function addProduct(Request $request) {
+        \Debugbar::info($request->all());
+
+        $product = Product::firstOrCreate(
+            ['code' => $request->code],
+            ['name' => $request->name]
+        );
+        return $product;
+    }
+
+    public function addDealer(Request $request) {
+        \Debugbar::info($request->all());
+        
+        $dealer = Dealer::firstOrCreate(
+            ['inn' => $request->inn],
+            ['name' => $request->name]
+        );
+        return $dealer;
+    }
+
+    public function addCustomer(Request $request) {
+        \Debugbar::info($request->all());
+        
+        $customer = Customer::firstOrCreate(
+            ['inn' => $request->inn],
+            ['name' => $request->name]
+        );
+        return $customer;
+    }
+
+    public function addOpponent(Request $request) {
+        \Debugbar::info($request->all());
+        
+        $opponent = Opponent::firstOrCreate(
+            ['name' => $request->name]
+        );
+        return $opponent;
+    }
 }

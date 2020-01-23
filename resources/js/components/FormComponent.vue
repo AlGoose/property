@@ -212,6 +212,7 @@ export default {
   mounted() {
     let newThis = this;
     if (this.$route.name === "edit") {
+      this.mode = "edit";
       if (window.project == undefined) {
         axios
           .get("/project/" + this.$route.params.id + "/edit")
@@ -416,6 +417,7 @@ export default {
           },
           product: {
             type: "products",
+            ids: [],
             items: {
               product_code: {
                 sizes: {
@@ -567,6 +569,19 @@ export default {
         return;
       }
 
+      let test = {
+        name: value
+      };
+
+      axios
+        .post("http://property.test/addOpponent", test)
+        .then(function(response) {
+          console.log(response);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+
       this.form.customer.items.opponents.data.push(value);
       this.form.customer.items.opponents.opponent = "";
     },
@@ -583,7 +598,33 @@ export default {
 
     addProduct() {
       if (this.$refs.form_prod[0].validate()) {
+        let isValid = true;
+        let data = this.form.customer.items.product.items.product_table.data;
+        let length = data.length;
+        let currentCode = this.form.customer.items.product.items.product_code
+          .data;
+        for (let i = 0; i < length; i++) {
+          if (currentCode === data[i].code) {
+            isValid = false;
+            return;
+          }
+        }
+        if (!isValid) return;
+
         console.log("FINE");
+        let test = {
+          code: this.form.customer.items.product.items.product_code.data,
+          name: "Деталь 1"
+        };
+
+        axios
+          .post("http://property.test/addProduct", test)
+          .then(function(response) {
+            console.log(response);
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
 
         let res = {
           code: this.form.customer.items.product.items.product_code.data,

@@ -19,3 +19,8 @@ Route::resource('/project', 'ProjectController');
 Route::get('/test', 'ProjectController@savestaff');
 
 Route::get('/{any}', 'SinglePageController@index')->middleware('auth')->where(['any' => '.*']);
+
+Route::post('/addProduct', 'ProjectController@addProduct');
+Route::post('/addDealer', 'ProjectController@addDealer');
+Route::post('/addCustomer', 'ProjectController@addCustomer');
+Route::post('/addOpponent', 'ProjectController@addOpponent');

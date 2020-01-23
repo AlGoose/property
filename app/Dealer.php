@@ -25,7 +25,8 @@ class Dealer extends Model
      */
     protected $fillable = [
         'name',
-        'inn'
+        'inn',
+        'address'
     ];
 
     public function projects()

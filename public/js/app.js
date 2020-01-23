@@ -2157,6 +2157,8 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     var newThis = this;
 
     if (this.$route.name === "edit") {
+      this.mode = "edit";
+
       if (window.project == undefined) {
         axios.get("/project/" + this.$route.params.id + "/edit").then(function (response) {
           console.log("AXIOS");
@@ -2371,6 +2373,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             },
             product: {
               type: "products",
+              ids: [],
               items: {
                 product_code: {
                   sizes: {
@@ -2531,6 +2534,14 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         return;
       }
 
+      var test = {
+        name: value
+      };
+      axios.post("http://property.test/addOpponent", test).then(function (response) {
+        console.log(response);
+      })["catch"](function (error) {
+        console.log(error);
+      });
       this.form.customer.items.opponents.data.push(value);
       this.form.customer.items.opponents.opponent = "";
     },
@@ -2540,7 +2551,29 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     },
     addProduct: function addProduct() {
       if (this.$refs.form_prod[0].validate()) {
+        var isValid = true;
+        var data = this.form.customer.items.product.items.product_table.data;
+        var length = data.length;
+        var currentCode = this.form.customer.items.product.items.product_code.data;
+
+        for (var i = 0; i < length; i++) {
+          if (currentCode === data[i].code) {
+            isValid = false;
+            return;
+          }
+        }
+
+        if (!isValid) return;
         console.log("FINE");
+        var test = {
+          code: this.form.customer.items.product.items.product_code.data,
+          name: "Деталь 1"
+        };
+        axios.post("http://property.test/addProduct", test).then(function (response) {
+          console.log(response);
+        })["catch"](function (error) {
+          console.log(error);
+        });
         var res = {
           code: this.form.customer.items.product.items.product_code.data,
           name: "Деталь 1 Деталь 1 Деталь 1 Деталь 1 Деталь 1 Деталь 1",
