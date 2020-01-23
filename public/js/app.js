@@ -2100,6 +2100,54 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   directives: {
@@ -2161,6 +2209,7 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       mode: "create",
       dialog: false,
       valid: true,
+      valid_prod: true,
       form: {
         dealer: {
           title: "Диллер",
@@ -2320,72 +2369,115 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
               label: "Дата заполнения бланка",
               menu: false
             },
-            product_code: {
-              sizes: {
-                cols: 12,
-                md: 4
-              },
-              type: "v-text-field",
-              data: [],
-              label: "Артикул товара"
-            },
-            product_name: {
-              sizes: {
-                cols: 12,
-                md: 8
-              },
-              type: "v-text-field",
-              data: [],
-              label: "Наименование товара",
-              readonly: true
-            },
-            product_count: {
-              sizes: {
-                cols: 12,
-                md: 4
-              },
-              type: "v-text-field",
-              data: [],
-              label: "Количество"
-            },
-            product_price: {
-              sizes: {
-                cols: 12,
-                md: 4
-              },
-              type: "v-text-field",
-              data: [],
-              label: "Цена за единицу"
-            },
-            product_total: {
-              sizes: {
-                cols: 12,
-                md: 4
-              },
-              type: "v-text-field",
-              data: [],
-              label: "Общая сумма"
-            },
-            product_table: {
-              type: "table",
-              data: [{
-                code: "123",
-                name: "Деталь 1",
-                count: 10,
-                price: 100,
-                total: 1000
-              }, {
-                code: "456",
-                name: "Деталь 2",
-                count: 2,
-                price: 4,
-                total: 8
-              }]
+            product: {
+              type: "products",
+              items: {
+                product_code: {
+                  sizes: {
+                    cols: 12,
+                    md: 4
+                  },
+                  type: "v-text-field",
+                  data: "",
+                  label: "Артикул товара",
+                  rules: [function (v) {
+                    return !!v || "Артикул is required";
+                  }]
+                },
+                product_name: {
+                  sizes: {
+                    cols: 12,
+                    md: 8
+                  },
+                  type: "v-text-field",
+                  data: "",
+                  label: "Наименование товара",
+                  readonly: true
+                },
+                product_count: {
+                  sizes: {
+                    cols: 12,
+                    md: 4
+                  },
+                  type: "v-text-field",
+                  data: "",
+                  label: "Количество",
+                  rules: [function (v) {
+                    return !!v || "Количество is required";
+                  }],
+                  mask: "#####"
+                },
+                product_price: {
+                  sizes: {
+                    cols: 12,
+                    md: 4
+                  },
+                  type: "v-text-field",
+                  data: "",
+                  label: "Цена за единицу",
+                  rules: [function (v) {
+                    return !!v || "Цена is required";
+                  }],
+                  mask: "#####"
+                },
+                product_total: {
+                  sizes: {
+                    cols: 12,
+                    md: 4
+                  },
+                  type: "v-text-field",
+                  data: "",
+                  label: "Общая сумма",
+                  rules: [function (v) {
+                    return !!v || "Cумма is required";
+                  }],
+                  mask: "#####"
+                },
+                product_button: {
+                  type: "button"
+                },
+                product_table: {
+                  type: "table",
+                  data: [{
+                    code: "123",
+                    name: "Деталь 1",
+                    count: 10,
+                    price: 100,
+                    total: 1000
+                  }, {
+                    code: "456",
+                    name: "Деталь 2",
+                    count: 2,
+                    price: 4,
+                    total: 8
+                  }]
+                }
+              }
             }
           }
         }
-      }
+      },
+      count: "",
+      price: "",
+      total: ""
     };
+  },
+  watch: {
+    count: function count(val) {
+      if (parseFloat(val) && parseFloat(this.price)) {
+        this.total = parseFloat(this.price) * parseFloat(val);
+      }
+    },
+    price: function price(val) {
+      if (parseFloat(val) && parseFloat(this.count)) {
+        this.total = parseFloat(this.count) * parseFloat(val);
+      }
+    },
+    total: function total(val) {
+      if (parseFloat(val) && parseFloat(this.count)) {
+        this.price = (parseFloat(val) / parseFloat(this.count)).toFixed(2);
+      }
+    }
   },
   methods: {
     addForm: function addForm() {
@@ -2445,6 +2537,32 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     remove: function remove(item) {
       this.form.customer.items.opponents.data.splice(this.form.customer.items.opponents.data.indexOf(item), 1);
       this.form.customer.items.opponents.data = _toConsumableArray(this.form.customer.items.opponents.data);
+    },
+    addProduct: function addProduct() {
+      if (this.$refs.form_prod[0].validate()) {
+        console.log("FINE");
+        var res = {
+          code: this.form.customer.items.product.items.product_code.data,
+          name: "Деталь 1 Деталь 1 Деталь 1 Деталь 1 Деталь 1 Деталь 1",
+          count: this.form.customer.items.product.items.product_count.data,
+          price: this.form.customer.items.product.items.product_price.data,
+          total: this.form.customer.items.product.items.product_total.data
+        };
+        this.form.customer.items.product.items.product_table.data.push(res);
+        this.form.customer.items.product.items.product_code.data = "";
+        this.form.customer.items.product.items.product_count.data = "";
+        this.form.customer.items.product.items.product_price.data = "";
+        this.form.customer.items.product.items.product_total.data = "";
+        this.$refs.form_prod[0].reset();
+      } else {
+        console.log("NOT FINE");
+      }
+    },
+    removeProduct: function removeProduct(item) {
+      console.log(item);
+      this.form.customer.items.product.items.product_table.data.splice(this.form.customer.items.product.items.product_table.data.indexOf(item), 1); // this.form.customer.items.opponents.data = [
+      //   ...this.form.customer.items.opponents.data
+      // ];
     }
   }
 });
@@ -2689,6 +2807,20 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     var newThis = this;
@@ -2742,6 +2874,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
+      dialog: false,
       auth_id: "",
       user_id: "",
       project_id: "",
@@ -2765,12 +2898,11 @@ __webpack_require__.r(__webpack_exports__);
         phone: {
           label: "Телефон",
           data: ""
-        } // inn: "",
-        // kpp: "",
-        // name: "",
-        // agent: "",
-        // phone: ""
-
+        },
+        email: {
+          label: "Почта",
+          data: ""
+        }
       },
       form: {
         name: {
@@ -2804,21 +2936,15 @@ __webpack_require__.r(__webpack_exports__);
         work: {
           label: "Работа",
           data: ""
-        } // name: "",
-        // address: "",
-        // inn: "",
-        // customer: "",
-        // contacts: "",
-        // opponents: [],
-        // date: "",
-        // work: ""
-
+        }
       }
     };
   },
   methods: {
     remove: function remove() {
-      axios["delete"]("/project/" + this.project_id).then(function (response) {//  window.location = "/project";
+      var newThis = this;
+      axios["delete"]("/project/" + this.project_id).then(function (response) {
+        newThis.$router.push("/project");
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2834,6 +2960,9 @@ __webpack_require__.r(__webpack_exports__);
     },
     back: function back() {
       this.$router.push("/project");
+    },
+    validate: function validate() {
+      this.dialog = true;
     }
   }
 });
@@ -7383,7 +7512,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.card[data-v-b1dd1884] {\r\n  margin-bottom: 30px;\n}\r\n", ""]);
+exports.push([module.i, "\n.card[data-v-b1dd1884] {\r\n  margin-bottom: 30px;\n}\n.table[data-v-b1dd1884] {\r\n  margin-top: 20px;\n}\r\n", ""]);
 
 // exports
 
@@ -39256,110 +39385,296 @@ var render = function() {
                                     1
                                   )
                                 ]
-                              : item.type === "table"
+                              : item.type === "products"
                               ? [
                                   _c(
-                                    "v-btn",
+                                    "v-form",
                                     {
-                                      attrs: {
-                                        block: "",
-                                        color: "red",
-                                        outlined: ""
+                                      ref: "form_prod",
+                                      refInFor: true,
+                                      attrs: { "lazy-validation": "" },
+                                      model: {
+                                        value: _vm.valid_prod,
+                                        callback: function($$v) {
+                                          _vm.valid_prod = $$v
+                                        },
+                                        expression: "valid_prod"
                                       }
                                     },
-                                    [_vm._v("Добавить товар")]
-                                  ),
-                                  _vm._v(" "),
-                                  _c("v-simple-table", {
-                                    scopedSlots: _vm._u(
-                                      [
-                                        {
-                                          key: "default",
-                                          fn: function() {
-                                            return [
-                                              _c("thead", [
-                                                _c("tr", [
-                                                  _c(
-                                                    "th",
-                                                    {
-                                                      staticClass: "text-left"
+                                    [
+                                      _c(
+                                        "v-row",
+                                        _vm._l(item.items, function(item, key) {
+                                          return _c(
+                                            "v-col",
+                                            {
+                                              key: key,
+                                              attrs: {
+                                                cols:
+                                                  item.sizes !== undefined
+                                                    ? item.sizes.cols
+                                                    : 12,
+                                                md:
+                                                  item.sizes !== undefined
+                                                    ? item.sizes.md
+                                                    : 12
+                                              }
+                                            },
+                                            [
+                                              item.type === "v-text-field"
+                                                ? _c("v-text-field", {
+                                                    directives: [
+                                                      {
+                                                        name: "mask",
+                                                        rawName: "v-mask",
+                                                        value: item.mask,
+                                                        expression: "item.mask"
+                                                      }
+                                                    ],
+                                                    attrs: {
+                                                      label: item.label,
+                                                      outlined: "",
+                                                      clearable: "",
+                                                      required: "",
+                                                      rules: item.rules,
+                                                      readonly: item.readonly
                                                     },
-                                                    [_vm._v("Артикул")]
-                                                  ),
-                                                  _vm._v(" "),
-                                                  _c(
-                                                    "th",
+                                                    model: {
+                                                      value: item.data,
+                                                      callback: function($$v) {
+                                                        _vm.$set(
+                                                          item,
+                                                          "data",
+                                                          $$v
+                                                        )
+                                                      },
+                                                      expression: "item.data"
+                                                    }
+                                                  })
+                                                : item.type === "button"
+                                                ? _c(
+                                                    "v-btn",
                                                     {
-                                                      staticClass: "text-left"
+                                                      staticClass: "button",
+                                                      attrs: {
+                                                        block: "",
+                                                        color: "red",
+                                                        outlined: ""
+                                                      },
+                                                      on: {
+                                                        click: _vm.addProduct
+                                                      }
                                                     },
-                                                    [_vm._v("Наименование")]
-                                                  ),
-                                                  _vm._v(" "),
-                                                  _c(
-                                                    "th",
-                                                    {
-                                                      staticClass: "text-left"
-                                                    },
-                                                    [_vm._v("Количество")]
-                                                  ),
-                                                  _vm._v(" "),
-                                                  _c(
-                                                    "th",
-                                                    {
-                                                      staticClass: "text-left"
-                                                    },
-                                                    [_vm._v("Цена")]
-                                                  ),
-                                                  _vm._v(" "),
-                                                  _c(
-                                                    "th",
-                                                    {
-                                                      staticClass: "text-left"
-                                                    },
-                                                    [_vm._v("Итог")]
+                                                    [_vm._v("Добавить товар")]
                                                   )
-                                                ])
-                                              ]),
-                                              _vm._v(" "),
-                                              _c(
-                                                "tbody",
-                                                _vm._l(item.data, function(
-                                                  item,
-                                                  i
-                                                ) {
-                                                  return _c("tr", { key: i }, [
-                                                    _c("td", [
-                                                      _vm._v(_vm._s(item.code))
-                                                    ]),
-                                                    _vm._v(" "),
-                                                    _c("td", [
-                                                      _vm._v(_vm._s(item.name))
-                                                    ]),
-                                                    _vm._v(" "),
-                                                    _c("td", [
-                                                      _vm._v(_vm._s(item.count))
-                                                    ]),
-                                                    _vm._v(" "),
-                                                    _c("td", [
-                                                      _vm._v(_vm._s(item.price))
-                                                    ]),
-                                                    _vm._v(" "),
-                                                    _c("td", [
-                                                      _vm._v(_vm._s(item.total))
-                                                    ])
-                                                  ])
-                                                }),
-                                                0
-                                              )
-                                            ]
-                                          },
-                                          proxy: true
-                                        }
-                                      ],
-                                      null,
-                                      true
-                                    )
-                                  })
+                                                : item.type === "table" &&
+                                                  item.data.length
+                                                ? _c("v-simple-table", {
+                                                    staticClass: "table",
+                                                    scopedSlots: _vm._u(
+                                                      [
+                                                        {
+                                                          key: "default",
+                                                          fn: function() {
+                                                            return [
+                                                              _c("thead", [
+                                                                _c("tr", [
+                                                                  _c(
+                                                                    "th",
+                                                                    {
+                                                                      staticClass:
+                                                                        "text-left"
+                                                                    },
+                                                                    [
+                                                                      _vm._v(
+                                                                        "Артикул"
+                                                                      )
+                                                                    ]
+                                                                  ),
+                                                                  _vm._v(" "),
+                                                                  _c(
+                                                                    "th",
+                                                                    {
+                                                                      staticClass:
+                                                                        "text-left"
+                                                                    },
+                                                                    [
+                                                                      _vm._v(
+                                                                        "Наименование"
+                                                                      )
+                                                                    ]
+                                                                  ),
+                                                                  _vm._v(" "),
+                                                                  _c(
+                                                                    "th",
+                                                                    {
+                                                                      staticClass:
+                                                                        "text-left"
+                                                                    },
+                                                                    [
+                                                                      _vm._v(
+                                                                        "Количество"
+                                                                      )
+                                                                    ]
+                                                                  ),
+                                                                  _vm._v(" "),
+                                                                  _c(
+                                                                    "th",
+                                                                    {
+                                                                      staticClass:
+                                                                        "text-left"
+                                                                    },
+                                                                    [
+                                                                      _vm._v(
+                                                                        "Цена"
+                                                                      )
+                                                                    ]
+                                                                  ),
+                                                                  _vm._v(" "),
+                                                                  _c(
+                                                                    "th",
+                                                                    {
+                                                                      staticClass:
+                                                                        "text-left"
+                                                                    },
+                                                                    [
+                                                                      _vm._v(
+                                                                        "Итог"
+                                                                      )
+                                                                    ]
+                                                                  )
+                                                                ])
+                                                              ]),
+                                                              _vm._v(" "),
+                                                              _c(
+                                                                "tbody",
+                                                                _vm._l(
+                                                                  item.data,
+                                                                  function(
+                                                                    item,
+                                                                    i
+                                                                  ) {
+                                                                    return _c(
+                                                                      "tr",
+                                                                      {
+                                                                        key: i,
+                                                                        attrs: {
+                                                                          valign:
+                                                                            "middle"
+                                                                        }
+                                                                      },
+                                                                      [
+                                                                        _c(
+                                                                          "td",
+                                                                          [
+                                                                            _vm._v(
+                                                                              _vm._s(
+                                                                                item.code
+                                                                              )
+                                                                            )
+                                                                          ]
+                                                                        ),
+                                                                        _vm._v(
+                                                                          " "
+                                                                        ),
+                                                                        _c(
+                                                                          "td",
+                                                                          [
+                                                                            _vm._v(
+                                                                              _vm._s(
+                                                                                item.name
+                                                                              )
+                                                                            )
+                                                                          ]
+                                                                        ),
+                                                                        _vm._v(
+                                                                          " "
+                                                                        ),
+                                                                        _c(
+                                                                          "td",
+                                                                          [
+                                                                            _vm._v(
+                                                                              _vm._s(
+                                                                                item.count
+                                                                              )
+                                                                            )
+                                                                          ]
+                                                                        ),
+                                                                        _vm._v(
+                                                                          " "
+                                                                        ),
+                                                                        _c(
+                                                                          "td",
+                                                                          [
+                                                                            _vm._v(
+                                                                              _vm._s(
+                                                                                item.price
+                                                                              )
+                                                                            )
+                                                                          ]
+                                                                        ),
+                                                                        _vm._v(
+                                                                          " "
+                                                                        ),
+                                                                        _c(
+                                                                          "td",
+                                                                          [
+                                                                            _vm._v(
+                                                                              _vm._s(
+                                                                                item.total
+                                                                              )
+                                                                            )
+                                                                          ]
+                                                                        ),
+                                                                        _vm._v(
+                                                                          " "
+                                                                        ),
+                                                                        _c(
+                                                                          "v-icon",
+                                                                          {
+                                                                            on: {
+                                                                              click: function(
+                                                                                $event
+                                                                              ) {
+                                                                                return _vm.removeProduct(
+                                                                                  item,
+                                                                                  i
+                                                                                )
+                                                                              }
+                                                                            }
+                                                                          },
+                                                                          [
+                                                                            _vm._v(
+                                                                              "mdi-minus-circle-outline"
+                                                                            )
+                                                                          ]
+                                                                        )
+                                                                      ],
+                                                                      1
+                                                                    )
+                                                                  }
+                                                                ),
+                                                                0
+                                                              )
+                                                            ]
+                                                          },
+                                                          proxy: true
+                                                        }
+                                                      ],
+                                                      null,
+                                                      true
+                                                    )
+                                                  })
+                                                : _vm._e()
+                                            ],
+                                            1
+                                          )
+                                        }),
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  )
                                 ]
                               : _vm._e()
                           ],
@@ -39375,6 +39690,66 @@ var render = function() {
               1
             )
           }),
+          _vm._v(" "),
+          _c(
+            "v-row",
+            [
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "4" } },
+                [
+                  _c("v-text-field", {
+                    attrs: { label: "count", outlined: "" },
+                    model: {
+                      value: _vm.count,
+                      callback: function($$v) {
+                        _vm.count = $$v
+                      },
+                      expression: "count"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "4" } },
+                [
+                  _c("v-text-field", {
+                    attrs: { label: "price", outlined: "" },
+                    model: {
+                      value: _vm.price,
+                      callback: function($$v) {
+                        _vm.price = $$v
+                      },
+                      expression: "price"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-col",
+                { attrs: { cols: "12", md: "4" } },
+                [
+                  _c("v-text-field", {
+                    attrs: { label: "total", outlined: "" },
+                    model: {
+                      value: _vm.total,
+                      callback: function($$v) {
+                        _vm.total = $$v
+                      },
+                      expression: "total"
+                    }
+                  })
+                ],
+                1
+              )
+            ],
+            1
+          ),
           _vm._v(" "),
           _vm.$route.name === "edit"
             ? _c(
@@ -39645,81 +40020,160 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "row justify-content-center" },
     [
       _c(
-        "v-card",
-        { attrs: { "max-width": "800", outlined: "" } },
+        "div",
+        { staticClass: "row justify-content-center" },
         [
           _c(
-            "v-list-item",
-            { attrs: { "three-line": "" } },
+            "v-card",
+            { attrs: { "max-width": "800", outlined: "" } },
             [
               _c(
-                "v-list-item-content",
+                "v-list-item",
+                { attrs: { "three-line": "" } },
                 [
-                  _c("h4", [_vm._v("Дилер")]),
-                  _vm._v(" "),
-                  _vm._l(_vm.dealer, function(item, i) {
-                    return _c("div", { key: "A" + i, staticClass: "list" }, [
-                      _c("p", [
-                        _vm._v(_vm._s(item.label) + " : " + _vm._s(item.data))
-                      ])
-                    ])
-                  }),
-                  _vm._v(" "),
-                  _c("h4", [_vm._v("Проект")]),
-                  _vm._v(" "),
-                  _vm._l(_vm.form, function(item, i) {
-                    return _c("div", { key: "B" + i, staticClass: "list" }, [
-                      _c("p", [
-                        _vm._v(_vm._s(item.label) + " : " + _vm._s(item.data))
-                      ])
-                    ])
-                  })
+                  _c(
+                    "v-list-item-content",
+                    [
+                      _c("h4", [_vm._v("Дилер")]),
+                      _vm._v(" "),
+                      _vm._l(_vm.dealer, function(item, i) {
+                        return _c(
+                          "div",
+                          { key: "A" + i, staticClass: "list" },
+                          [
+                            _c("p", [
+                              _vm._v(
+                                _vm._s(item.label) + " : " + _vm._s(item.data)
+                              )
+                            ])
+                          ]
+                        )
+                      }),
+                      _vm._v(" "),
+                      _c("h4", [_vm._v("Проект")]),
+                      _vm._v(" "),
+                      _vm._l(_vm.form, function(item, i) {
+                        return _c(
+                          "div",
+                          { key: "B" + i, staticClass: "list" },
+                          [
+                            _c("p", [
+                              _vm._v(
+                                _vm._s(item.label) + " : " + _vm._s(item.data)
+                              )
+                            ])
+                          ]
+                        )
+                      })
+                    ],
+                    2
+                  )
                 ],
-                2
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-card-actions",
+                [
+                  _c(
+                    "v-btn",
+                    {
+                      staticClass: "ma-2",
+                      attrs: { outlined: "", color: "indigo" },
+                      on: { click: _vm.back }
+                    },
+                    [_vm._v("Назад")]
+                  ),
+                  _vm._v(" "),
+                  _vm.user_id === _vm.auth_id
+                    ? _c(
+                        "v-btn",
+                        {
+                          staticClass: "ma-2",
+                          attrs: { outlined: "", color: "teal" },
+                          on: { click: _vm.edit }
+                        },
+                        [_vm._v("Редактировать")]
+                      )
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.user_id === _vm.auth_id
+                    ? _c(
+                        "v-btn",
+                        {
+                          staticClass: "ma-2",
+                          attrs: { outlined: "", color: "error" },
+                          on: { click: _vm.validate }
+                        },
+                        [_vm._v("Удалить")]
+                      )
+                    : _vm._e()
+                ],
+                1
               )
             ],
             1
-          ),
-          _vm._v(" "),
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "v-row",
+        { attrs: { justify: "center" } },
+        [
           _c(
-            "v-card-actions",
+            "v-dialog",
+            {
+              attrs: { width: "200px" },
+              model: {
+                value: _vm.dialog,
+                callback: function($$v) {
+                  _vm.dialog = $$v
+                },
+                expression: "dialog"
+              }
+            },
             [
               _c(
-                "v-btn",
-                {
-                  staticClass: "ma-2",
-                  attrs: { outlined: "", color: "indigo" },
-                  on: { click: _vm.back }
-                },
-                [_vm._v("Назад")]
-              ),
-              _vm._v(" "),
-              _vm.user_id === _vm.auth_id
-                ? _c(
-                    "v-btn",
-                    {
-                      staticClass: "ma-2",
-                      attrs: { outlined: "", color: "teal" },
-                      on: { click: _vm.edit }
-                    },
-                    [_vm._v("Редактировать")]
+                "v-card",
+                [
+                  _c("v-card-title", [_vm._v("Точно удалить?")]),
+                  _vm._v(" "),
+                  _c(
+                    "v-card-actions",
+                    [
+                      _c("v-spacer"),
+                      _vm._v(" "),
+                      _c(
+                        "v-btn",
+                        {
+                          attrs: { depressed: "", color: "success" },
+                          on: {
+                            click: function($event) {
+                              _vm.dialog = false
+                            }
+                          }
+                        },
+                        [_vm._v("Отмена")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-btn",
+                        {
+                          attrs: { depressed: "", color: "error" },
+                          on: { click: _vm.remove }
+                        },
+                        [_vm._v("Удалить")]
+                      )
+                    ],
+                    1
                   )
-                : _vm._e(),
-              _vm._v(" "),
-              _vm.user_id === _vm.auth_id
-                ? _c(
-                    "v-btn",
-                    {
-                      staticClass: "ma-2",
-                      attrs: { outlined: "", color: "error" },
-                      on: { click: _vm.remove }
-                    },
-                    [_vm._v("Удалить")]
-                  )
-                : _vm._e()
+                ],
+                1
+              )
             ],
             1
           )

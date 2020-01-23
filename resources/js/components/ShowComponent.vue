@@ -1,38 +1,52 @@
 <template>
-  <div class="row justify-content-center">
-    <v-card max-width="800" outlined>
-      <v-list-item three-line>
-        <v-list-item-content>
-          <h4>Дилер</h4>
-          <div class="list" v-for="(item, i) in dealer" :key="'A'+ i">
-            <p>{{item.label}} : {{item.data}}</p>
-          </div>
+  <div>
+    <div class="row justify-content-center">
+      <v-card max-width="800" outlined>
+        <v-list-item three-line>
+          <v-list-item-content>
+            <h4>Дилер</h4>
+            <div class="list" v-for="(item, i) in dealer" :key="'A'+ i">
+              <p>{{item.label}} : {{item.data}}</p>
+            </div>
 
-          <h4>Проект</h4>
-          <div class="list" v-for="(item, i) in form" :key="'B'+ i">
-            <p>{{item.label}} : {{item.data}}</p>
-          </div>
-        </v-list-item-content>
-      </v-list-item>
+            <h4>Проект</h4>
+            <div class="list" v-for="(item, i) in form" :key="'B'+ i">
+              <p>{{item.label}} : {{item.data}}</p>
+            </div>
+          </v-list-item-content>
+        </v-list-item>
 
-      <v-card-actions>
-        <v-btn class="ma-2" outlined color="indigo" @click="back">Назад</v-btn>
-        <v-btn
-          class="ma-2"
-          outlined
-          color="teal"
-          v-if="user_id === auth_id"
-          @click="edit"
-        >Редактировать</v-btn>
-        <v-btn
-          class="ma-2"
-          outlined
-          color="error"
-          v-if="user_id === auth_id"
-          @click="remove"
-        >Удалить</v-btn>
-      </v-card-actions>
-    </v-card>
+        <v-card-actions>
+          <v-btn class="ma-2" outlined color="indigo" @click="back">Назад</v-btn>
+          <v-btn
+            class="ma-2"
+            outlined
+            color="teal"
+            v-if="user_id === auth_id"
+            @click="edit"
+          >Редактировать</v-btn>
+          <v-btn
+            class="ma-2"
+            outlined
+            color="error"
+            v-if="user_id === auth_id"
+            @click="validate"
+          >Удалить</v-btn>
+        </v-card-actions>
+      </v-card>
+    </div>
+    <v-row justify="center">
+      <v-dialog v-model="dialog" width="200px">
+        <v-card>
+          <v-card-title>Точно удалить?</v-card-title>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn depressed color="success" @click="dialog = false">Отмена</v-btn>
+            <v-btn depressed color="error" @click="remove">Удалить</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-row>
   </div>
 </template>
 
@@ -89,6 +103,7 @@ export default {
 
   data() {
     return {
+      dialog: false,
       auth_id: "",
       user_id: "",
       project_id: "",
@@ -112,12 +127,11 @@ export default {
         phone: {
           label: "Телефон",
           data: ""
+        },
+        email: {
+          label: "Почта",
+          data: ""
         }
-        // inn: "",
-        // kpp: "",
-        // name: "",
-        // agent: "",
-        // phone: ""
       },
       form: {
         name: {
@@ -152,24 +166,17 @@ export default {
           label: "Работа",
           data: ""
         }
-        // name: "",
-        // address: "",
-        // inn: "",
-        // customer: "",
-        // contacts: "",
-        // opponents: [],
-        // date: "",
-        // work: ""
       }
     };
   },
 
   methods: {
     remove() {
+      let newThis = this;
       axios
         .delete("/project/" + this.project_id)
         .then(function(response) {
-          //  window.location = "/project";
+          newThis.$router.push("/project");
         })
         .catch(function(error) {
           console.log(error);
@@ -186,6 +193,10 @@ export default {
 
     back() {
       this.$router.push("/project");
+    },
+
+    validate() {
+      this.dialog = true;
     }
   }
 };

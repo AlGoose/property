@@ -17,7 +17,6 @@ class CreateProjectsTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('address');
-            $table->string('customer');
             $table->string('date'); //FIXME: в timestamp перевести
             $table->string('time');
             $table->longText('work')->nullable();

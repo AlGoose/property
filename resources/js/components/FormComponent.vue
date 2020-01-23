@@ -92,36 +92,84 @@
                 </v-menu>
               </template>
 
-              <template v-else-if="item.type === 'table'">
-                <v-btn block color="red" outlined>Добавить товар</v-btn>
-                
-                <v-simple-table>
-                  <template v-slot:default>
-                    <thead>
-                      <tr>
-                        <th class="text-left">Артикул</th>
-                        <th class="text-left">Наименование</th>
-                        <th class="text-left">Количество</th>
-                        <th class="text-left">Цена</th>
-                        <th class="text-left">Итог</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="(item, i) in item.data" :key="i">
-                        <td>{{ item.code }}</td>
-                        <td>{{ item.name }}</td>
-                        <td>{{ item.count }}</td>
-                        <td>{{ item.price }}</td>
-                        <td>{{ item.total }}</td>
-                      </tr>
-                    </tbody>
-                  </template>
-                </v-simple-table>
+              <template v-else-if="item.type === 'products'">
+                <v-form ref="form_prod" v-model="valid_prod" lazy-validation>
+                  <v-row>
+                    <v-col
+                      v-for="(item, key) in item.items"
+                      :key="key"
+                      :cols="item.sizes !== undefined ? item.sizes.cols : 12"
+                      :md="item.sizes !== undefined ? item.sizes.md : 12"
+                    >
+                      <v-text-field
+                        v-if="item.type === 'v-text-field'"
+                        v-model="item.data"
+                        :label="item.label"
+                        outlined
+                        clearable
+                        required
+                        :rules="item.rules"
+                        v-mask="item.mask"
+                        :readonly="item.readonly"
+                      ></v-text-field>
+
+                      <v-btn
+                        v-else-if="item.type === 'button'"
+                        class="button"
+                        block
+                        color="red"
+                        outlined
+                        @click="addProduct"
+                      >Добавить товар</v-btn>
+
+                      <v-simple-table
+                        class="table"
+                        v-else-if="item.type === 'table' && item.data.length"
+                      >
+                        <template v-slot:default>
+                          <thead>
+                            <tr>
+                              <th class="text-left">Артикул</th>
+                              <th class="text-left">Наименование</th>
+                              <th class="text-left">Количество</th>
+                              <th class="text-left">Цена</th>
+                              <th class="text-left">Итог</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr valign="middle" v-for="(item, i) in item.data" :key="i">
+                              <td>{{ item.code }}</td>
+                              <td>{{ item.name }}</td>
+                              <td>{{ item.count }}</td>
+                              <td>{{ item.price }}</td>
+                              <td>{{ item.total }}</td>
+                              <v-icon @click="removeProduct(item,i)">mdi-minus-circle-outline</v-icon>
+                            </tr>
+                          </tbody>
+                        </template>
+                      </v-simple-table>
+                    </v-col>
+                  </v-row>
+                </v-form>
               </template>
             </v-col>
           </v-row>
         </v-card-text>
       </v-card>
+
+      <v-row>
+        <v-col cols="12" md="4">
+          <v-text-field v-model="count" label="count" outlined></v-text-field>
+        </v-col>
+
+        <v-col cols="12" md="4">
+          <v-text-field v-model="price" label="price" outlined></v-text-field>
+        </v-col>
+
+        <v-col cols="12" md="4">
+          <v-text-field v-model="total" label="total" outlined></v-text-field>
+        </v-col>
+      </v-row>
       <v-btn
         v-if="$route.name === 'edit'"
         block
@@ -214,6 +262,7 @@ export default {
     mode: "create",
     dialog: false,
     valid: true,
+    valid_prod: true,
     form: {
       dealer: {
         title: "Диллер",
@@ -365,75 +414,111 @@ export default {
             label: "Дата заполнения бланка",
             menu: false
           },
-          product_code: {
-            sizes: {
-              cols: 12,
-              md: 4
-            },
-            type: "v-text-field",
-            data: [],
-            label: "Артикул товара"
-          },
-          product_name: {
-            sizes: {
-              cols: 12,
-              md: 8
-            },
-            type: "v-text-field",
-            data: [],
-            label: "Наименование товара",
-            readonly: true
-          },
-          product_count: {
-            sizes: {
-              cols: 12,
-              md: 4
-            },
-            type: "v-text-field",
-            data: [],
-            label: "Количество"
-          },
-          product_price: {
-            sizes: {
-              cols: 12,
-              md: 4
-            },
-            type: "v-text-field",
-            data: [],
-            label: "Цена за единицу"
-          },
-          product_total: {
-            sizes: {
-              cols: 12,
-              md: 4
-            },
-            type: "v-text-field",
-            data: [],
-            label: "Общая сумма"
-          },
-          product_table: {
-            type: "table",
-            data: [
-              {
-                code: "123",
-                name: "Деталь 1",
-                count: 10,
-                price: 100,
-                total: 1000
+          product: {
+            type: "products",
+            items: {
+              product_code: {
+                sizes: {
+                  cols: 12,
+                  md: 4
+                },
+                type: "v-text-field",
+                data: "",
+                label: "Артикул товара",
+                rules: [v => !!v || "Артикул is required"]
               },
-              {
-                code: "456",
-                name: "Деталь 2",
-                count: 2,
-                price: 4,
-                total: 8
+              product_name: {
+                sizes: {
+                  cols: 12,
+                  md: 8
+                },
+                type: "v-text-field",
+                data: "",
+                label: "Наименование товара",
+                readonly: true
+              },
+              product_count: {
+                sizes: {
+                  cols: 12,
+                  md: 4
+                },
+                type: "v-text-field",
+                data: "",
+                label: "Количество",
+                rules: [v => !!v || "Количество is required"],
+                mask: "#####"
+              },
+              product_price: {
+                sizes: {
+                  cols: 12,
+                  md: 4
+                },
+                type: "v-text-field",
+                data: "",
+                label: "Цена за единицу",
+                rules: [v => !!v || "Цена is required"],
+                mask: "#####"
+              },
+              product_total: {
+                sizes: {
+                  cols: 12,
+                  md: 4
+                },
+                type: "v-text-field",
+                data: "",
+                label: "Общая сумма",
+                rules: [v => !!v || "Cумма is required"],
+                mask: "#####"
+              },
+              product_button: {
+                type: "button"
+              },
+              product_table: {
+                type: "table",
+                data: [
+                  {
+                    code: "123",
+                    name: "Деталь 1",
+                    count: 10,
+                    price: 100,
+                    total: 1000
+                  },
+                  {
+                    code: "456",
+                    name: "Деталь 2",
+                    count: 2,
+                    price: 4,
+                    total: 8
+                  }
+                ]
               }
-            ]
+            }
           }
         }
       }
-    }
+    },
+    count: "",
+    price: "",
+    total: ""
   }),
+
+  watch: {
+    count: function(val) {
+      if (parseFloat(val) && parseFloat(this.price)) {
+        this.total = parseFloat(this.price) * parseFloat(val);
+      }
+    },
+    price: function(val) {
+      if (parseFloat(val) && parseFloat(this.count)) {
+        this.total = parseFloat(this.count) * parseFloat(val);
+      }
+    },
+    total: function(val) {
+      if (parseFloat(val) && parseFloat(this.count)) {
+        this.price = (parseFloat(val) / parseFloat(this.count)).toFixed(2);
+      }
+    }
+  },
 
   methods: {
     addForm() {
@@ -494,6 +579,39 @@ export default {
       this.form.customer.items.opponents.data = [
         ...this.form.customer.items.opponents.data
       ];
+    },
+
+    addProduct() {
+      if (this.$refs.form_prod[0].validate()) {
+        console.log("FINE");
+
+        let res = {
+          code: this.form.customer.items.product.items.product_code.data,
+          name: "Деталь 1 Деталь 1 Деталь 1 Деталь 1 Деталь 1 Деталь 1",
+          count: this.form.customer.items.product.items.product_count.data,
+          price: this.form.customer.items.product.items.product_price.data,
+          total: this.form.customer.items.product.items.product_total.data
+        };
+        this.form.customer.items.product.items.product_table.data.push(res);
+        this.form.customer.items.product.items.product_code.data = "";
+        this.form.customer.items.product.items.product_count.data = "";
+        this.form.customer.items.product.items.product_price.data = "";
+        this.form.customer.items.product.items.product_total.data = "";
+        this.$refs.form_prod[0].reset();
+      } else {
+        console.log("NOT FINE");
+      }
+    },
+
+    removeProduct(item) {
+      console.log(item);
+      this.form.customer.items.product.items.product_table.data.splice(
+        this.form.customer.items.product.items.product_table.data.indexOf(item),
+        1
+      );
+      // this.form.customer.items.opponents.data = [
+      //   ...this.form.customer.items.opponents.data
+      // ];
     }
   }
 };
@@ -502,5 +620,9 @@ export default {
 <style scoped>
 .card {
   margin-bottom: 30px;
+}
+
+.table {
+  margin-top: 20px;
 }
 </style>
