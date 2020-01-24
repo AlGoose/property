@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Dealer;
-use App\Http\Requests\ProjectRequest;
 use App\Opponent;
 use App\Product;
 use App\Project;
 use App\Staff;
 use Illuminate\Http\Request;
+use App\Http\Requests\ProjectRequest;
 
 class ProjectController extends Controller
 {
@@ -19,7 +19,6 @@ class ProjectController extends Controller
      */
     public function __construct()
     {
-
         $this->middleware('auth');
     }
 
@@ -94,7 +93,7 @@ class ProjectController extends Controller
             ['inn' =>  intval($request->dealer['inn'])] //TODO: ПОЧЕМУ ЗАПИСЫВАЕТСЯ NULL?
         );
         $project->dealer()->associate($dealer)->save();
-        
+
         foreach ($request->project['opponents'] as $name) {
             \Debugbar::info($name);
             $opponent = Opponent::firstOrCreate(
@@ -102,7 +101,7 @@ class ProjectController extends Controller
             );
             $project->opponents()->attach($opponent->id);
         }
-        
+
         $product = Product::firstOrCreate(
             ['code' => 'CODE'],
             ['name' => 'NAME'],
@@ -170,54 +169,5 @@ class ProjectController extends Controller
     public function destroy($id)
     {
         Project::destroy($id);
-    }
-
-    public function addresses(Request $request)
-    {
-        if ($request->address == '') {
-            return array();
-        } else {
-            $projects = Project::where('address', 'like', '%' . $request->address . '%')->get();
-            return $projects;
-        }
-    }
-
-    public function addProduct(Request $request) {
-        \Debugbar::info($request->all());
-
-        $product = Product::firstOrCreate(
-            ['code' => $request->code],
-            ['name' => $request->name]
-        );
-        return $product;
-    }
-
-    public function addDealer(Request $request) {
-        \Debugbar::info($request->all());
-        
-        $dealer = Dealer::firstOrCreate(
-            ['inn' => $request->inn],
-            ['name' => $request->name]
-        );
-        return $dealer;
-    }
-
-    public function addCustomer(Request $request) {
-        \Debugbar::info($request->all());
-        
-        $customer = Customer::firstOrCreate(
-            ['inn' => $request->inn],
-            ['name' => $request->name]
-        );
-        return $customer;
-    }
-
-    public function addOpponent(Request $request) {
-        \Debugbar::info($request->all());
-        
-        $opponent = Opponent::firstOrCreate(
-            ['name' => $request->name]
-        );
-        return $opponent;
     }
 }

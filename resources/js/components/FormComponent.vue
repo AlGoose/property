@@ -3,7 +3,12 @@
     <h3 align="center" v-if="$route.name === 'edit'">Изменение проекта</h3>
     <h3 align="center" v-else>Создание проекта</h3>
 
-    <v-form ref="form" v-model="valid" lazy-validation>
+    <v-row>
+      <v-col cols="6">
+        <DealerComponent></DealerComponent>
+      </v-col>
+    </v-row>
+    <!-- <v-form ref="form" v-model="valid" lazy-validation>
       <v-card class="card" v-for="(group, key) in form" :key="key">
         <v-card-title>
           <h3>{{group.title}}</h3>
@@ -178,9 +183,9 @@
         @click="validate"
       >Изменить форму</v-btn>
       <v-btn v-else block color="indigo" outlined @click="validate">Добавить форму</v-btn>
-    </v-form>
+    </v-form>-->
 
-    <v-row justify="center">
+    <!-- <v-row justify="center">
       <v-dialog v-model="dialog" width="210px">
         <v-card>
           <v-card-title>Все верно?</v-card-title>
@@ -190,15 +195,18 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-    </v-row>
-    
+    </v-row>-->
   </v-container>
 </template>
 
 <script>
 import { mask } from "vue-the-mask";
+import DealerComponent from "./Subforms/DealerComponent";
 
 export default {
+  components: {
+    DealerComponent
+  },
   directives: { mask },
   mounted() {
     let newThis = this;

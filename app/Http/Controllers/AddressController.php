@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Project;
+use Illuminate\Http\Request;
 
 class AddressController extends Controller
 {
@@ -15,5 +17,15 @@ class AddressController extends Controller
     print_r($info['result'][1]);
     print_r('<br/>');
     print_r(date('Y-m-d'));
+  }
+
+  public function addresses(Request $request)
+  {
+    if ($request->address == '') {
+      return array();
+    } else {
+      $projects = Project::where('address', 'like', '%' . $request->address . '%')->get();
+      return $projects;
+    }
   }
 }
