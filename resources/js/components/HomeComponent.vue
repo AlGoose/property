@@ -37,14 +37,6 @@ export default {
   computed: {
     items() {
       return ["1", "123", "111", "121"];
-      // return this.entries.map(entry => {
-      //   const Address =
-      //     entry.address.length > this.textLimit
-      //       ? entry.address.slice(0, this.textLimit) + "..."
-      //       : entry.address;
-
-      //   return Object.assign({}, entry, { Address });
-      // });
     }
   },
 

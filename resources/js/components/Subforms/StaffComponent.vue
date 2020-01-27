@@ -49,7 +49,7 @@
 
 <script>
 export default {
-  props: ["test"],
+  props: ["dealer_id"],
 
   data: () => ({
     dialog: false,
@@ -68,7 +68,7 @@ export default {
   }),
 
   watch: {
-    test(val) {
+    dealer_id(val) {
       let newThis = this;
       console.log(val);
       axios
@@ -80,6 +80,11 @@ export default {
         .catch(function(error) {
           console.log(error);
         });
+    },
+
+    agent(val) {
+      console.log('StaffComponent', val);
+      this.$emit('staff', val);
     }
   },
 

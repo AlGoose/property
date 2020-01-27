@@ -18,7 +18,7 @@
       <p class="subtitle">КПП: {{company ? company.kpp : ''}}</p>
       <p class="subtitle">Название: {{company ? company.name : ''}}</p>
       <p class="subtitle">Адрес: {{company ? company.address : ''}}</p>
-      <StaffComponent></StaffComponent>
+      <StaffComponent v-bind:dealer_id="company ? company.kpp : ''" v-on:staff="saveStaff"></StaffComponent>
     </v-card-text>
   </v-card>
 </template>
@@ -67,6 +67,12 @@ export default {
           console.log(error);
           newThis.isLoading = false;
         });
+    }
+  },
+
+  methods: {
+    saveStaff(staff) {
+      console.log('CustomerComponent', staff);
     }
   }
 };

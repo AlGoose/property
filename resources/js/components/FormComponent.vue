@@ -11,7 +11,7 @@
         <CustomerComponent></CustomerComponent>
       </v-col>
        <v-col cols="12">
-        <ProjectComponent></ProjectComponent>
+        <ProjectComponent v-bind:address_prop="address"></ProjectComponent>
       </v-col>
       <v-col cols="6">
         <OpponentComponent></OpponentComponent>
@@ -63,6 +63,7 @@ export default {
   },
   directives: { mask },
   mounted() {
+    console.log('FORM', this.$route.params.address);
     let newThis = this;
     if (this.$route.name === "edit") {
       this.mode = "edit";
@@ -107,7 +108,9 @@ export default {
       }
     } else {
       if (this.$route.params.address) {
-        this.form.address.data = this.$route.params.address;
+        console.log("SIGN");
+
+        this.address = this.$route.params.address;
       }
     }
   },
@@ -117,6 +120,7 @@ export default {
     dialog: false,
     valid: true,
     valid_prod: true,
+    address: null,
   }),
 
 methods: {

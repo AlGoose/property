@@ -2004,6 +2004,7 @@ __webpack_require__.r(__webpack_exports__);
     mask: vue_the_mask__WEBPACK_IMPORTED_MODULE_0__["mask"]
   },
   mounted: function mounted() {
+    console.log('FORM', this.$route.params.address);
     var newThis = this;
 
     if (this.$route.name === "edit") {
@@ -2052,7 +2053,8 @@ __webpack_require__.r(__webpack_exports__);
       }
     } else {
       if (this.$route.params.address) {
-        this.form.address.data = this.$route.params.address;
+        console.log("SIGN");
+        this.address = this.$route.params.address;
       }
     }
   },
@@ -2061,7 +2063,8 @@ __webpack_require__.r(__webpack_exports__);
       mode: "create",
       dialog: false,
       valid: true,
-      valid_prod: true
+      valid_prod: true,
+      address: null
     };
   },
   methods: {
@@ -2160,13 +2163,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   computed: {
     items: function items() {
-      return ["1", "123", "111", "121"]; // return this.entries.map(entry => {
-      //   const Address =
-      //     entry.address.length > this.textLimit
-      //       ? entry.address.slice(0, this.textLimit) + "..."
-      //       : entry.address;
-      //   return Object.assign({}, entry, { Address });
-      // });
+      return ["1", "123", "111", "121"];
     }
   },
   watch: {
@@ -2588,6 +2585,11 @@ __webpack_require__.r(__webpack_exports__);
         newThis.isLoading = false;
       });
     }
+  },
+  methods: {
+    saveStaff: function saveStaff(staff) {
+      console.log('CustomerComponent', staff);
+    }
   }
 });
 
@@ -2667,6 +2669,11 @@ __webpack_require__.r(__webpack_exports__);
         console.log(error);
         newThis.isLoading = false;
       });
+    }
+  },
+  methods: {
+    saveStaff: function saveStaff(staff) {
+      console.log('DealerComponent', staff);
     }
   }
 });
@@ -3034,6 +3041,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
+  mounted: function mounted() {
+    console.log('PROJECT', this.address_prop);
+
+    if (this.address_prop) {
+      this.address = this.address_prop;
+    }
+  },
+  props: ["address_prop"],
   data: function data() {
     return {
       name: null,
@@ -3044,6 +3059,12 @@ __webpack_require__.r(__webpack_exports__);
       dateMenu: false,
       timeMenu: false
     };
+  },
+  watch: {
+    address_prop: function address_prop(val) {
+      console.log('POP', val);
+      this.address = val;
+    }
   }
 });
 
@@ -3108,7 +3129,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["test"],
+  props: ["dealer_id"],
   data: function data() {
     return {
       dialog: false,
@@ -3132,7 +3153,7 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   watch: {
-    test: function test(val) {
+    dealer_id: function dealer_id(val) {
       var newThis = this;
       console.log(val);
       axios.get("/dealer/getStaff/1").then(function (response) {
@@ -3141,6 +3162,10 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (error) {
         console.log(error);
       });
+    },
+    agent: function agent(val) {
+      console.log('StaffComponent', val);
+      this.$emit('staff', val);
     }
   },
   methods: {
@@ -39397,7 +39422,12 @@ var render = function() {
           _vm._v(" "),
           _c("v-col", { attrs: { cols: "6" } }, [_c("CustomerComponent")], 1),
           _vm._v(" "),
-          _c("v-col", { attrs: { cols: "12" } }, [_c("ProjectComponent")], 1),
+          _c(
+            "v-col",
+            { attrs: { cols: "12" } },
+            [_c("ProjectComponent", { attrs: { address_prop: _vm.address } })],
+            1
+          ),
           _vm._v(" "),
           _c("v-col", { attrs: { cols: "6" } }, [_c("OpponentComponent")], 1),
           _vm._v(" "),
@@ -39813,7 +39843,10 @@ var render = function() {
             _vm._v("Адрес: " + _vm._s(_vm.company ? _vm.company.address : ""))
           ]),
           _vm._v(" "),
-          _c("StaffComponent")
+          _c("StaffComponent", {
+            attrs: { dealer_id: _vm.company ? _vm.company.kpp : "" },
+            on: { staff: _vm.saveStaff }
+          })
         ],
         1
       )
@@ -39897,7 +39930,8 @@ var render = function() {
           ]),
           _vm._v(" "),
           _c("StaffComponent", {
-            attrs: { test: _vm.company ? _vm.company.kpp : "" }
+            attrs: { dealer_id: _vm.company ? _vm.company.kpp : "" },
+            on: { staff: _vm.saveStaff }
           })
         ],
         1

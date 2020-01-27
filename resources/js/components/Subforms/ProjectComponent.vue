@@ -55,6 +55,13 @@
 
 <script>
 export default {
+  mounted() {
+    console.log('PROJECT', this.address_prop);
+    if(this.address_prop) {
+      this.address = this.address_prop;
+    }
+  },
+  props: ["address_prop"],
   data: () => ({
     name: null,
     address: null,
@@ -63,6 +70,13 @@ export default {
     time: new Date().toISOString().substr(0, 10),
     dateMenu: false,
     timeMenu: false
-  })
+  }),
+
+  watch: {
+    address_prop(val) {
+      console.log('POP', val);
+      this.address = val;
+    }
+  }
 };
 </script>
