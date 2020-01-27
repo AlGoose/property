@@ -30,7 +30,8 @@
 export default {
   data: () => ({
     opponent: null,
-    opponents: []
+    opponents: [],
+    model: 1
   }),
 
   methods: {

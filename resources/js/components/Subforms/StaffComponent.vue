@@ -10,9 +10,9 @@
       item-value="name"
       return-object
     ></v-autocomplete>
-    <p class="title font-weight-bold">Имя: {{agent ? agent.name : ''}}</p>
-    <p class="title font-weight-bold">Телефон: {{agent ? agent.phone : ''}}</p>
-    <p class="title font-weight-bold">Почта: {{agent ? agent.email : ''}}</p>
+    <p class="subtitle">Имя: {{agent ? agent.name : ''}}</p>
+    <p class="subtitle">Телефон: {{agent ? agent.phone : ''}}</p>
+    <p class="subtitle">Почта: {{agent ? agent.email : ''}}</p>
 
     <v-row justify="center">
       <v-dialog v-model="dialog" persistent max-width="600px">
@@ -38,7 +38,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn outlined color="indigo" @click="dialog = false">Отмена</v-btn>
+            <v-btn outlined color="indigo" @click="closeDialog">Отмена</v-btn>
             <v-btn outlined color="indigo" @click="addAgent">Добавить</v-btn>
           </v-card-actions>
         </v-card>
@@ -49,14 +49,12 @@
 
 <script>
 export default {
-  mounted() {
-    console.log("JOPA");
-  },
+  props: ["test"],
+
   data: () => ({
     dialog: false,
     isLoading: false,
     agent: null,
-    search: null,
     entries: [],
     agents: [
       { name: "5", phone: "5", email: "5" },
@@ -69,33 +67,20 @@ export default {
     }
   }),
 
-//   computed: {
-//     agents() {
-//       return [
-//         { name: "5", phone: "5", email: "5" },
-//         { name: "1", phone: "1", email: "1" }
-//       ];
-//     }
-//   },
-
   watch: {
-    search(val) {
+    test(val) {
+      let newThis = this;
       console.log(val);
-      //   if (this.isLoading) return;
-      //   this.isLoading = true;
-      //   fetch("/addresses?address=" + val)
-      //     .then(res => res.json())
-      //     .then(res => {
-      //       console.log(res);
-      //       this.entries = res;
-      //     })
-      //     .catch(err => {
-      //       console.log(err);
-      //     })
-      //     .finally(() => (this.isLoading = false));
-    },
-
-    agent(val) {}
+      axios
+        .get("/dealer/getStaff/1")
+        .then(function(response) {
+          console.log(response);
+          newThis.agents = response.data;
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
   },
 
   methods: {
@@ -103,7 +88,27 @@ export default {
       this.agents.push(this.agentForm);
       this.agent = this.agentForm;
       this.dialog = false;
+      this.agentForm = {
+        name: null,
+        phone: null,
+        email: null
+      };
+    },
+
+    closeDialog() {
+      this.dialog = false;
+      this.agentForm = {
+        name: null,
+        phone: null,
+        email: null
+      };
     }
   }
 };
 </script>
+
+<style scoped>
+p {
+  color: black;
+}
+</style>

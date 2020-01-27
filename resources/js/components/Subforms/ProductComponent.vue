@@ -14,31 +14,38 @@
               </v-card-title>
               <v-card-text>
                 <v-row>
-                  <v-col cols="12" md="4">
-                    <!-- <v-text-field v-model="code" label="Артикул" solo></v-text-field> -->
+                  <v-col cols="12" md="12">
                     <v-autocomplete
                       v-model="product"
                       :items="entires"
-                      :search-input.sync="code"
+                      :search-input.sync="search"
                       color="grey"
                       label="Артикул"
-                      solo
+                      outlined
                       item-text="name"
                       item-value="name"
                       return-object
                     ></v-autocomplete>
                   </v-col>
+                  <v-col cols="12" md="4">
+                    <v-text-field v-model="code" label="Артикул" solo readonly></v-text-field>
+                  </v-col>
                   <v-col cols="12" md="8">
                     <v-text-field v-model="name" label="Название" solo readonly></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4">
-                    <v-text-field v-model="count" label="Количество" solo @change="onChangeCount"></v-text-field>
+                    <v-text-field
+                      v-model="count"
+                      label="Количество"
+                      outlined
+                      @change="onChangeCount"
+                    ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4">
                     <v-text-field
                       v-model="price"
                       label="Цена за единицу"
-                      solo
+                      outlined
                       @change="onChangePrice"
                     ></v-text-field>
                   </v-col>
@@ -46,7 +53,7 @@
                     <v-text-field
                       v-model="total"
                       label="Итоговая сумма"
-                      solo
+                      outlined
                       @change="onChangeTotal"
                     ></v-text-field>
                   </v-col>
@@ -54,7 +61,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn outlined color="indigo" @click="dialog = false">Отмена</v-btn>
+                <v-btn outlined color="indigo" @click="closeDialog">Отмена</v-btn>
                 <v-btn outlined color="indigo" @click="addProduct">Добавить</v-btn>
               </v-card-actions>
             </v-card>
@@ -97,6 +104,7 @@ export default {
     dialog: false,
     products: [],
     entires: [],
+    search: null,
     product: null,
     code: null,
     name: null,
@@ -107,10 +115,18 @@ export default {
   }),
 
   watch: {
-    code(val) {
+    search(val) {
       console.log(val);
       if (this.isLoading) return;
       if (val === null || val.length < 7) return;
+
+      let isValid = true;
+      for (let i = 0; i < this.entires.length; i++) {
+        if (this.entires[i].name === val) {
+          isValid = false;
+        }
+      }
+      if (!isValid) return;
 
       let newThis = this;
       this.isLoading = true;
@@ -123,7 +139,7 @@ export default {
           response.data.result.forEach(item => {
             let product = {
               code: item.article,
-              name: item.name,
+              name: item.name
             };
             newThis.entires.push(product);
             newThis.isLoading = false;
@@ -137,7 +153,9 @@ export default {
     },
 
     product(val) {
-      this.name = val.name;
+      console.log(val);
+      this.name = val != null ? val.name : "";
+      this.code = val != null ? val.code : "";
     }
   },
 
@@ -182,16 +200,27 @@ export default {
         });
 
       this.products.push(product);
-      this.code = "";
-      this.name = "";
-      this.count = "";
-      this.price = "";
-      this.total = "";
+      this.code = null;
+      this.name = null;
+      this.count = null;
+      this.price = null;
+      this.total = null;
+      this.product = null;
       this.dialog = false;
     },
 
     removeProduct(item) {
       this.products.splice(this.products.indexOf(item), 1);
+    },
+
+    closeDialog() {
+      this.code = null;
+      this.name = null;
+      this.count = null;
+      this.price = null;
+      this.total = null;
+      this.product = null;
+      this.dialog = false;
     }
   }
 };

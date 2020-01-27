@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Dealer;
+use App\Staff;
 // use Illuminate\Http\Request;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client;
@@ -107,5 +108,10 @@ class DealerController extends Controller
 
         $response = $client->send($request);
         return $response->getBody();
+    }
+
+    public function getStaff($id) {
+        $staff = Dealer::find($id)->contacts()->get();
+        return $staff;
     }
 }

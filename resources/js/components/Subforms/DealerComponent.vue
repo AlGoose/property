@@ -18,7 +18,7 @@
       <p class="subtitle">КПП: {{company ? company.kpp : ''}}</p>
       <p class="subtitle">Название: {{company ? company.name : ''}}</p>
       <p class="subtitle">Адрес: {{company ? company.address : ''}}</p>
-      <StaffComponent></StaffComponent>
+      <StaffComponent v-bind:test="company ? company.kpp : ''"></StaffComponent>
     </v-card-text>
   </v-card>
 </template>
@@ -52,6 +52,7 @@ export default {
       axios
         .get("/dealer/findByInn/" + val)
         .then(function(response) {
+          console.log(response);
           response.data.suggestions.forEach(item => {
             let company = {
               inn: item.data.inn,
@@ -60,8 +61,8 @@ export default {
               address: item.data.address.value
             };
             newThis.companies.push(company);
-            newThis.isLoading = false;
           });
+            newThis.isLoading = false;
         })
         .catch(function(error) {
           console.log(error);
