@@ -3129,7 +3129,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["dealer_id"],
+  props: ["dealer_id", "mode"],
   data: function data() {
     return {
       dialog: false,
@@ -3156,7 +3156,7 @@ __webpack_require__.r(__webpack_exports__);
     dealer_id: function dealer_id(val) {
       var newThis = this;
       console.log(val);
-      axios.get("/dealer/getStaff/1").then(function (response) {
+      axios.get("/" + this.mode + "/getStaff/1").then(function (response) {
         console.log(response);
         newThis.agents = response.data;
       })["catch"](function (error) {
@@ -3164,8 +3164,8 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     agent: function agent(val) {
-      console.log('StaffComponent', val);
-      this.$emit('staff', val);
+      console.log("StaffComponent", val);
+      this.$emit("staff", val);
     }
   },
   methods: {
@@ -39844,7 +39844,10 @@ var render = function() {
           ]),
           _vm._v(" "),
           _c("StaffComponent", {
-            attrs: { dealer_id: _vm.company ? _vm.company.kpp : "" },
+            attrs: {
+              dealer_id: _vm.company ? _vm.company.kpp : "",
+              mode: "customer"
+            },
             on: { staff: _vm.saveStaff }
           })
         ],
@@ -39930,7 +39933,10 @@ var render = function() {
           ]),
           _vm._v(" "),
           _c("StaffComponent", {
-            attrs: { dealer_id: _vm.company ? _vm.company.kpp : "" },
+            attrs: {
+              dealer_id: _vm.company ? _vm.company.kpp : "",
+              mode: "dealer"
+            },
             on: { staff: _vm.saveStaff }
           })
         ],

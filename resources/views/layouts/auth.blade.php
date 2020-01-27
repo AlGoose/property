@@ -54,10 +54,6 @@
                                 </li>
                             @endif
                         @else
-                            <router-link to="project">Projektlista</router-link>
-                            <a class="navbar-brand" href="{{ url('/project') }}">Projektlista</a>
-                            <a class="navbar-brand" href="{{ url('/home') }}">Home</a>
-
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }} <span class="caret"></span>
@@ -81,11 +77,8 @@
             </div>
         </nav>
         <main class="py-4">
-
             @yield('content')
         </main>
-
     </div>
-
 </body>
 </html>

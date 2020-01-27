@@ -49,7 +49,7 @@
 
 <script>
 export default {
-  props: ["dealer_id"],
+  props: ["dealer_id", "mode"],
 
   data: () => ({
     dialog: false,
@@ -72,7 +72,7 @@ export default {
       let newThis = this;
       console.log(val);
       axios
-        .get("/dealer/getStaff/1")
+        .get("/" + this.mode + "/getStaff/1")
         .then(function(response) {
           console.log(response);
           newThis.agents = response.data;
@@ -83,8 +83,8 @@ export default {
     },
 
     agent(val) {
-      console.log('StaffComponent', val);
-      this.$emit('staff', val);
+      console.log("StaffComponent", val);
+      this.$emit("staff", val);
     }
   },
 

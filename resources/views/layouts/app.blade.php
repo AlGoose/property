@@ -20,7 +20,23 @@
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <script> var current_user = @json(Auth::user())</script>
 
+    <style>
+    .router-link-exact-active {
+        border: 1px solid grey;
+    }
+    .link {
+        padding: 10px;
+        color: black !important;
+        text-decoration: none;
+        cursor: pointer;
+        border-radius: 25px;
 
+    }
+    .link:hover {
+        border: 1px solid black;
+        text-decoration: none;
+    }
+    </style>
 </head>
 <body>
     <div id="app">
@@ -54,8 +70,8 @@
                                 </li>
                             @endif
                         @else
-                            <router-link to="/project">Projektlista</router-link>
-                            <router-link to="/">Home</router-link>
+                            <router-link class="link" to="/project">Projektlista</router-link>
+                            <router-link class="link" to="/">Home</router-link>
 
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
