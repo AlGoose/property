@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Dealer;
-use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Client;
 
 class DealerController extends Controller
 {
@@ -40,7 +42,7 @@ class DealerController extends Controller
     public function store(Request $request)
     {
         \Debugbar::info($request->all());
-        
+
         $dealer = Dealer::firstOrCreate(
             ['inn' => $request->inn],
             ['name' => $request->name]
@@ -91,5 +93,19 @@ class DealerController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function findByInn($id)
+    {
+        $client = new Client(['timeout'  => 2.0]);
+
+        $headers = ['Content-Type' => 'application/json', 'Accept' => 'application/json', 'Authorization' => 'Token 9a4f6cd37ac0af31b81068987f7a5e5fedb673da'];
+        // $body = ['query' => '5405340660'];
+        // 7728168971 АЛЬФАБАНК
+        $body = ['query' => $id];
+        $request = new Request('POST', 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party', $headers, json_encode($body));
+
+        $response = $client->send($request);
+        return $response->getBody();
     }
 }

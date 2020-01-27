@@ -4,20 +4,20 @@
     <v-card-text>
       <v-autocomplete
         v-model="company"
-        :items="entries"
+        :items="companies"
         :search-input.sync="inn"
         color="grey"
         label="ИНН"
         outlined
-        item-text="inn"
+        item-text="name"
         item-value="name"
         return-object
       ></v-autocomplete>
 
-      <p class="title font-weight-bold">ИНН: {{company ? company.inn : ''}}</p>
-      <p class="title font-weight-bold">КПП: {{company ? company.kpp : ''}}</p>
-      <p class="title font-weight-bold">Название: {{company ? company.name : ''}}</p>
-      <p class="title font-weight-bold">Адрес: {{company ? company.name : ''}}</p>
+      <p class="subtitle">ИНН: {{company ? company.inn : ''}}</p>
+      <p class="subtitle">КПП: {{company ? company.kpp : ''}}</p>
+      <p class="subtitle">Название: {{company ? company.name : ''}}</p>
+      <p class="subtitle">Адрес: {{company ? company.address : ''}}</p>
       <StaffComponent></StaffComponent>
     </v-card-text>
   </v-card>
@@ -32,34 +32,48 @@ export default {
   },
   data: () => ({
     inn: null,
-    kpp: "",
-    name: "",
-    address: "",
+    kpp: null,
+    name: null,
+    address: null,
     company: null,
     isLoading: false,
-    entries: [
-      { inn: "5", kpp: "5", name: "5" },
-      { inn: "1", kpp: "1", name: "1" }
-    ]
+    companies: []
   }),
-
-  computed: {
-    companies() {}
-  },
 
   watch: {
     inn(val) {
       if (this.isLoading) return;
-      //   this.isLoading = true;
+      if (val === null || val.length != 10) return;
 
-      if (val === null || val.length < 8) return;
+      let newThis = this;
+      this.isLoading = true;
+      this.companies = [];
 
-      console.log(val);
+      axios
+        .get("/dealer/findByInn/" + val)
+        .then(function(response) {
+          response.data.suggestions.forEach(item => {
+            let company = {
+              inn: item.data.inn,
+              kpp: item.data.kpp,
+              name: item.value,
+              address: item.data.address.value
+            };
+            newThis.companies.push(company);
+            newThis.isLoading = false;
+          });
+        })
+        .catch(function(error) {
+          console.log(error);
+          newThis.isLoading = false;
+        });
     }
-  },
-
-  methods: {
-    someHandler() {}
   }
 };
 </script>
+
+<style scoped>
+p {
+  color: black;
+}
+</style>

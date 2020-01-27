@@ -16,7 +16,10 @@ Auth::routes();
 Route::get('/addresses', 'ProjectController@addresses');
 
 Route::resource('/project', 'ProjectController');
-Route::get('/test', 'ProjectController@savestaff');
+// Route::get('/test', 'ProjectController@savestaff');
+Route::get('/dealer/findByInn/{id}', 'DealerController@findByInn');
+Route::get('/customer/findByInn/{id}', 'CustomerController@findByInn');
+Route::get('/product/findById/{id}', 'ProductController@findById');
 
 Route::get('/{any}', 'SinglePageController@index')->middleware('auth')->where(['any' => '.*']);
 
@@ -27,6 +30,7 @@ Route::get('/{any}', 'SinglePageController@index')->middleware('auth')->where(['
 
 Route::resource('/product', 'ProductController');
 Route::resource('/dealer', 'DealerController');
+
 Route::resource('/customer', 'CustomerController');
 Route::resource('/opponent', 'OpponentController');
 Route::resource('/staff', 'StaffController');

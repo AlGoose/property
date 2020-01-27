@@ -13,14 +13,14 @@
           @click:append="input(opponent)"
         ></v-text-field>
 
-          <v-list flat v-if="opponents.length">
-            <v-list-item-group v-model="model" mandatory color="indigo">
-              <v-list-item v-for="(item, i) in opponents" :key="i">
-                  <v-list-item-title v-text="item"></v-list-item-title>
-                <v-icon @click="remove(item)">mdi-minus-circle-outline</v-icon>
-              </v-list-item>
-            </v-list-item-group>
-          </v-list>
+        <v-list flat v-if="opponents.length">
+          <v-list-item-group v-model="model" mandatory color="indigo">
+            <v-list-item v-for="(item, i) in opponents" :key="i">
+              <v-list-item-title v-text="item"></v-list-item-title>
+              <v-icon @click="remove(item)">mdi-minus-circle-outline</v-icon>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
       </v-card-text>
     </v-card>
   </div>
@@ -42,18 +42,18 @@ export default {
         return;
       }
 
-      let test = {
+      let opponent = {
         name: value
       };
 
-      //   axios
-      //     .post("http://property.test/addOpponent", test)
-      //     .then(function(response) {
-      //       console.log(response);
-      //     })
-      //     .catch(function(error) {
-      //       console.log(error);
-      //     });
+      axios
+        .post("/opponent", opponent)
+        .then(function(response) {
+          console.log(response);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
 
       this.opponents.push(value);
       this.opponent = "";
@@ -65,9 +65,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-/* .card {
-    height: 100px;
-} */
-</style>
