@@ -108,8 +108,8 @@ class CustomerController extends Controller
         return $response->getBody();
     }
 
-    public function getStaff($id) {
-        $staff = Customer::find($id)->contacts()->get();
+    public function getStaff(Customer $customer) {
+        $staff = $customer->contacts()->get();
         return $staff;
     }
 }
