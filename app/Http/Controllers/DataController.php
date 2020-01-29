@@ -23,16 +23,22 @@ class DataController extends Controller
         
         $result = [];
         foreach ($response->suggestions as $item) {
-            try {
-                $result[] = Dealer::where(['inn' => $item->data->inn, 'kpp' => $item->data->kpp])->with('contacts')->firstOrFail();
-            } catch (ModelNotFoundException $exception) {
-                $result[] = [
-                    'inn' => $item->data->inn,
-                    'kpp' => $item->data->kpp,
-                    'address' => $item->data->address->value,
-                    'name' => $item->value,
-                ];
-            }
+            // try {
+            //     $result[] = Dealer::where(['inn' => $item->data->inn, 'kpp' => $item->data->kpp])->with('contacts')->firstOrFail();
+            // } catch (ModelNotFoundException $exception) {
+            //     $result[] = [
+            //         'inn' => $item->data->inn,
+            //         'kpp' => $item->data->kpp,
+            //         'address' => $item->data->address->value,
+            //         'name' => $item->value,
+            //     ];
+            // }
+            $result[] = [
+                'inn' => $item->data->inn,
+                'kpp' => $item->data->kpp,
+                'address' => $item->data->address->value,
+                'name' => $item->value,
+            ];
         }
         return $result;
     }

@@ -79,6 +79,7 @@ export default {
     entity(val) {
       if (this.entity.contacts === undefined) {
         this.agent_id = null;
+        this.agents = [],
         this.dialog = true;
       } else {
         this.agents = this.entity.contacts;
@@ -87,11 +88,11 @@ export default {
 
     value(val) {
       let newThis = this;
-      console.log(val);
+      // console.log(val);
       axios
         .get("/" + this.mode + "/getStaff/1")
         .then(function(response) {
-          console.log(response);
+          // console.log(response);
           newThis.agent = response.data;
         })
         .catch(function(error) {
@@ -100,7 +101,7 @@ export default {
     },
 
     agent_id(val) {
-      console.log("StaffComponent", val);
+      // console.log("StaffComponent", val);
       this.$emit("staff", val);
     }
   },
@@ -111,7 +112,7 @@ export default {
       this.dialog = false;
 
       axios.post("/staff", this.agentForm).then(request => {
-        console.log(request.data);
+        // console.log(request.data);
         this.agents.push(request.data);
         this.agent_id = request.data.id;
       }),

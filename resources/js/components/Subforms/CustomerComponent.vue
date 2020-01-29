@@ -5,20 +5,23 @@
       <v-autocomplete
         v-model="company"
         :items="companies"
-        :search-input.sync="inn"
+        :search-input.sync="search"
         color="grey"
         label="ИНН"
         outlined
-        item-text="name"
-        item-value="name"
+        hide-details
+        no-filter
         return-object
-      ></v-autocomplete>
+        item-text="name"
+        :loading="isLoading"
+      >
+        <template v-slot:item="{ item }">{{item.name}}, КПП:{{item.kpp}}</template>
+        <template v-slot:selection="{ item }">{{item.inn}}, КПП:{{item.kpp}}</template>
+      </v-autocomplete>
 
-      <p class="subtitle">ИНН: {{company ? company.inn : ''}}</p>
-      <p class="subtitle">КПП: {{company ? company.kpp : ''}}</p>
       <p class="subtitle">Название: {{company ? company.name : ''}}</p>
       <p class="subtitle">Адрес: {{company ? company.address : ''}}</p>
-      <StaffComponent v-bind:dealer_id="company ? company.kpp : ''" mode="customer" v-on:staff="saveStaff"></StaffComponent>
+      <StaffComponent v-if="customer" :entity="customer" mode="customer" @staff="saveStaff"></StaffComponent>
     </v-card-text>
   </v-card>
 </template>
@@ -31,40 +34,48 @@ export default {
     StaffComponent
   },
   data: () => ({
-    inn: null,
-    kpp: null,
-    name: null,
-    address: null,
-    company: null,
+    search: "",
+    company: { inn: "" },
     isLoading: false,
-    companies: []
+    companies: [],
+    customer: ""
   }),
 
   watch: {
-    inn(val) {
+    company(val) {
+      //console.log(val)
+      axios //TODO:
+        .post("/customer/findCustomer", { inn: val.inn, kpp: val.kpp })
+        .then(response => {
+          // console.log(response);
+          if (response.data === "") {
+            this.customer = {};
+          } else {
+            this.customer = response.data;
+          }
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    },
+
+    search(val) {
       if (this.isLoading) return;
       if (val === null || val.length != 10) return;
 
       let newThis = this;
       this.isLoading = true;
-      this.companies = [];
+      //   this.companies = [];
 
       axios
-        .get("/customer/findByInn/" + val)
-        .then(function(response) {
-          response.data.suggestions.forEach(item => {
-            let company = {
-              inn: item.data.inn,
-              kpp: item.data.kpp,
-              name: item.value,
-              address: item.data.address.value
-            };
-            newThis.companies.push(company);
-            newThis.isLoading = false;
-          });
+        // .get("/customer/findByInn/" + val)
+        .get("/data/findByInn/" + val)
+        .then(response => {
+          this.companies = response.data;
+          newThis.isLoading = false;
         })
         .catch(function(error) {
-          console.log(error);
+          //   console.log(error);
           newThis.isLoading = false;
         });
     }
@@ -72,7 +83,40 @@ export default {
 
   methods: {
     saveStaff(staff) {
-      console.log('CustomerComponent', staff);
+      // console.log(staff);
+      if (!this.customer.id) {
+        // console.log("NEW CUSTOMER");
+        axios
+          .post("/customer", { customer: this.company, staff_id: staff })
+          .then(response => {
+            // console.log(response.data);
+            this.$emit("customer", {
+              customer_id: response.data.id,
+              customer_staff_id: staff
+            });
+          });
+      } else {
+        // console.log("OLD CUSTOMER"); //МБ костыль на добавление нового стафа к имеющемуся в БД диллеру.
+        axios
+          .post("/customer", {
+            customer: {
+              inn: this.company.inn,
+              kpp: this.company.kpp,
+              address: this.company.address,
+              name: this.company.name
+            },
+            staff_id: staff
+          })
+          .then(response => {
+            // console.log(response.data);
+            this.$emit("customer", {
+              customer_id: response.data.id,
+              customer_staff_id: staff
+            });
+          });
+      }
+
+      // console.log("CustomerComponent", staff);
     }
   }
 };

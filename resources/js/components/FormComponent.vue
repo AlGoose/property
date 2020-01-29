@@ -5,19 +5,19 @@
 
     <v-row>
       <v-col cols="6">
-        <DealerComponent></DealerComponent>
+        <DealerComponent @dealer="saveDealer"></DealerComponent>
       </v-col>
       <v-col cols="6">
-        <CustomerComponent></CustomerComponent>
+        <CustomerComponent @customer="saveCustomer"></CustomerComponent>
       </v-col>
-       <v-col cols="12">
-        <ProjectComponent v-bind:address_prop="address"></ProjectComponent>
-      </v-col>
-      <v-col cols="6">
-        <OpponentComponent></OpponentComponent>
+      <v-col cols="12">
+        <ProjectComponent v-bind:address_prop="address" @project="saveProject"></ProjectComponent>
       </v-col>
       <v-col cols="6">
-        <ProductComponent></ProductComponent>
+        <OpponentComponent @opponent="saveOpponent"></OpponentComponent>
+      </v-col>
+      <v-col cols="6">
+        <ProductComponent @product="saveProduct"></ProductComponent>
       </v-col>
     </v-row>
     <!-- <v-form ref="form" v-model="valid" lazy-validation>
@@ -62,8 +62,9 @@ export default {
     ProjectComponent
   },
   directives: { mask },
+
   mounted() {
-    console.log('FORM', this.$route.params.address);
+    console.log("FORM", this.$route.params.address);
     let newThis = this;
     if (this.$route.name === "edit") {
       this.mode = "edit";
@@ -118,12 +119,11 @@ export default {
   data: () => ({
     mode: "create",
     dialog: false,
-    valid: true,
-    valid_prod: true,
     address: null,
+    formData: {}
   }),
 
-methods: {
+  methods: {
     addForm() {
       let newThis = this;
 
@@ -160,6 +160,26 @@ methods: {
       if (this.$refs.form.validate()) {
         this.dialog = true;
       }
+    },
+
+    saveDealer(value) {
+      console.log("FormComponent | Dealer |", value);
+    },
+
+    saveCustomer(value) {
+      console.log("FormComponent | Customer |", value);
+    },
+
+    saveProject(value) {
+      console.log("FormComponent | Project |", value);
+    },
+
+    saveOpponent(value) {
+      console.log("FormComponent | Opponent |", value);
+    },
+
+    saveProduct(value) {
+      console.log("FormComponent | Product |", value);
     }
   }
 };

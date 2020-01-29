@@ -31,6 +31,7 @@ export default {
   data: () => ({
     opponent: null,
     opponents: [],
+    ids: [],
     model: 1
   }),
 
@@ -49,10 +50,12 @@ export default {
 
       axios
         .post("/opponent", opponent)
-        .then(function(response) {
-          console.log(response);
+        .then(response => {
+          console.log(response.data);
+          this.ids.push(response.data.id);
+          // this.$set(this.ids, this.ids.length, response.data.id);
         })
-        .catch(function(error) {
+        .catch(error => {
           console.log(error);
         });
 
@@ -61,7 +64,9 @@ export default {
     },
 
     remove(item) {
+      console.log(this.opponents.indexOf(item));
       this.opponents.splice(this.opponents.indexOf(item), 1);
+      this.ids.splice(this.opponents.indexOf(item), 1); //FIXME: Некорректно удаляется
     }
   }
 };

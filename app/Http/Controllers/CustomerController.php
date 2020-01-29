@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Customer;
-// use Illuminate\Http\Request;
-use GuzzleHttp\Psr7\Request;
+use App\Staff;
+use Illuminate\Http\Request;
+// use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Client;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CustomerController extends Controller
 {
@@ -42,12 +44,10 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         \Debugbar::info($request->all());
-        
-        $customer = Customer::firstOrCreate(
-            ['inn' => $request->inn],
-            ['name' => $request->name]
-        );
-        return $customer;
+        $dealer = Customer::firstOrCreate($request->customer);
+        $staff = Staff::find($request->staff_id);
+        $staff->entity()->associate($dealer)->save();
+        return $dealer;
     }
 
     /**
@@ -59,6 +59,16 @@ class CustomerController extends Controller
     public function show($id)
     {
         //
+    }
+
+    public function findCustomer(Request $request)
+    {
+        try {
+            $result = Customer::where(['inn' => $request->inn, 'kpp' => $request->kpp])->with('contacts')->firstOrFail();
+        } catch (ModelNotFoundException $exception) {
+            return null;
+        }
+        return $result;
     }
 
     /**

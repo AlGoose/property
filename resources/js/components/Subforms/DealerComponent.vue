@@ -34,7 +34,7 @@ export default {
     StaffComponent
   },
   data: () => ({
-    search: "772816897",
+    search: "",
     company: { inn: "" },
     isLoading: false,
     companies: [],
@@ -47,7 +47,7 @@ export default {
       axios
         .post("/dealer/findDealer", { inn: val.inn, kpp: val.kpp })
         .then(response => {
-          console.log(response);
+          // console.log(response);
           if (response.data === "") {
             this.dealer = {};
           } else {
@@ -83,24 +83,40 @@ export default {
 
   methods: {
     saveStaff(staff) {
-      console.log(staff);
+      // console.log(staff);
       if (!this.dealer.id) {
-        console.log("NEW DEALER");
-        axios.post("/dealer", { dealer: this.company, staff_id: staff });
+        // console.log("NEW DEALER");
+        axios
+          .post("/dealer", { dealer: this.company, staff_id: staff })
+          .then(response => {
+            // console.log(response.data);
+            this.$emit('dealer', {
+              dealer_id: response.data.id,
+              dealer_staff_id: staff
+            });
+          });
       } else {
-        console.log("OLD DEALER"); //МБ костыль на добавление нового стафа к имеющемуся в БД диллеру.
-        axios.post("/dealer", {
-          dealer: {
-            inn: this.company.inn,
-            kpp: this.company.kpp,
-            address: this.company.address,
-            name: this.company.name
-          },
-          staff_id: staff
-        });
+        // console.log("OLD DEALER"); //МБ костыль на добавление нового стафа к имеющемуся в БД диллеру.
+        axios
+          .post("/dealer", {
+            dealer: {
+              inn: this.company.inn,
+              kpp: this.company.kpp,
+              address: this.company.address,
+              name: this.company.name
+            },
+            staff_id: staff
+          })
+          .then(response => {
+            // console.log(response.data);
+            this.$emit('dealer', {
+              dealer_id: response.data.id,
+              dealer_staff_id: staff
+            });
+          });
       }
 
-      console.log("DealerComponent", staff);
+      // console.log("DealerComponent", staff);
     }
   }
 };

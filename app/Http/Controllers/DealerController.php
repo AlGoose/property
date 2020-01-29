@@ -66,8 +66,6 @@ class DealerController extends Controller
 
     public function findDealer(Request $request)
     {
-
-
         try {
             $result = Dealer::where(['inn' => $request->inn, 'kpp' => $request->kpp])->with('contacts')->firstOrFail();
         } catch (ModelNotFoundException $exception) {
