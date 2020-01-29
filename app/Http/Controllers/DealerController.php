@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Dealer;
 use App\Staff;
 use App\Clients\InnClient;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Request as Psr7Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
@@ -116,18 +118,19 @@ class DealerController extends Controller
         // $body = ['query' => '5405340660'];
         // 7728168971 АЛЬФАБАНК
         // $body = ['query' => $id];
-        // $request = new GRequest('POST', 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party', $headers, json_encode($body));
+        // $request = new Psr7Request('POST', 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party', $headers, json_encode($body));
 
         // $response = $client->send($request)->getBody();
         // 7728168971
-        \Debugbar::info($id);
+        // \Debugbar::info($id);
 
         $client = InnClient::getInstance();
-        $response = $client->post('/findById/party', ['query' => $id]);
-        \Debugbar::info($response);
-        // $response = json_decode($response->read(5000000));
+        // \Debugbar::info($client);
+        $response = $client->request('POST', '/findById/party', ['query' => $id])->getBody();
+        // \Debugbar::info($response);
+        $response = json_decode($response->read(5000000));
         // $response = json_encode($response->getBody()->read(5000000));
-        $response = json_decode((string)$response->getBody());
+        // $response = json_decode((string)$response->getBody());
         \Debugbar::info($response);
 
         $result = [];
@@ -143,17 +146,12 @@ class DealerController extends Controller
         //         ];
         //     }
         // }
-        //   inn: item.data.inn,
-        //   kpp: item.data.kpp,
-        //   name: item.value,
-        //   address: item.data.address.value
 
         return $result;
     }
 
-    public function getStaff($id)
+    public function getStaff(Dealer $dealer)
     {
-        $staff = Dealer::find($id)->contacts()->get();
-        return $staff;
+        return $dealer->contacts()->get();
     }
 }

@@ -17,11 +17,10 @@ Route::get('/addresses', 'ProjectController@addresses');
 
 Route::post('/dealer/findDealer/', 'DealerController@findDealer');
 Route::resource('/project', 'ProjectController');
-// Route::get('/test', 'ProjectController@savestaff');
-Route::get('/dealer/findByInn/{id}', 'DealerController@findByInn');
-Route::get('/customer/findByInn/{id}', 'CustomerController@findByInn');
+
+Route::get('/data/findByInn/{id}', 'DataController@findByInn');
 Route::get('/product/findById/{id}', 'ProductController@findById');
-Route::get('/dealer/getStaff/{id}', 'DealerController@getStaff');
+Route::get('/dealer/{id}/getStaff/', 'DealerController@getStaff');
 Route::get('/customer/getStaff/{customer}', 'CustomerController@getStaff');
 
 Route::get('/{any}', 'SinglePageController@index')->middleware('auth')->where(['any' => '.*']);

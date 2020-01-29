@@ -2678,7 +2678,8 @@ __webpack_require__.r(__webpack_exports__);
       var newThis = this;
       this.isLoading = true; //   this.companies = [];
 
-      axios.get("/dealer/findByInn/" + val).then(function (response) {
+      axios // .get("/dealer/findByInn/" + val)
+      .get("/data/findByInn/" + val).then(function (response) {
         _this2.companies = response.data;
         newThis.isLoading = false;
       })["catch"](function (error) {

@@ -58,6 +58,7 @@ export default {
           console.log(e);
         });
     },
+
     search(val) {
       if (this.isLoading) return;
       if (val === null || val.length != 10) return;
@@ -67,7 +68,8 @@ export default {
       //   this.companies = [];
 
       axios
-        .get("/dealer/findByInn/" + val)
+        // .get("/dealer/findByInn/" + val)
+        .get("/data/findByInn/" + val)
         .then(response => {
           this.companies = response.data;
           newThis.isLoading = false;
