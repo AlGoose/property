@@ -2630,6 +2630,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+ //7728168971
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
@@ -2637,43 +2641,77 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      inn: null,
-      kpp: null,
-      name: null,
-      address: null,
-      company: null,
+      search: "772816897",
+      company: {
+        inn: ""
+      },
       isLoading: false,
-      companies: []
+      companies: [],
+      dealer: ""
     };
   },
   watch: {
-    inn: function inn(val) {
+    company: function company(val) {
+      var _this = this;
+
+      //console.log(val)
+      axios.post("/dealer/findDealer", {
+        inn: val.inn,
+        kpp: val.kpp
+      }).then(function (response) {
+        console.log(response);
+
+        if (response.data === "") {
+          _this.dealer = {};
+        } else {
+          _this.dealer = response.data;
+        }
+      })["catch"](function (e) {
+        console.log(e);
+      });
+    },
+    search: function search(val) {
+      var _this2 = this;
+
       if (this.isLoading) return;
       if (val === null || val.length != 10) return;
       var newThis = this;
-      this.isLoading = true;
-      this.companies = [];
+      this.isLoading = true; //   this.companies = [];
+
       axios.get("/dealer/findByInn/" + val).then(function (response) {
-        console.log(response);
-        response.data.suggestions.forEach(function (item) {
-          var company = {
-            inn: item.data.inn,
-            kpp: item.data.kpp,
-            name: item.value,
-            address: item.data.address.value
-          };
-          newThis.companies.push(company);
-        });
+        _this2.companies = response.data;
         newThis.isLoading = false;
       })["catch"](function (error) {
-        console.log(error);
+        //   console.log(error);
         newThis.isLoading = false;
       });
     }
   },
   methods: {
     saveStaff: function saveStaff(staff) {
-      console.log('DealerComponent', staff);
+      console.log(staff);
+
+      if (!this.dealer.id) {
+        console.log("NEW DEALER");
+        axios.post("/dealer", {
+          dealer: this.company,
+          staff_id: staff
+        });
+      } else {
+        console.log("OLD DEALER"); //МБ костыль на добавление нового стафа к имеющемуся в БД диллеру.
+
+        axios.post("/dealer", {
+          dealer: {
+            inn: this.company.inn,
+            kpp: this.company.kpp,
+            address: this.company.address,
+            name: this.company.name
+          },
+          staff_id: staff
+        });
+      }
+
+      console.log("DealerComponent", staff);
     }
   }
 });
@@ -3129,22 +3167,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["dealer_id", "mode"],
+  props: ["entity", "mode"],
   data: function data() {
     return {
       dialog: false,
       isLoading: false,
-      agent: null,
-      entries: [],
-      agents: [{
-        name: "5",
-        phone: "5",
-        email: "5"
-      }, {
-        name: "1",
-        phone: "1",
-        email: "1"
-      }],
+      agent_id: null,
+      agents: [],
       agentForm: {
         name: null,
         phone: null,
@@ -3152,28 +3181,59 @@ __webpack_require__.r(__webpack_exports__);
       }
     };
   },
+  computed: {
+    agent: function agent() {
+      var _this = this;
+
+      return this.agents.filter(function (item) {
+        return _this.agent_id === item.id;
+      }).pop();
+    }
+  },
+  mounted: function mounted() {
+    if (this.entity.contacts === undefined) {
+      this.dialog = true;
+    } else {
+      this.agents = this.entity.contacts;
+    }
+  },
   watch: {
-    dealer_id: function dealer_id(val) {
+    entity: function entity(val) {
+      if (this.entity.contacts === undefined) {
+        this.agent_id = null;
+        this.dialog = true;
+      } else {
+        this.agents = this.entity.contacts;
+      }
+    },
+    value: function value(val) {
       var newThis = this;
       console.log(val);
       axios.get("/" + this.mode + "/getStaff/1").then(function (response) {
         console.log(response);
-        newThis.agents = response.data;
+        newThis.agent = response.data;
       })["catch"](function (error) {
         console.log(error);
       });
     },
-    agent: function agent(val) {
+    agent_id: function agent_id(val) {
       console.log("StaffComponent", val);
       this.$emit("staff", val);
     }
   },
   methods: {
     addAgent: function addAgent() {
-      this.agents.push(this.agentForm);
-      this.agent = this.agentForm;
+      var _this2 = this;
+
+      // this.agent = this.agentForm;
       this.dialog = false;
-      this.agentForm = {
+      axios.post("/staff", this.agentForm).then(function (request) {
+        console.log(request.data);
+
+        _this2.agents.push(request.data);
+
+        _this2.agent_id = request.data.id;
+      }), this.agentForm = {
         name: null,
         phone: null,
         email: null
@@ -39891,22 +39951,44 @@ var render = function() {
           _c("v-autocomplete", {
             attrs: {
               items: _vm.companies,
-              "search-input": _vm.inn,
+              "search-input": _vm.search,
               color: "grey",
               label: "ИНН",
               outlined: "",
+              "hide-details": "",
+              "no-filter": "",
+              "return-object": "",
               "item-text": "name",
-              "item-value": "name",
-              "return-object": ""
+              loading: _vm.isLoading
             },
             on: {
               "update:searchInput": function($event) {
-                _vm.inn = $event
+                _vm.search = $event
               },
               "update:search-input": function($event) {
-                _vm.inn = $event
+                _vm.search = $event
               }
             },
+            scopedSlots: _vm._u([
+              {
+                key: "item",
+                fn: function(ref) {
+                  var item = ref.item
+                  return [
+                    _vm._v(_vm._s(item.name) + ", КПП:" + _vm._s(item.kpp))
+                  ]
+                }
+              },
+              {
+                key: "selection",
+                fn: function(ref) {
+                  var item = ref.item
+                  return [
+                    _vm._v(_vm._s(item.inn) + ", КПП:" + _vm._s(item.kpp))
+                  ]
+                }
+              }
+            ]),
             model: {
               value: _vm.company,
               callback: function($$v) {
@@ -39917,14 +39999,6 @@ var render = function() {
           }),
           _vm._v(" "),
           _c("p", { staticClass: "subtitle" }, [
-            _vm._v("ИНН: " + _vm._s(_vm.company ? _vm.company.inn : ""))
-          ]),
-          _vm._v(" "),
-          _c("p", { staticClass: "subtitle" }, [
-            _vm._v("КПП: " + _vm._s(_vm.company ? _vm.company.kpp : ""))
-          ]),
-          _vm._v(" "),
-          _c("p", { staticClass: "subtitle" }, [
             _vm._v("Название: " + _vm._s(_vm.company ? _vm.company.name : ""))
           ]),
           _vm._v(" "),
@@ -39932,13 +40006,12 @@ var render = function() {
             _vm._v("Адрес: " + _vm._s(_vm.company ? _vm.company.address : ""))
           ]),
           _vm._v(" "),
-          _c("StaffComponent", {
-            attrs: {
-              dealer_id: _vm.company ? _vm.company.kpp : "",
-              mode: "dealer"
-            },
-            on: { staff: _vm.saveStaff }
-          })
+          _vm.dealer
+            ? _c("StaffComponent", {
+                attrs: { entity: _vm.dealer, mode: "dealer" },
+                on: { staff: _vm.saveStaff }
+              })
+            : _vm._e()
         ],
         1
       )
@@ -40710,36 +40783,39 @@ var render = function() {
   return _c(
     "div",
     [
-      _c("v-autocomplete", {
-        attrs: {
-          items: _vm.agents,
-          color: "grey",
-          label: "Представитель",
-          outlined: "",
-          "item-text": "name",
-          "item-value": "name",
-          "return-object": ""
-        },
-        model: {
-          value: _vm.agent,
-          callback: function($$v) {
-            _vm.agent = $$v
-          },
-          expression: "agent"
-        }
-      }),
-      _vm._v(" "),
-      _c("p", { staticClass: "subtitle" }, [
-        _vm._v("Имя: " + _vm._s(_vm.agent ? _vm.agent.name : ""))
-      ]),
-      _vm._v(" "),
-      _c("p", { staticClass: "subtitle" }, [
-        _vm._v("Телефон: " + _vm._s(_vm.agent ? _vm.agent.phone : ""))
-      ]),
-      _vm._v(" "),
-      _c("p", { staticClass: "subtitle" }, [
-        _vm._v("Почта: " + _vm._s(_vm.agent ? _vm.agent.email : ""))
-      ]),
+      _vm.entity.contacts || _vm.agent_id
+        ? [
+            _c("v-autocomplete", {
+              attrs: {
+                items: _vm.agents,
+                color: "grey",
+                label: "Представитель",
+                outlined: "",
+                "item-text": "name",
+                "item-value": "id"
+              },
+              model: {
+                value: _vm.agent_id,
+                callback: function($$v) {
+                  _vm.agent_id = $$v
+                },
+                expression: "agent_id"
+              }
+            }),
+            _vm._v(" "),
+            _c("p", { staticClass: "subtitle" }, [
+              _vm._v("Имя: " + _vm._s(_vm.agent ? _vm.agent.name : ""))
+            ]),
+            _vm._v(" "),
+            _c("p", { staticClass: "subtitle" }, [
+              _vm._v("Телефон: " + _vm._s(_vm.agent ? _vm.agent.phone : ""))
+            ]),
+            _vm._v(" "),
+            _c("p", { staticClass: "subtitle" }, [
+              _vm._v("Почта: " + _vm._s(_vm.agent ? _vm.agent.email : ""))
+            ])
+          ]
+        : _vm._e(),
       _vm._v(" "),
       _c(
         "v-row",
@@ -40889,7 +40965,7 @@ var render = function() {
         1
       )
     ],
-    1
+    2
   )
 }
 var staticRenderFns = []
