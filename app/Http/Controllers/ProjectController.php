@@ -7,6 +7,7 @@ use App\Opponent;
 use App\Product;
 use App\Project;
 use App\Staff;
+use App\Customer;
 use Illuminate\Http\Request;
 use App\Http\Requests\ProjectRequest;
 
@@ -77,37 +78,50 @@ class ProjectController extends Controller
     public function store(ProjectRequest $request)
     {
         \Debugbar::info($request->all());
-        \Debugbar::info($request->dealer);
-
-        $project = new Project;
-        $project->name = $request->project['name'];
-        $project->address = $request->project['address'];
-        $project->customer = $request->project['customer'];
-        $project->date = $request->project['date'];
-        $project->work = $request->project['work'];
+        // $project = Project::create($request->project);
+        $project = new Project($request->project);
+        \Debugbar::info($project);
+        // \Debugbar::info($request->customer['customer_id']);
         $project->user()->associate(\Auth::user());
+        $project->customer()->associate(Customer::find($request->customer['customer_id']));
+        $project->dealer()->associate(Dealer::find($request->dealer['dealer_id']));
+        $project->dealer()->associate(Dealer::find($request->dealer['dealer_id']));
+        $project->staff()->associate(Staff::find($request->dealer['dealer_staff_id'])); //FIXME: А как второго сохранить стафа?
+        \Debugbar::info($project);
 
-        $dealer = Dealer::firstOrCreate(
-            ['name' => $request->dealer['name']],
-            ['address' =>  'ADDRESS'],
-            ['inn' =>  intval($request->dealer['inn'])] //TODO: ПОЧЕМУ ЗАПИСЫВАЕТСЯ NULL?
-        );
-        $project->dealer()->associate($dealer)->save();
 
-        foreach ($request->project['opponents'] as $name) {
-            \Debugbar::info($name);
-            $opponent = Opponent::firstOrCreate(
-                ['name' => $name]
-            );
-            $project->opponents()->attach($opponent->id);
-        }
 
-        $product = Product::firstOrCreate(
-            ['code' => 'CODE'],
-            ['name' => 'NAME'],
-            ['price' => intval('10')]
-        );
-        $project->products()->attach($product->id, ['count' => 5]);
+        // \Debugbar::info($request->dealer);
+
+        // $project = new Project;
+        // $project->name = $request->project['name'];
+        // $project->address = $request->project['address'];
+        // $project->customer = $request->project['customer'];
+        // $project->date = $request->project['date'];
+        // $project->work = $request->project['work'];
+        // $project->user()->associate(\Auth::user());
+
+        // $dealer = Dealer::firstOrCreate(
+        //     ['name' => $request->dealer['name']],
+        //     ['address' =>  'ADDRESS'],
+        //     ['inn' =>  intval($request->dealer['inn'])] //TODO: ПОЧЕМУ ЗАПИСЫВАЕТСЯ NULL?
+        // );
+        // $project->dealer()->associate($dealer)->save();
+
+        // foreach ($request->project['opponents'] as $name) {
+        //     \Debugbar::info($name);
+        //     $opponent = Opponent::firstOrCreate(
+        //         ['name' => $name]
+        //     );
+        //     $project->opponents()->attach($opponent->id);
+        // }
+
+        // $product = Product::firstOrCreate(
+        //     ['code' => 'CODE'],
+        //     ['name' => 'NAME'],
+        //     ['price' => intval('10')]
+        // );
+        // $project->products()->attach($product->id, ['count' => 5]);
     }
 
     /**

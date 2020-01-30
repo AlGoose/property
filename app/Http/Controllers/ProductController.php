@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Product;
 use Illuminate\Http\Request;
-use GuzzleHttp\Psr7\Request as GRequest;
-use GuzzleHttp\Client;
 
 class ProductController extends Controller
 {
@@ -41,7 +39,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        \Debugbar::info($request->all());
+        // \Debugbar::info($request->all());
 
         $product = Product::firstOrCreate(
             ['code' => $request->code],

@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Customer;
 use App\Staff;
 use Illuminate\Http\Request;
-// use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CustomerController extends Controller
@@ -43,7 +41,7 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        \Debugbar::info($request->all());
+        // \Debugbar::info($request->all());
         $dealer = Customer::firstOrCreate($request->customer);
         $staff = Staff::find($request->staff_id);
         $staff->entity()->associate($dealer)->save();
@@ -105,20 +103,8 @@ class CustomerController extends Controller
         //
     }
 
-    public function findByInn($id)
+    public function getStaff(Customer $customer)
     {
-        $client = new Client(['timeout'  => 2.0]);
-
-        $headers = ['Content-Type' => 'application/json', 'Accept' => 'application/json', 'Authorization' => 'Token 9a4f6cd37ac0af31b81068987f7a5e5fedb673da'];
-        // $body = ['query' => '5405340660'];
-        $body = ['query' => $id];
-        $request = new Request('POST', 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party', $headers, json_encode($body));
-
-        $response = $client->send($request);
-        return $response->getBody();
-    }
-
-    public function getStaff(Customer $customer) {
         $staff = $customer->contacts()->get();
         return $staff;
     }

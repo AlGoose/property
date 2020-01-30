@@ -2068,39 +2068,26 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     addForm: function addForm() {
-      var newThis = this;
-      var res = {
-        dealer: 1,
-        project: {
-          name: "",
-          address: ""
-        },
-        products: {
-          1: {
-            count: 5,
-            price: 100
-          },
-          25: {
-            count: 5,
-            price: 100
-          }
-        },
-        oponents: [1, 2, 3]
-      };
-
-      for (var prop in this.dealer) {
-        res.dealer[prop] = this.dealer[prop].data;
-      }
-
-      for (var _prop3 in this.form) {
-        res.project[_prop3] = this.form[_prop3].data;
-      }
-
-      axios.post("http://property.test/project", res).then(function (response) {
-        newThis.$refs.form.reset();
-        newThis.form.opponents.opponent = "";
-        newThis.form.opponents.data = [];
-        newThis.dialog = false;
+      // let res = {
+      //   dealer: 1,
+      //   project: { name: "", address: "" },
+      //   products: {
+      //     1: { count: 5, price: 100 },
+      //     25: { count: 5, price: 100 }
+      //   },
+      //   oponents: [1, 2, 3]
+      // };
+      // for (let prop in this.dealer) {
+      //   res.dealer[prop] = this.dealer[prop].data;
+      // }
+      // for (let prop in this.form) {
+      //   res.project[prop] = this.form[prop].data;
+      // }
+      axios.post("/project", this.formData).then(function (response) {
+        console.log(response); // newThis.$refs.form.reset();
+        // newThis.form.opponents.opponent = "";
+        // newThis.form.opponents.data = [];
+        // newThis.dialog = false;
       })["catch"](function (error) {
         console.log(error);
       });
@@ -39592,6 +39579,87 @@ var render = function() {
             "v-col",
             { attrs: { cols: "6" } },
             [_c("ProductComponent", { on: { products: _vm.saveProducts } })],
+            1
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _vm.$route.name === "edit"
+        ? _c(
+            "v-btn",
+            {
+              attrs: { block: "", color: "indigo", outlined: "" },
+              on: { click: _vm.validate }
+            },
+            [_vm._v("Изменить форму")]
+          )
+        : _c(
+            "v-btn",
+            {
+              attrs: { block: "", color: "indigo", outlined: "" },
+              on: {
+                click: function($event) {
+                  _vm.dialog = true
+                }
+              }
+            },
+            [_vm._v("Добавить форму")]
+          ),
+      _vm._v(" "),
+      _c(
+        "v-row",
+        { attrs: { justify: "center" } },
+        [
+          _c(
+            "v-dialog",
+            {
+              attrs: { width: "210px" },
+              model: {
+                value: _vm.dialog,
+                callback: function($$v) {
+                  _vm.dialog = $$v
+                },
+                expression: "dialog"
+              }
+            },
+            [
+              _c(
+                "v-card",
+                [
+                  _c("v-card-title", [_vm._v("Все верно?")]),
+                  _vm._v(" "),
+                  _c(
+                    "v-card-actions",
+                    [
+                      _c(
+                        "v-btn",
+                        {
+                          attrs: { depressed: "", color: "error" },
+                          on: {
+                            click: function($event) {
+                              _vm.dialog = false
+                            }
+                          }
+                        },
+                        [_vm._v("Отмена")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-btn",
+                        {
+                          attrs: { depressed: "", color: "success" },
+                          on: { click: _vm.addForm }
+                        },
+                        [_vm._v("Добавить")]
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
             1
           )
         ],
