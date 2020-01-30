@@ -125,40 +125,14 @@ export default {
 
   methods: {
     addForm() {
-      // let res = {
-      //   dealer: 1,
-      //   project: { name: "", address: "" },
-      //   products: {
-      //     1: { count: 5, price: 100 },
-      //     25: { count: 5, price: 100 }
-      //   },
-      //   oponents: [1, 2, 3]
-      // };
-      // for (let prop in this.dealer) {
-      //   res.dealer[prop] = this.dealer[prop].data;
-      // }
-      // for (let prop in this.form) {
-      //   res.project[prop] = this.form[prop].data;
-      // }
-
       axios
         .post("/project", this.formData)
         .then(response => {
-          console.log(response);
-          // newThis.$refs.form.reset();
-          // newThis.form.opponents.opponent = "";
-          // newThis.form.opponents.data = [];
-          // newThis.dialog = false;
+          this.dialog = false;
         })
         .catch(error => {
           console.log(error);
         });
-    },
-
-    validate() {
-      if (this.$refs.form.validate()) {
-        this.dialog = true;
-      }
     },
 
     saveDealer(value) {

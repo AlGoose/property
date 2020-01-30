@@ -2068,34 +2068,13 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     addForm: function addForm() {
-      // let res = {
-      //   dealer: 1,
-      //   project: { name: "", address: "" },
-      //   products: {
-      //     1: { count: 5, price: 100 },
-      //     25: { count: 5, price: 100 }
-      //   },
-      //   oponents: [1, 2, 3]
-      // };
-      // for (let prop in this.dealer) {
-      //   res.dealer[prop] = this.dealer[prop].data;
-      // }
-      // for (let prop in this.form) {
-      //   res.project[prop] = this.form[prop].data;
-      // }
+      var _this = this;
+
       axios.post("/project", this.formData).then(function (response) {
-        console.log(response); // newThis.$refs.form.reset();
-        // newThis.form.opponents.opponent = "";
-        // newThis.form.opponents.data = [];
-        // newThis.dialog = false;
+        _this.dialog = false;
       })["catch"](function (error) {
         console.log(error);
       });
-    },
-    validate: function validate() {
-      if (this.$refs.form.validate()) {
-        this.dialog = true;
-      }
     },
     saveDealer: function saveDealer(value) {
       this.formData.dealer = value;
@@ -2235,19 +2214,19 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
-    var newThis = this;
+    var _this = this;
 
     if (window.projects == undefined) {
       axios.get("/project").then(function (response) {
-        newThis.itemsPerPage = response.data.per_page;
-        newThis.length = Math.ceil(response.data.total / response.data.per_page);
-        newThis.fruits = response.data.data;
+        _this.itemsPerPage = response.data.per_page;
+        _this.length = Math.ceil(response.data.total / response.data.per_page);
+        _this.fruits = response.data.data;
       })["catch"](function (error) {
         console.log(error);
       });
     } else {
-      newThis.itemsPerPage = window.projects.per_page;
-      newThis.length = Math.ceil(window.projects.total / window.projects.per_page);
+      this.itemsPerPage = window.projects.per_page;
+      this.length = Math.ceil(window.projects.total / window.projects.per_page);
       this.fruits = window.projects.data;
       window.projects = undefined;
     }
@@ -2265,14 +2244,14 @@ __webpack_require__.r(__webpack_exports__);
         text: "Address",
         value: "address"
       }, {
-        text: "Customer",
-        value: "customer"
-      }, {
         text: "Dealer",
         value: "dealer"
       }, {
         text: "Date",
         value: "date"
+      }, {
+        text: "Time",
+        value: "time"
       }, {
         text: "Manager",
         value: "manager"
@@ -2282,11 +2261,12 @@ __webpack_require__.r(__webpack_exports__);
   },
   watch: {
     page: function page(val) {
-      var newThis = this;
+      var _this2 = this;
+
       axios.get("/project?page=" + val).then(function (response) {
-        newThis.itemsPerPage = response.data.per_page;
-        newThis.length = Math.ceil(response.data.total / response.data.per_page);
-        newThis.fruits = response.data.data;
+        _this2.itemsPerPage = response.data.per_page;
+        _this2.length = Math.ceil(response.data.total / response.data.per_page);
+        _this2.fruits = response.data.data;
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2369,56 +2349,102 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
-    var newThis = this;
     this.project_id = this.$route.params.id;
     this.auth_id = window.current_user.id;
+    var form;
 
     if (window.project == undefined) {
       axios.get("/project/" + this.project_id).then(function (response) {
         console.log(response);
-
-        for (var prop in newThis.dealer) {
-          newThis.dealer[prop].data = response.data.dealer[prop];
-        }
-
-        for (var _prop in newThis.form) {
-          if (_prop === "opponents") {
-            response.data.opponents.forEach(function (item) {
-              console.log(item.name);
-              newThis.form.opponents.data.push(item.name);
-            });
-          } else {
-            newThis.form[_prop].data = response.data[_prop];
-          }
-        }
-
-        newThis.user_id = response.data.user_id;
+        form = response.data;
       })["catch"](function (error) {
         console.log(error);
       });
     } else {
       console.log(window.project);
-
-      for (var prop in newThis.dealer) {
-        newThis.dealer[prop].data = window.project.dealer[prop];
-      }
-
-      for (var _prop2 in newThis.form) {
-        if (_prop2 === "opponents") {
-          window.project.opponents.forEach(function (item) {
-            console.log(item.name);
-            newThis.form.opponents.data.push(item.name);
-          });
-        } else {
-          newThis.form[_prop2].data = window.project[_prop2];
-        }
-      }
-
-      this.user_id = window.project.user_id;
-      window.project = undefined;
+      form = window.project;
     }
+
+    for (var prop in this.dealer) {
+      this.dealer[prop].data = form.dealer[prop];
+    }
+
+    for (var _prop in this.dealer_staff) {
+      this.dealer_staff[_prop].data = form.dealer_staff[_prop];
+    }
+
+    for (var _prop2 in this.customer) {
+      this.customer[_prop2].data = form.customer[_prop2];
+    }
+
+    for (var _prop3 in this.customer_staff) {
+      this.customer_staff[_prop3].data = form.customer_staff[_prop3];
+    }
+
+    for (var _prop4 in this.project) {
+      this.project[_prop4].data = form[_prop4];
+    }
+
+    this.opponents = form.opponents;
+    this.products = form.products; //FIXME: Где количество с ценами? Pivot таблица не вся отдается
+
+    this.user_id = window.project.user_id;
+    window.project = undefined;
   },
   data: function data() {
     return {
@@ -2439,7 +2465,13 @@ __webpack_require__.r(__webpack_exports__);
           label: "Имя",
           data: ""
         },
-        agent: {
+        address: {
+          label: "Адрес",
+          data: ""
+        }
+      },
+      dealer_staff: {
+        name: {
           label: "Представитель",
           data: ""
         },
@@ -2452,7 +2484,39 @@ __webpack_require__.r(__webpack_exports__);
           data: ""
         }
       },
-      form: {
+      customer: {
+        inn: {
+          label: "ИНН",
+          data: ""
+        },
+        kpp: {
+          label: "КПП",
+          data: ""
+        },
+        name: {
+          label: "Имя",
+          data: ""
+        },
+        address: {
+          label: "Адрес",
+          data: ""
+        }
+      },
+      customer_staff: {
+        name: {
+          label: "Представитель",
+          data: ""
+        },
+        phone: {
+          label: "Телефон",
+          data: ""
+        },
+        email: {
+          label: "Почта",
+          data: ""
+        }
+      },
+      project: {
         name: {
           label: "Название",
           data: ""
@@ -2461,38 +2525,29 @@ __webpack_require__.r(__webpack_exports__);
           label: "Адрес",
           data: ""
         },
-        inn: {
-          label: "ИНН",
+        work: {
+          label: "Работа",
           data: ""
-        },
-        customer: {
-          label: "Заказчик",
-          data: ""
-        },
-        contacts: {
-          label: "Контакты",
-          data: ""
-        },
-        opponents: {
-          label: "Конкуренты",
-          data: []
         },
         date: {
           label: "Дата",
           data: ""
         },
-        work: {
-          label: "Работа",
+        time: {
+          label: "Время",
           data: ""
         }
-      }
+      },
+      opponents: [],
+      products: []
     };
   },
   methods: {
     remove: function remove() {
-      var newThis = this;
+      var _this = this;
+
       axios["delete"]("/project/" + this.project_id).then(function (response) {
-        newThis.$router.push("/project");
+        _this.$router.push("/project");
       })["catch"](function (error) {
         console.log(error);
       });
@@ -7878,7 +7933,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n*[data-v-59cc4a25] {\r\n  padding-bottom: 14px;\n}\n.list[data-v-59cc4a25] {\r\n  height: 30px;\n}\r\n", ""]);
+exports.push([module.i, "\n*[data-v-59cc4a25] {\r\n  padding-bottom: 14px;\n}\n.list[data-v-59cc4a25] {\r\n  height: 30px;\n}\np[data-v-59cc4a25] {\r\n  color: black;\n}\r\n", ""]);
 
 // exports
 
@@ -39843,7 +39898,7 @@ var render = function() {
         [
           _c(
             "v-card",
-            { attrs: { "max-width": "800", outlined: "" } },
+            { attrs: { width: "1000", outlined: "" } },
             [
               _c(
                 "v-list-item",
@@ -39852,39 +39907,207 @@ var render = function() {
                   _c(
                     "v-list-item-content",
                     [
-                      _c("h4", [_vm._v("Дилер")]),
-                      _vm._v(" "),
-                      _vm._l(_vm.dealer, function(item, i) {
-                        return _c(
-                          "div",
-                          { key: "A" + i, staticClass: "list" },
-                          [
-                            _c("p", [
-                              _vm._v(
-                                _vm._s(item.label) + " : " + _vm._s(item.data)
+                      _c(
+                        "v-col",
+                        { attrs: { col: "12", md: "6" } },
+                        [
+                          _c(
+                            "v-card",
+                            { staticClass: "mx-auto" },
+                            [
+                              _c("v-card-title", [_vm._v("Дилер")]),
+                              _vm._v(" "),
+                              _c(
+                                "v-card-text",
+                                [
+                                  _vm._l(_vm.dealer, function(item, i) {
+                                    return _c(
+                                      "div",
+                                      { key: "A" + i, staticClass: "list" },
+                                      [
+                                        _c("p", [
+                                          _vm._v(
+                                            _vm._s(item.label) +
+                                              " : " +
+                                              _vm._s(item.data)
+                                          )
+                                        ])
+                                      ]
+                                    )
+                                  }),
+                                  _vm._v(" "),
+                                  _vm._l(_vm.dealer_staff, function(item, i) {
+                                    return _c(
+                                      "div",
+                                      { key: "B" + i, staticClass: "list" },
+                                      [
+                                        _c("p", [
+                                          _vm._v(
+                                            _vm._s(item.label) +
+                                              " : " +
+                                              _vm._s(item.data)
+                                          )
+                                        ])
+                                      ]
+                                    )
+                                  })
+                                ],
+                                2
                               )
-                            ])
-                          ]
-                        )
-                      }),
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      ),
                       _vm._v(" "),
-                      _c("h4", [_vm._v("Проект")]),
-                      _vm._v(" "),
-                      _vm._l(_vm.form, function(item, i) {
-                        return _c(
-                          "div",
-                          { key: "B" + i, staticClass: "list" },
-                          [
-                            _c("p", [
-                              _vm._v(
-                                _vm._s(item.label) + " : " + _vm._s(item.data)
+                      _c(
+                        "v-col",
+                        { attrs: { col: "12", md: "6" } },
+                        [
+                          _c(
+                            "v-card",
+                            { staticClass: "mx-auto" },
+                            [
+                              _c("v-card-title", [_vm._v("Заказчик")]),
+                              _vm._v(" "),
+                              _c(
+                                "v-card-text",
+                                [
+                                  _vm._l(_vm.customer, function(item, i) {
+                                    return _c(
+                                      "div",
+                                      { key: "C" + i, staticClass: "list" },
+                                      [
+                                        _c("p", [
+                                          _vm._v(
+                                            _vm._s(item.label) +
+                                              " : " +
+                                              _vm._s(item.data)
+                                          )
+                                        ])
+                                      ]
+                                    )
+                                  }),
+                                  _vm._v(" "),
+                                  _vm._l(_vm.customer_staff, function(item, i) {
+                                    return _c(
+                                      "div",
+                                      { key: "D" + i, staticClass: "list" },
+                                      [
+                                        _c("p", [
+                                          _vm._v(
+                                            _vm._s(item.label) +
+                                              " : " +
+                                              _vm._s(item.data)
+                                          )
+                                        ])
+                                      ]
+                                    )
+                                  })
+                                ],
+                                2
                               )
-                            ])
-                          ]
-                        )
-                      })
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-col",
+                        { attrs: { col: "12", md: "12" } },
+                        [
+                          _c(
+                            "v-card",
+                            { staticClass: "mx-auto" },
+                            [
+                              _c("v-card-title", [_vm._v("Проект")]),
+                              _vm._v(" "),
+                              _c(
+                                "v-card-text",
+                                _vm._l(_vm.project, function(item, i) {
+                                  return _c(
+                                    "div",
+                                    { key: "E" + i, staticClass: "list" },
+                                    [
+                                      _c("p", [
+                                        _vm._v(
+                                          _vm._s(item.label) +
+                                            " : " +
+                                            _vm._s(item.data)
+                                        )
+                                      ])
+                                    ]
+                                  )
+                                }),
+                                0
+                              )
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-col",
+                        { attrs: { col: "12", md: "6" } },
+                        [
+                          _c(
+                            "v-card",
+                            { staticClass: "mx-auto" },
+                            [
+                              _c("v-card-title", [_vm._v("Конкуренты")]),
+                              _vm._v(" "),
+                              _c(
+                                "v-card-text",
+                                _vm._l(_vm.opponents, function(item, i) {
+                                  return _c(
+                                    "div",
+                                    { key: "F" + i, staticClass: "list" },
+                                    [_c("p", [_vm._v(_vm._s(item.name))])]
+                                  )
+                                }),
+                                0
+                              )
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-col",
+                        { attrs: { col: "12", md: "6" } },
+                        [
+                          _c(
+                            "v-card",
+                            { staticClass: "mx-auto" },
+                            [
+                              _c("v-card-title", [_vm._v("Детали")]),
+                              _vm._v(" "),
+                              _c(
+                                "v-card-text",
+                                _vm._l(_vm.products, function(item, i) {
+                                  return _c(
+                                    "div",
+                                    { key: "G" + i, staticClass: "list" },
+                                    [_c("p", [_vm._v(_vm._s(item.name))])]
+                                  )
+                                }),
+                                0
+                              )
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      )
                     ],
-                    2
+                    1
                   )
                 ],
                 1
@@ -39892,6 +40115,7 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "v-card-actions",
+                { staticClass: "row justify-content-center" },
                 [
                   _c(
                     "v-btn",

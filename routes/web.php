@@ -22,6 +22,7 @@ Route::get('/data/findProductById/{id}', 'DataController@findProductById');
 
 Route::get('/dealer/{id}/getStaff/', 'DealerController@getStaff');
 Route::get('/customer/getStaff/{customer}', 'CustomerController@getStaff');
+Route::resource('/project', 'ProjectController');
 
 Route::get('/{any}', 'SinglePageController@index')->middleware('auth')->where(['any' => '.*']);
 
@@ -30,6 +31,5 @@ Route::resource('/dealer', 'DealerController');
 Route::resource('/customer', 'CustomerController');
 Route::resource('/opponent', 'OpponentController');
 Route::resource('/staff', 'StaffController');
-Route::resource('/project', 'ProjectController');
 
 

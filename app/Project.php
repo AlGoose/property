@@ -45,7 +45,12 @@ class Project extends Model
         return $this->belongsTo(Customer::class);
     }
 
-    public function staff()
+    public function dealer_staff() //FIXME: В Staff норм ссылки?
+    {
+        return $this->belongsTo(Staff::class);
+    }
+
+    public function customer_staff()
     {
         return $this->belongsTo(Staff::class);
     }
