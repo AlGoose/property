@@ -163,23 +163,28 @@ export default {
     },
 
     saveDealer(value) {
-      console.log("FormComponent | Dealer |", value);
+      this.formData.dealer = value;
+      console.log("FormData | ", this.formData);
     },
 
     saveCustomer(value) {
-      console.log("FormComponent | Customer |", value);
+      this.formData.customer = value;
+      console.log("FormData | ", this.formData);
     },
 
     saveProject(value) {
-      console.log("FormComponent | Project |", value);
+      this.formData.project = value;
+      console.log("FormData | ", this.formData);
     },
 
     saveOpponents(value) {
-      console.log("FormComponent | Opponents |", value);
+      this.formData.opponents = value;
+      console.log("FormData | ", this.formData);
     },
 
     saveProducts(value) {
-      console.log("FormComponent | Products |", value);
+      this.formData.products = value;
+      console.log("FormData | ", this.formData);
     }
   }
 };

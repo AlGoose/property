@@ -65,7 +65,6 @@
 <script>
 export default {
   mounted() {
-    console.log("PROJECT", this.address_prop);
     if (this.address_prop) {
       this.address = this.address_prop;
     }
@@ -83,7 +82,6 @@ export default {
 
   watch: {
     address_prop(value) {
-      console.log("POP", value);
       this.address = value;
     }
   },

@@ -112,12 +112,11 @@ export default {
     price: null,
     total: null,
     isLoading: false,
-    ids: []
+    ids: {}
   }),
 
   watch: {
     search(val) {
-      console.log(val);
       if (this.isLoading) return;
       if (val === null || val.length < 7) return;
 
@@ -135,7 +134,6 @@ export default {
       axios
         .get("/data/findProductById/" + val)
         .then(response => {
-          console.log(response.data.result);
           this.entires = response.data.result;
           this.isLoading = false;
         })
@@ -145,8 +143,8 @@ export default {
         });
     },
 
-    ids(val) {
-      this.$emit("products", val);
+    ids(value) {
+      this.$emit("products", value);
     }
   },
 
@@ -184,8 +182,11 @@ export default {
       axios
         .post("/product", product)
         .then(response => {
-          console.log(response);
-          this.ids.push(response.data.id);
+          this.$set(this.ids, response.data.id, {
+            price: product.price,
+            count: product.count
+          });
+          product.id = response.data.id;
         })
         .catch(function(error) {
           console.log(error);
@@ -202,7 +203,7 @@ export default {
 
     removeProduct(item, i) {
       this.products.splice(i, 1);
-      this.ids.splice(i, 1);
+      this.$delete(this.ids, item.id);
     },
 
     closeDialog() {

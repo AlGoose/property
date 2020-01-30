@@ -88,11 +88,9 @@ export default {
 
     value(val) {
       let newThis = this;
-      // console.log(val);
       axios
         .get("/" + this.mode + "/getStaff/1")
         .then(function(response) {
-          // console.log(response);
           newThis.agent = response.data;
         })
         .catch(function(error) {
@@ -101,18 +99,15 @@ export default {
     },
 
     agent_id(val) {
-      // console.log("StaffComponent", val);
       this.$emit("staff", val);
     }
   },
 
   methods: {
     addAgent() {
-      // this.agent = this.agentForm;
       this.dialog = false;
 
       axios.post("/staff", this.agentForm).then(request => {
-        // console.log(request.data);
         this.agents.push(request.data);
         this.agent_id = request.data.id;
       }),
