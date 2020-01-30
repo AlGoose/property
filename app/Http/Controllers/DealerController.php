@@ -4,9 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Dealer;
 use App\Staff;
-use App\Clients\InnClient;
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Request as Psr7Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
@@ -106,10 +103,5 @@ class DealerController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    public function getStaff(Dealer $dealer)
-    {
-        return $dealer->contacts()->get();
     }
 }

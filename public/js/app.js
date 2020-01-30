@@ -3331,14 +3331,6 @@ __webpack_require__.r(__webpack_exports__);
         this.agents = this.entity.contacts;
       }
     },
-    value: function value(val) {
-      var newThis = this;
-      axios.get("/" + this.mode + "/getStaff/1").then(function (response) {
-        newThis.agent = response.data;
-      })["catch"](function (error) {
-        console.log(error);
-      });
-    },
     agent_id: function agent_id(val) {
       this.$emit("staff", val);
     }

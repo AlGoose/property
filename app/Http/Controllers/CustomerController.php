@@ -102,10 +102,4 @@ class CustomerController extends Controller
     {
         //
     }
-
-    public function getStaff(Customer $customer)
-    {
-        $staff = $customer->contacts()->get();
-        return $staff;
-    }
 }

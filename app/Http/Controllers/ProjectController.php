@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Dealer;
-use App\Opponent;
-use App\Product;
 use App\Project;
 use App\Staff;
 use App\Customer;

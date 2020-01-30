@@ -20,8 +20,6 @@ Route::post('/customer/findCustomer/', 'CustomerController@findCustomer');
 Route::get('/data/findByInn/{id}', 'DataController@findByInn');
 Route::get('/data/findProductById/{id}', 'DataController@findProductById');
 
-Route::get('/dealer/{id}/getStaff/', 'DealerController@getStaff');
-Route::get('/customer/getStaff/{customer}', 'CustomerController@getStaff');
 Route::resource('/project', 'ProjectController');
 
 Route::get('/{any}', 'SinglePageController@index')->middleware('auth')->where(['any' => '.*']);
