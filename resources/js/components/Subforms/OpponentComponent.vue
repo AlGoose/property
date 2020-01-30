@@ -17,7 +17,7 @@
           <v-list-item-group v-model="model" mandatory color="indigo">
             <v-list-item v-for="(item, i) in opponents" :key="i">
               <v-list-item-title v-text="item"></v-list-item-title>
-              <v-icon @click="remove(item)">mdi-minus-circle-outline</v-icon>
+              <v-icon @click="remove(item,i)">mdi-minus-circle-outline</v-icon>
             </v-list-item>
           </v-list-item-group>
         </v-list>
@@ -35,6 +35,13 @@ export default {
     model: 1
   }),
 
+  watch: {
+    ids(val) {
+      console.log("WATCH: ", val);
+      this.$emit("opponents", val);
+    }
+  },
+
   methods: {
     input(value) {
       if (value === "") return;
@@ -51,7 +58,7 @@ export default {
       axios
         .post("/opponent", opponent)
         .then(response => {
-          console.log(response.data);
+          // console.log(response.data);
           this.ids.push(response.data.id);
           // this.$set(this.ids, this.ids.length, response.data.id);
         })
@@ -63,10 +70,9 @@ export default {
       this.opponent = "";
     },
 
-    remove(item) {
-      console.log(this.opponents.indexOf(item));
-      this.opponents.splice(this.opponents.indexOf(item), 1);
-      this.ids.splice(this.opponents.indexOf(item), 1); //FIXME: Некорректно удаляется
+    remove(item, i) {
+      this.opponents.splice(i, 1);
+      this.ids.splice(i, 1);
     }
   }
 };

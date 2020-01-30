@@ -2,9 +2,16 @@
   <v-card class="mx-auto">
     <v-card-title>Проект</v-card-title>
     <v-card-text>
-      <v-text-field v-model="name" label="Название" outlined></v-text-field>
-      <v-text-field v-model="address" label="Адрес" outlined></v-text-field>
-      <v-textarea v-model="work" height="200" no-resize outlined label="Проделанная работа"></v-textarea>
+      <v-text-field v-model="name" label="Название" outlined @change="sendData"></v-text-field>
+      <v-text-field v-model="address" label="Адрес" outlined @change="sendData"></v-text-field>
+      <v-textarea
+        v-model="work"
+        height="200"
+        no-resize
+        outlined
+        label="Проделанная работа"
+        @change="sendData"
+      ></v-textarea>
       <v-row>
         <v-col md="6">
           <v-menu
@@ -24,6 +31,7 @@
               locale="Rus"
               v-model="date"
               @input="dateMenu = false"
+              @change="sendData"
             ></v-date-picker>
           </v-menu>
         </v-col>
@@ -45,6 +53,7 @@
               locale="Rus"
               v-model="time"
               @input="timeMenu = false"
+              @change="sendData"
             ></v-date-picker>
           </v-menu>
         </v-col>
@@ -56,8 +65,8 @@
 <script>
 export default {
   mounted() {
-    console.log('PROJECT', this.address_prop);
-    if(this.address_prop) {
+    console.log("PROJECT", this.address_prop);
+    if (this.address_prop) {
       this.address = this.address_prop;
     }
   },
@@ -73,9 +82,21 @@ export default {
   }),
 
   watch: {
-    address_prop(val) {
-      console.log('POP', val);
-      this.address = val;
+    address_prop(value) {
+      console.log("POP", value);
+      this.address = value;
+    }
+  },
+
+  methods: {
+    sendData() {
+      this.$emit("project", {
+        name: this.name,
+        address: this.address,
+        work: this.work,
+        date: this.date,
+        time: this.time
+      });
     }
   }
 };

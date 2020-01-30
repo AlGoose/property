@@ -42,4 +42,12 @@ class DataController extends Controller
         }
         return $result;
     }
+
+    public function findProductById($id)
+    {
+        $client = new Client(['timeout'  => 2.0]);
+        $request = new Psr7Request('GET', 'https://www.zkabel.ru/api/catalog/findItemByArticle/?q='.$id);
+        $response = $client->send($request);
+        return $response->getBody();
+    }
 }

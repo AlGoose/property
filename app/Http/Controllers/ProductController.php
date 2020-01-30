@@ -94,12 +94,4 @@ class ProductController extends Controller
     {
         //
     }
-
-    public function findById($id)
-    {
-        $client = new Client(['timeout'  => 2.0]);
-        $request = new GRequest('GET', 'https://www.zkabel.ru/api/catalog/findItemByArticle/?q='.$id);
-        $response = $client->send($request);
-        return $response->getBody();
-    }
 }

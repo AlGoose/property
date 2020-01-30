@@ -2119,11 +2119,11 @@ __webpack_require__.r(__webpack_exports__);
     saveProject: function saveProject(value) {
       console.log("FormComponent | Project |", value);
     },
-    saveOpponent: function saveOpponent(value) {
-      console.log("FormComponent | Opponent |", value);
+    saveOpponents: function saveOpponents(value) {
+      console.log("FormComponent | Opponents |", value);
     },
-    saveProduct: function saveProduct(value) {
-      console.log("FormComponent | Product |", value);
+    saveProducts: function saveProducts(value) {
+      console.log("FormComponent | Products |", value);
     }
   }
 });
@@ -2839,6 +2839,12 @@ __webpack_require__.r(__webpack_exports__);
       model: 1
     };
   },
+  watch: {
+    ids: function ids(val) {
+      console.log("WATCH: ", val);
+      this.$emit("opponents", val);
+    }
+  },
   methods: {
     input: function input(value) {
       var _this = this;
@@ -2854,8 +2860,7 @@ __webpack_require__.r(__webpack_exports__);
         name: value
       };
       axios.post("/opponent", opponent).then(function (response) {
-        console.log(response.data);
-
+        // console.log(response.data);
         _this.ids.push(response.data.id); // this.$set(this.ids, this.ids.length, response.data.id);
 
       })["catch"](function (error) {
@@ -2864,10 +2869,9 @@ __webpack_require__.r(__webpack_exports__);
       this.opponents.push(value);
       this.opponent = "";
     },
-    remove: function remove(item) {
-      console.log(this.opponents.indexOf(item));
-      this.opponents.splice(this.opponents.indexOf(item), 1);
-      this.ids.splice(this.opponents.indexOf(item), 1); //FIXME: Некорректно удаляется
+    remove: function remove(item, i) {
+      this.opponents.splice(i, 1);
+      this.ids.splice(i, 1);
     }
   }
 });
@@ -2983,6 +2987,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2990,17 +2996,18 @@ __webpack_require__.r(__webpack_exports__);
       products: [],
       entires: [],
       search: null,
-      product: null,
-      code: null,
-      name: null,
+      product: {},
       count: null,
       price: null,
       total: null,
-      isLoading: false
+      isLoading: false,
+      ids: []
     };
   },
   watch: {
     search: function search(val) {
+      var _this = this;
+
       console.log(val);
       if (this.isLoading) return;
       if (val === null || val.length < 7) return;
@@ -3013,29 +3020,19 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       if (!isValid) return;
-      var newThis = this;
       this.isLoading = true;
       this.entires = [];
-      axios.get("/product/findById/" + val).then(function (response) {
+      axios.get("/data/findProductById/" + val).then(function (response) {
         console.log(response.data.result);
-        response.data.result.forEach(function (item) {
-          var product = {
-            code: item.article,
-            name: item.name
-          };
-          newThis.entires.push(product);
-          newThis.isLoading = false;
-        });
-        newThis.isLoading = false;
+        _this.entires = response.data.result;
+        _this.isLoading = false;
       })["catch"](function (error) {
         console.log(error);
-        newThis.isLoading = false;
+        _this.isLoading = false;
       });
     },
-    product: function product(val) {
-      console.log(val);
-      this.name = val != null ? val.name : "";
-      this.code = val != null ? val.code : "";
+    ids: function ids(val) {
+      this.$emit("products", val);
     }
   },
   methods: {
@@ -3049,6 +3046,8 @@ __webpack_require__.r(__webpack_exports__);
       this.price = (parseFloat(value) / parseFloat(this.count)).toFixed(2);
     },
     addProduct: function addProduct() {
+      var _this2 = this;
+
       var isValid = true;
 
       for (var i = 0; i < this.products.length; i++) {
@@ -3060,36 +3059,37 @@ __webpack_require__.r(__webpack_exports__);
 
       if (!isValid) return;
       var product = {
-        code: this.code,
-        name: this.name,
+        code: this.product.article,
+        name: this.product.name,
         count: this.count,
         price: this.price,
         total: this.total
       };
       axios.post("/product", product).then(function (response) {
         console.log(response);
+
+        _this2.ids.push(response.data.id);
       })["catch"](function (error) {
         console.log(error);
       });
       this.products.push(product);
-      this.code = null;
-      this.name = null;
       this.count = null;
       this.price = null;
       this.total = null;
-      this.product = null;
+      this.product = {};
+      this.entires = [];
       this.dialog = false;
     },
-    removeProduct: function removeProduct(item) {
-      this.products.splice(this.products.indexOf(item), 1);
+    removeProduct: function removeProduct(item, i) {
+      this.products.splice(i, 1);
+      this.ids.splice(i, 1);
     },
     closeDialog: function closeDialog() {
-      this.code = null;
-      this.name = null;
       this.count = null;
       this.price = null;
       this.total = null;
-      this.product = null;
+      this.product = {};
+      this.entires = [];
       this.dialog = false;
     }
   }
@@ -3161,9 +3161,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
-    console.log('PROJECT', this.address_prop);
+    console.log("PROJECT", this.address_prop);
 
     if (this.address_prop) {
       this.address = this.address_prop;
@@ -3182,9 +3191,20 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   watch: {
-    address_prop: function address_prop(val) {
-      console.log('POP', val);
-      this.address = val;
+    address_prop: function address_prop(value) {
+      console.log("POP", value);
+      this.address = value;
+    }
+  },
+  methods: {
+    sendData: function sendData() {
+      this.$emit("project", {
+        name: this.name,
+        address: this.address,
+        work: this.work,
+        date: this.date,
+        time: this.time
+      });
     }
   }
 });
@@ -39589,14 +39609,14 @@ var render = function() {
           _c(
             "v-col",
             { attrs: { cols: "6" } },
-            [_c("OpponentComponent", { on: { opponent: _vm.saveOpponent } })],
+            [_c("OpponentComponent", { on: { opponents: _vm.saveOpponents } })],
             1
           ),
           _vm._v(" "),
           _c(
             "v-col",
             { attrs: { cols: "6" } },
-            [_c("ProductComponent", { on: { product: _vm.saveProduct } })],
+            [_c("ProductComponent", { on: { products: _vm.saveProducts } })],
             1
           )
         ],
@@ -40234,7 +40254,7 @@ var render = function() {
                                 {
                                   on: {
                                     click: function($event) {
-                                      return _vm.remove(item)
+                                      return _vm.remove(item, i)
                                     }
                                   }
                                 },
@@ -40353,7 +40373,7 @@ var render = function() {
                                 [
                                   _c(
                                     "v-col",
-                                    { attrs: { cols: "12", md: "12" } },
+                                    { attrs: { cols: "12", md: "4" } },
                                     [
                                       _c("v-autocomplete", {
                                         attrs: {
@@ -40362,9 +40382,11 @@ var render = function() {
                                           color: "grey",
                                           label: "Артикул",
                                           outlined: "",
+                                          "hide-details": "",
+                                          "no-filter": "",
                                           "item-text": "name",
-                                          "item-value": "name",
-                                          "return-object": ""
+                                          "return-object": "",
+                                          loading: _vm.isLoading
                                         },
                                         on: {
                                           "update:searchInput": function(
@@ -40378,6 +40400,24 @@ var render = function() {
                                             _vm.search = $event
                                           }
                                         },
+                                        scopedSlots: _vm._u([
+                                          {
+                                            key: "item",
+                                            fn: function(ref) {
+                                              var item = ref.item
+                                              return [_vm._v(_vm._s(item.name))]
+                                            }
+                                          },
+                                          {
+                                            key: "selection",
+                                            fn: function(ref) {
+                                              var item = ref.item
+                                              return [
+                                                _vm._v(_vm._s(item.article))
+                                              ]
+                                            }
+                                          }
+                                        ]),
                                         model: {
                                           value: _vm.product,
                                           callback: function($$v) {
@@ -40392,42 +40432,21 @@ var render = function() {
                                   _vm._v(" "),
                                   _c(
                                     "v-col",
-                                    { attrs: { cols: "12", md: "4" } },
-                                    [
-                                      _c("v-text-field", {
-                                        attrs: {
-                                          label: "Артикул",
-                                          solo: "",
-                                          readonly: ""
-                                        },
-                                        model: {
-                                          value: _vm.code,
-                                          callback: function($$v) {
-                                            _vm.code = $$v
-                                          },
-                                          expression: "code"
-                                        }
-                                      })
-                                    ],
-                                    1
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "v-col",
                                     { attrs: { cols: "12", md: "8" } },
                                     [
                                       _c("v-text-field", {
                                         attrs: {
                                           label: "Название",
                                           solo: "",
+                                          flat: "",
                                           readonly: ""
                                         },
                                         model: {
-                                          value: _vm.name,
+                                          value: _vm.product.name,
                                           callback: function($$v) {
-                                            _vm.name = $$v
+                                            _vm.$set(_vm.product, "name", $$v)
                                           },
-                                          expression: "name"
+                                          expression: "product.name"
                                         }
                                       })
                                     ],
@@ -40670,6 +40689,7 @@ var render = function() {
         [
           _c("v-text-field", {
             attrs: { label: "Название", outlined: "" },
+            on: { change: _vm.sendData },
             model: {
               value: _vm.name,
               callback: function($$v) {
@@ -40681,6 +40701,7 @@ var render = function() {
           _vm._v(" "),
           _c("v-text-field", {
             attrs: { label: "Адрес", outlined: "" },
+            on: { change: _vm.sendData },
             model: {
               value: _vm.address,
               callback: function($$v) {
@@ -40697,6 +40718,7 @@ var render = function() {
               outlined: "",
               label: "Проделанная работа"
             },
+            on: { change: _vm.sendData },
             model: {
               value: _vm.work,
               callback: function($$v) {
@@ -40772,7 +40794,8 @@ var render = function() {
                         on: {
                           input: function($event) {
                             _vm.dateMenu = false
-                          }
+                          },
+                          change: _vm.sendData
                         },
                         model: {
                           value: _vm.date,
@@ -40852,7 +40875,8 @@ var render = function() {
                         on: {
                           input: function($event) {
                             _vm.timeMenu = false
-                          }
+                          },
+                          change: _vm.sendData
                         },
                         model: {
                           value: _vm.time,

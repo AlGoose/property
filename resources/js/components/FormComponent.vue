@@ -14,10 +14,10 @@
         <ProjectComponent v-bind:address_prop="address" @project="saveProject"></ProjectComponent>
       </v-col>
       <v-col cols="6">
-        <OpponentComponent @opponent="saveOpponent"></OpponentComponent>
+        <OpponentComponent @opponents="saveOpponents"></OpponentComponent>
       </v-col>
       <v-col cols="6">
-        <ProductComponent @product="saveProduct"></ProductComponent>
+        <ProductComponent @products="saveProducts"></ProductComponent>
       </v-col>
     </v-row>
     <!-- <v-form ref="form" v-model="valid" lazy-validation>
@@ -174,12 +174,12 @@ export default {
       console.log("FormComponent | Project |", value);
     },
 
-    saveOpponent(value) {
-      console.log("FormComponent | Opponent |", value);
+    saveOpponents(value) {
+      console.log("FormComponent | Opponents |", value);
     },
 
-    saveProduct(value) {
-      console.log("FormComponent | Product |", value);
+    saveProducts(value) {
+      console.log("FormComponent | Products |", value);
     }
   }
 };

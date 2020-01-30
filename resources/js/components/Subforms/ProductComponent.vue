@@ -14,7 +14,7 @@
               </v-card-title>
               <v-card-text>
                 <v-row>
-                  <v-col cols="12" md="12">
+                  <v-col cols="12" md="4">
                     <v-autocomplete
                       v-model="product"
                       :items="entires"
@@ -22,16 +22,18 @@
                       color="grey"
                       label="Артикул"
                       outlined
+                      hide-details
+                      no-filter
                       item-text="name"
-                      item-value="name"
                       return-object
-                    ></v-autocomplete>
-                  </v-col>
-                  <v-col cols="12" md="4">
-                    <v-text-field v-model="code" label="Артикул" solo readonly></v-text-field>
+                      :loading="isLoading"
+                    >
+                      <template v-slot:item="{ item }">{{item.name}}</template>
+                      <template v-slot:selection="{ item }">{{item.article}}</template>
+                    </v-autocomplete>
                   </v-col>
                   <v-col cols="12" md="8">
-                    <v-text-field v-model="name" label="Название" solo readonly></v-text-field>
+                    <v-text-field v-model="product.name" label="Название" solo flat readonly></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4">
                     <v-text-field
@@ -105,13 +107,12 @@ export default {
     products: [],
     entires: [],
     search: null,
-    product: null,
-    code: null,
-    name: null,
+    product: {},
     count: null,
     price: null,
     total: null,
-    isLoading: false
+    isLoading: false,
+    ids: []
   }),
 
   watch: {
@@ -128,34 +129,24 @@ export default {
       }
       if (!isValid) return;
 
-      let newThis = this;
       this.isLoading = true;
       this.entires = [];
 
       axios
-        .get("/product/findById/" + val)
-        .then(function(response) {
+        .get("/data/findProductById/" + val)
+        .then(response => {
           console.log(response.data.result);
-          response.data.result.forEach(item => {
-            let product = {
-              code: item.article,
-              name: item.name
-            };
-            newThis.entires.push(product);
-            newThis.isLoading = false;
-          });
-          newThis.isLoading = false;
+          this.entires = response.data.result;
+          this.isLoading = false;
         })
-        .catch(function(error) {
+        .catch(error => {
           console.log(error);
-          newThis.isLoading = false;
+          this.isLoading = false;
         });
     },
 
-    product(val) {
-      console.log(val);
-      this.name = val != null ? val.name : "";
-      this.code = val != null ? val.code : "";
+    ids(val) {
+      this.$emit("products", val);
     }
   },
 
@@ -183,8 +174,8 @@ export default {
       if (!isValid) return;
 
       let product = {
-        code: this.code,
-        name: this.name,
+        code: this.product.article,
+        name: this.product.name,
         count: this.count,
         price: this.price,
         total: this.total
@@ -192,34 +183,34 @@ export default {
 
       axios
         .post("/product", product)
-        .then(function(response) {
+        .then(response => {
           console.log(response);
+          this.ids.push(response.data.id);
         })
         .catch(function(error) {
           console.log(error);
         });
 
       this.products.push(product);
-      this.code = null;
-      this.name = null;
       this.count = null;
       this.price = null;
       this.total = null;
-      this.product = null;
+      this.product = {};
+      this.entires = [];
       this.dialog = false;
     },
 
-    removeProduct(item) {
-      this.products.splice(this.products.indexOf(item), 1);
+    removeProduct(item, i) {
+      this.products.splice(i, 1);
+      this.ids.splice(i, 1);
     },
 
     closeDialog() {
-      this.code = null;
-      this.name = null;
       this.count = null;
       this.price = null;
       this.total = null;
-      this.product = null;
+      this.product = {};
+      this.entires = [];
       this.dialog = false;
     }
   }
