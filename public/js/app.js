@@ -2404,47 +2404,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
+    var _this = this;
+
     this.project_id = this.$route.params.id;
     this.auth_id = window.current_user.id;
     var form;
 
     if (window.project == undefined) {
       axios.get("/project/" + this.project_id).then(function (response) {
-        console.log(response);
-        form = response.data;
+        _this.initial(response.data);
       })["catch"](function (error) {
         console.log(error);
       });
     } else {
-      console.log(window.project);
-      form = window.project;
+      this.initial(window.project);
     }
-
-    for (var prop in this.dealer) {
-      this.dealer[prop].data = form.dealer[prop];
-    }
-
-    for (var _prop in this.dealer_staff) {
-      this.dealer_staff[_prop].data = form.dealer_staff[_prop];
-    }
-
-    for (var _prop2 in this.customer) {
-      this.customer[_prop2].data = form.customer[_prop2];
-    }
-
-    for (var _prop3 in this.customer_staff) {
-      this.customer_staff[_prop3].data = form.customer_staff[_prop3];
-    }
-
-    for (var _prop4 in this.project) {
-      this.project[_prop4].data = form[_prop4];
-    }
-
-    this.opponents = form.opponents;
-    this.products = form.products; //FIXME: Где количество с ценами? Pivot таблица не вся отдается
-
-    this.user_id = window.project.user_id;
-    window.project = undefined;
   },
   data: function data() {
     return {
@@ -2543,11 +2517,38 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
+    initial: function initial(form) {
+      for (var prop in this.dealer) {
+        this.dealer[prop].data = form.dealer[prop];
+      }
+
+      for (var _prop in this.dealer_staff) {
+        this.dealer_staff[_prop].data = form.dealer_staff[_prop];
+      }
+
+      for (var _prop2 in this.customer) {
+        this.customer[_prop2].data = form.customer[_prop2];
+      }
+
+      for (var _prop3 in this.customer_staff) {
+        this.customer_staff[_prop3].data = form.customer_staff[_prop3];
+      }
+
+      for (var _prop4 in this.project) {
+        this.project[_prop4].data = form[_prop4];
+      }
+
+      this.opponents = form.opponents;
+      this.products = form.products; //FIXME: Где количество с ценами? Pivot таблица не вся отдается
+
+      this.user_id = form.user_id;
+      window.project = undefined;
+    },
     remove: function remove() {
-      var _this = this;
+      var _this2 = this;
 
       axios["delete"]("/project/" + this.project_id).then(function (response) {
-        _this.$router.push("/project");
+        _this2.$router.push("/project");
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2630,8 +2631,7 @@ __webpack_require__.r(__webpack_exports__);
     company: function company(val) {
       var _this = this;
 
-      axios //TODO:
-      .post("/customer/findCustomer", {
+      axios.post("/customer/findCustomer", {
         inn: val.inn,
         kpp: val.kpp
       }).then(function (response) {
@@ -2773,13 +2773,12 @@ __webpack_require__.r(__webpack_exports__);
 
       if (this.isLoading) return;
       if (val === null || val.length != 10) return;
-      var newThis = this;
       this.isLoading = true;
       axios.get("/data/findByInn/" + val).then(function (response) {
         _this2.companies = response.data;
-        newThis.isLoading = false;
+        _this2.isLoading = false;
       })["catch"](function (error) {
-        newThis.isLoading = false;
+        this.isLoading = false;
       });
     }
   },

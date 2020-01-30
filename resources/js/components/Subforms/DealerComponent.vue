@@ -61,17 +61,16 @@ export default {
       if (this.isLoading) return;
       if (val === null || val.length != 10) return;
 
-      let newThis = this;
       this.isLoading = true;
 
       axios
         .get("/data/findByInn/" + val)
         .then(response => {
           this.companies = response.data;
-          newThis.isLoading = false;
+          this.isLoading = false;
         })
         .catch(function(error) {
-          newThis.isLoading = false;
+          this.isLoading = false;
         });
     }
   },

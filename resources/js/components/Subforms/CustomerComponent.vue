@@ -43,7 +43,7 @@ export default {
 
   watch: {
     company(val) {
-      axios //TODO:
+      axios
         .post("/customer/findCustomer", { inn: val.inn, kpp: val.kpp })
         .then(response => {
           if (response.data === "") {

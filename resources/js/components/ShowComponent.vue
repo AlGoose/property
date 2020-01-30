@@ -117,40 +117,14 @@ export default {
       axios
         .get("/project/" + this.project_id)
         .then(response => {
-          console.log(response);
-          form = response.data;
+          this.initial(response.data);
         })
         .catch(error => {
           console.log(error);
         });
     } else {
-      console.log(window.project);
-      form = window.project;
+      this.initial(window.project);
     }
-
-    for (let prop in this.dealer) {
-      this.dealer[prop].data = form.dealer[prop];
-    }
-    for (let prop in this.dealer_staff) {
-      this.dealer_staff[prop].data = form.dealer_staff[prop];
-    }
-
-    for (let prop in this.customer) {
-      this.customer[prop].data = form.customer[prop];
-    }
-    for (let prop in this.customer_staff) {
-      this.customer_staff[prop].data = form.customer_staff[prop];
-    }
-
-    for (let prop in this.project) {
-      this.project[prop].data = form[prop];
-    }
-
-    this.opponents = form.opponents;
-    this.products = form.products; //FIXME: Где количество с ценами? Pivot таблица не вся отдается
-
-    this.user_id = window.project.user_id;
-    window.project = undefined;
   },
 
   data() {
@@ -251,6 +225,32 @@ export default {
   },
 
   methods: {
+    initial(form) {
+      for (let prop in this.dealer) {
+        this.dealer[prop].data = form.dealer[prop];
+      }
+      for (let prop in this.dealer_staff) {
+        this.dealer_staff[prop].data = form.dealer_staff[prop];
+      }
+
+      for (let prop in this.customer) {
+        this.customer[prop].data = form.customer[prop];
+      }
+      for (let prop in this.customer_staff) {
+        this.customer_staff[prop].data = form.customer_staff[prop];
+      }
+
+      for (let prop in this.project) {
+        this.project[prop].data = form[prop];
+      }
+
+      this.opponents = form.opponents;
+      this.products = form.products; //FIXME: Где количество с ценами? Pivot таблица не вся отдается
+
+      this.user_id = form.user_id;
+      window.project = undefined;
+    },
+
     remove() {
       axios
         .delete("/project/" + this.project_id)
