@@ -20,18 +20,18 @@
         <ProductComponent @products="saveProducts"></ProductComponent>
       </v-col>
     </v-row>
-    <!-- <v-form ref="form" v-model="valid" lazy-validation>
-      <v-btn
-        v-if="$route.name === 'edit'"
-        block
-        color="indigo"
-        outlined
-        @click="validate"
-      >Изменить форму</v-btn>
-      <v-btn v-else block color="indigo" outlined @click="validate">Добавить форму</v-btn>
-    </v-form>-->
+    <!-- <v-form ref="form" v-model="valid" lazy-validation> -->
+    <v-btn
+      v-if="$route.name === 'edit'"
+      block
+      color="indigo"
+      outlined
+      @click="validate"
+    >Изменить форму</v-btn>
+    <v-btn v-else block color="indigo" outlined @click="dialog = true">Добавить форму</v-btn>
+    <!-- </v-form> -->
 
-    <!-- <v-row justify="center">
+    <v-row justify="center">
       <v-dialog v-model="dialog" width="210px">
         <v-card>
           <v-card-title>Все верно?</v-card-title>
@@ -41,7 +41,7 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-    </v-row>-->
+    </v-row>
   </v-container>
 </template>
 
@@ -125,61 +125,39 @@ export default {
 
   methods: {
     addForm() {
-      let newThis = this;
-
-      let res = {
-        dealer: 1,
-        project: { name: "", address: "" },
-        products: {
-          1: { count: 5, price: 100 },
-          25: { count: 5, price: 100 }
-        },
-        oponents: [1, 2, 3]
-      };
-      for (let prop in this.dealer) {
-        res.dealer[prop] = this.dealer[prop].data;
-      }
-      for (let prop in this.form) {
-        res.project[prop] = this.form[prop].data;
-      }
-
       axios
-        .post("http://property.test/project", res)
-        .then(function(response) {
-          newThis.$refs.form.reset();
-          newThis.form.opponents.opponent = "";
-          newThis.form.opponents.data = [];
-          newThis.dialog = false;
+        .post("/project", this.formData)
+        .then(response => {
+          this.dialog = false;
         })
-        .catch(function(error) {
+        .catch(error => {
           console.log(error);
         });
     },
 
-    validate() {
-      if (this.$refs.form.validate()) {
-        this.dialog = true;
-      }
-    },
-
     saveDealer(value) {
-      console.log("FormComponent | Dealer |", value);
+      this.formData.dealer = value;
+      console.log("FormData | ", this.formData);
     },
 
     saveCustomer(value) {
-      console.log("FormComponent | Customer |", value);
+      this.formData.customer = value;
+      console.log("FormData | ", this.formData);
     },
 
     saveProject(value) {
-      console.log("FormComponent | Project |", value);
+      this.formData.project = value;
+      console.log("FormData | ", this.formData);
     },
 
     saveOpponents(value) {
-      console.log("FormComponent | Opponents |", value);
+      this.formData.opponents = value;
+      console.log("FormData | ", this.formData);
     },
 
     saveProducts(value) {
-      console.log("FormComponent | Products |", value);
+      this.formData.products = value;
+      console.log("FormData | ", this.formData);
     }
   }
 };

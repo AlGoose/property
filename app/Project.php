@@ -16,7 +16,7 @@ class Project extends Model
      * @var array
      */
     protected $dates = ['deleted_at'];
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -38,6 +38,21 @@ class Project extends Model
     public function dealer()
     {
         return $this->belongsTo(Dealer::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function dealer_staff() //FIXME: В Staff норм ссылки?
+    {
+        return $this->belongsTo(Staff::class);
+    }
+
+    public function customer_staff()
+    {
+        return $this->belongsTo(Staff::class);
     }
 
     public function opponents()

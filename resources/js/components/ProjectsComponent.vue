@@ -20,24 +20,24 @@
 <script>
 export default {
   mounted: function() {
-    let newThis = this;
-
     if (window.projects == undefined) {
       axios
         .get("/project")
-        .then(function(response) {
-          newThis.itemsPerPage = response.data.per_page;
-          newThis.length = Math.ceil(
+        .then(response => {
+          this.itemsPerPage = response.data.per_page;
+          this.length = Math.ceil(
             response.data.total / response.data.per_page
           );
-          newThis.fruits = response.data.data;
+          this.fruits = response.data.data;
         })
         .catch(function(error) {
           console.log(error);
         });
     } else {
-      newThis.itemsPerPage = window.projects.per_page;
-      newThis.length = Math.ceil(window.projects.total / window.projects.per_page);
+      this.itemsPerPage = window.projects.per_page;
+      this.length = Math.ceil(
+        window.projects.total / window.projects.per_page
+      );
       this.fruits = window.projects.data;
       window.projects = undefined;
     }
@@ -55,9 +55,9 @@ export default {
           value: "name"
         },
         { text: "Address", value: "address" },
-        { text: "Customer", value: "customer" },
         { text: "Dealer", value: "dealer" },
         { text: "Date", value: "date" },
+        { text: "Time", value: "time" },
         { text: "Manager", value: "manager" }
       ],
       fruits: []
@@ -66,15 +66,12 @@ export default {
 
   watch: {
     page: function(val) {
-      let newThis = this;
       axios
         .get("/project?page=" + val)
-        .then(function(response) {
-          newThis.itemsPerPage = response.data.per_page;
-          newThis.length = Math.ceil(
-            response.data.total / response.data.per_page
-          );
-          newThis.fruits = response.data.data;
+        .then(response => {
+          this.itemsPerPage = response.data.per_page;
+          this.length = Math.ceil(response.data.total / response.data.per_page);
+          this.fruits = response.data.data;
         })
         .catch(function(error) {
           console.log(error);

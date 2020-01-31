@@ -39,7 +39,7 @@ class OpponentController extends Controller
      */
     public function store(Request $request)
     {
-        \Debugbar::info($request->all());
+        // \Debugbar::info($request->all());
 
         $opponent = Opponent::firstOrCreate(
             ['name' => $request->name]

@@ -37,7 +37,6 @@ export default {
 
   watch: {
     ids(val) {
-      console.log("WATCH: ", val);
       this.$emit("opponents", val);
     }
   },
@@ -58,7 +57,6 @@ export default {
       axios
         .post("/opponent", opponent)
         .then(response => {
-          // console.log(response.data);
           this.ids.push(response.data.id);
           // this.$set(this.ids, this.ids.length, response.data.id);
         })

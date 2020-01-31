@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Staff;
-use DebugBar\DebugBar;
 use Illuminate\Http\Request;
 
 class StaffController extends Controller

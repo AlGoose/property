@@ -43,11 +43,9 @@ export default {
 
   watch: {
     company(val) {
-      //console.log(val)
       axios
         .post("/dealer/findDealer", { inn: val.inn, kpp: val.kpp })
         .then(response => {
-          // console.log(response);
           if (response.data === "") {
             this.dealer = {};
           } else {
@@ -63,40 +61,32 @@ export default {
       if (this.isLoading) return;
       if (val === null || val.length != 10) return;
 
-      let newThis = this;
       this.isLoading = true;
-      //   this.companies = [];
 
       axios
-        // .get("/dealer/findByInn/" + val)
         .get("/data/findByInn/" + val)
         .then(response => {
           this.companies = response.data;
-          newThis.isLoading = false;
+          this.isLoading = false;
         })
         .catch(function(error) {
-          //   console.log(error);
-          newThis.isLoading = false;
+          this.isLoading = false;
         });
     }
   },
 
   methods: {
     saveStaff(staff) {
-      // console.log(staff);
       if (!this.dealer.id) {
-        // console.log("NEW DEALER");
         axios
           .post("/dealer", { dealer: this.company, staff_id: staff })
           .then(response => {
-            // console.log(response.data);
             this.$emit('dealer', {
               dealer_id: response.data.id,
               dealer_staff_id: staff
             });
           });
       } else {
-        // console.log("OLD DEALER"); //МБ костыль на добавление нового стафа к имеющемуся в БД диллеру.
         axios
           .post("/dealer", {
             dealer: {
@@ -108,15 +98,12 @@ export default {
             staff_id: staff
           })
           .then(response => {
-            // console.log(response.data);
             this.$emit('dealer', {
               dealer_id: response.data.id,
               dealer_staff_id: staff
             });
           });
       }
-
-      // console.log("DealerComponent", staff);
     }
   }
 };
