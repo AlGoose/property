@@ -40,10 +40,9 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         // \Debugbar::info($request->all());
-
         $product = Product::firstOrCreate(
-            ['code' => $request->code],
-            ['name' => $request->name]
+            ['article' => $request->article],
+            ['name' => $request->name, 'code' => $request->code]
         );
         return $product;
     }

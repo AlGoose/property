@@ -2402,6 +2402,76 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     var _this = this;
@@ -2422,6 +2492,20 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
+      headers: [{
+        text: "Название продукта",
+        align: "left",
+        value: "name"
+      }, {
+        text: "Количество",
+        value: "pivot.count"
+      }, {
+        text: "Цена за единицу (₽)",
+        value: "pivot.price"
+      }, {
+        text: "Общая стоимость (₽)",
+        value: "pivot.total"
+      }],
       dialog: false,
       auth_id: "",
       user_id: "",
@@ -2539,8 +2623,10 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       this.opponents = form.opponents;
-      this.products = form.products; //FIXME: Где количество с ценами? Pivot таблица не вся отдается
-
+      this.products = form.products;
+      this.products.forEach(function (item) {
+        item.pivot.total = item.pivot.count * item.pivot.price;
+      });
       this.user_id = form.user_id;
       window.project = undefined;
     },
@@ -3012,9 +3098,23 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      valid: true,
       dialog: false,
       products: [],
       entires: [],
@@ -3028,81 +3128,96 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   watch: {
-    search: function search(val) {
-      var _this = this;
-
-      if (this.isLoading) return;
-      if (val === null || val.length < 7) return;
-      var isValid = true;
-
-      for (var i = 0; i < this.entires.length; i++) {
-        if (this.entires[i].name === val) {
-          isValid = false;
-        }
-      }
-
-      if (!isValid) return;
-      this.isLoading = true;
-      this.entires = [];
-      axios.get("/data/findProductById/" + val).then(function (response) {
-        _this.entires = response.data.result;
-        _this.isLoading = false;
-      })["catch"](function (error) {
-        console.log(error);
-        _this.isLoading = false;
-      });
+    search: function search() {
+      this.inputArticle();
     },
     ids: function ids(value) {
       this.$emit("products", value);
     }
   },
+  created: function created() {
+    this.inputArticle = window.debounce(this.searchProduct, 500);
+  },
   methods: {
-    onChangeCount: function onChangeCount(value) {
-      this.total = (parseFloat(value) * parseFloat(this.price)).toFixed(2);
-    },
-    onChangePrice: function onChangePrice(value) {
-      this.total = (parseFloat(value) * parseFloat(this.count)).toFixed(2);
-    },
-    onChangeTotal: function onChangeTotal(value) {
-      this.price = (parseFloat(value) / parseFloat(this.count)).toFixed(2);
-    },
-    addProduct: function addProduct() {
-      var _this2 = this;
+    searchProduct: function searchProduct() {
+      var _this = this;
 
-      var isValid = true;
+      if (this.search === null || this.search.length < 7) return;
 
-      for (var i = 0; i < this.products.length; i++) {
-        if (this.code === this.products[i].code) {
-          isValid = false;
+      for (var i = 0; i < this.entires.length; i++) {
+        if (this.entires[i].name === this.search) {
           return;
         }
       }
 
-      if (!isValid) return;
-      var product = {
-        code: this.product.article,
-        name: this.product.name,
-        count: this.count,
-        price: this.price,
-        total: this.total
-      };
-      axios.post("/product", product).then(function (response) {
-        _this2.$set(_this2.ids, response.data.id, {
-          price: product.price,
-          count: product.count
-        });
-
-        product.id = response.data.id;
+      this.isLoading = true;
+      axios.get("/data/findProductById/" + this.search).then(function (response) {
+        console.log(response);
+        _this.entires = response.data.result;
+        _this.isLoading = false;
       })["catch"](function (error) {
         console.log(error);
+        _this.entires = [];
+        _this.isLoading = false;
       });
-      this.products.push(product);
-      this.count = null;
-      this.price = null;
-      this.total = null;
-      this.product = {};
-      this.entires = [];
-      this.dialog = false;
+    },
+    onChangeCount: function onChangeCount(value) {
+      if (value.match(/^\d+(\.\d+)?$/)) {
+        if (this.price != null && !isNaN(this.price)) {
+          this.total = (parseFloat(value) * parseFloat(this.price)).toFixed(2);
+        }
+      }
+    },
+    onChangePrice: function onChangePrice(value) {
+      if (value.match(/^\d+(\.\d+)?$/)) {
+        if (this.count != null && !isNaN(this.count)) {
+          this.total = (parseFloat(value) * parseFloat(this.count)).toFixed(2);
+        }
+      }
+    },
+    onChangeTotal: function onChangeTotal(value) {
+      if (value.match(/^\d+(\.\d+)?$/)) {
+        if (this.count != null && !isNaN(this.count)) {
+          this.price = (parseFloat(value) / parseFloat(this.count)).toFixed(2);
+        }
+      }
+    },
+    addProduct: function addProduct() {
+      var _this2 = this;
+
+      if (this.$refs.form.validate()) {
+        for (var i = 0; i < this.products.length; i++) {
+          if (this.code == this.products[i].code) {
+            return;
+          }
+        }
+
+        var product = {
+          code: this.product.id,
+          article: this.product.article,
+          name: this.product.name,
+          count: this.count,
+          price: this.price,
+          total: this.total
+        };
+        axios.post("/product", product).then(function (response) {
+          _this2.$set(_this2.ids, response.data.id, {
+            price: product.price,
+            count: product.count
+          });
+
+          product.id = response.data.id;
+        })["catch"](function (error) {
+          console.log(error);
+        });
+        this.products.push(product);
+        this.count = null;
+        this.price = null;
+        this.total = null;
+        this.product = {};
+        this.entires = [];
+        this.dialog = false;
+      }
     },
     removeProduct: function removeProduct(item, i) {
       this.products.splice(i, 1);
@@ -7924,7 +8039,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n*[data-v-59cc4a25] {\r\n  padding-bottom: 14px;\n}\n.list[data-v-59cc4a25] {\r\n  height: 30px;\n}\np[data-v-59cc4a25] {\r\n  color: black;\n}\r\n", ""]);
+exports.push([module.i, "\np[data-v-59cc4a25] {\r\n  color: black;\r\n  margin-bottom: 0;\n}\r\n", ""]);
 
 // exports
 
@@ -39884,156 +39999,128 @@ var render = function() {
     "div",
     [
       _c(
-        "div",
-        { staticClass: "row justify-content-center" },
+        "v-container",
         [
           _c(
             "v-card",
-            { attrs: { width: "1000", outlined: "" } },
+            { attrs: { outlined: "" } },
             [
+              _c("v-card-title", [_vm._v(_vm._s(_vm.project.name.data))]),
+              _vm._v(" "),
               _c(
-                "v-list-item",
-                { attrs: { "three-line": "" } },
+                "v-card-text",
                 [
                   _c(
-                    "v-list-item-content",
+                    "v-expansion-panels",
+                    { attrs: { multiple: "", focusable: "" } },
                     [
                       _c(
-                        "v-col",
-                        { attrs: { col: "12", md: "6" } },
+                        "v-expansion-panel",
                         [
                           _c(
-                            "v-card",
-                            { staticClass: "mx-auto" },
+                            "v-expansion-panel-header",
+                            { staticClass: "title" },
+                            [_vm._v("Проект")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-expansion-panel-content",
                             [
-                              _c("v-card-title", [_vm._v("Дилер")]),
-                              _vm._v(" "),
                               _c(
-                                "v-card-text",
+                                "v-row",
                                 [
-                                  _vm._l(_vm.dealer, function(item, i) {
-                                    return _c(
-                                      "div",
-                                      { key: "A" + i, staticClass: "list" },
-                                      [
-                                        _c("p", [
-                                          _vm._v(
-                                            _vm._s(item.label) +
-                                              " : " +
-                                              _vm._s(item.data)
-                                          )
-                                        ])
-                                      ]
-                                    )
-                                  }),
-                                  _vm._v(" "),
-                                  _vm._l(_vm.dealer_staff, function(item, i) {
-                                    return _c(
-                                      "div",
-                                      { key: "B" + i, staticClass: "list" },
-                                      [
-                                        _c("p", [
-                                          _vm._v(
-                                            _vm._s(item.label) +
-                                              " : " +
-                                              _vm._s(item.data)
-                                          )
-                                        ])
-                                      ]
-                                    )
-                                  })
-                                ],
-                                2
-                              )
-                            ],
-                            1
-                          )
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "v-col",
-                        { attrs: { col: "12", md: "6" } },
-                        [
-                          _c(
-                            "v-card",
-                            { staticClass: "mx-auto" },
-                            [
-                              _c("v-card-title", [_vm._v("Заказчик")]),
-                              _vm._v(" "),
-                              _c(
-                                "v-card-text",
-                                [
-                                  _vm._l(_vm.customer, function(item, i) {
-                                    return _c(
-                                      "div",
-                                      { key: "C" + i, staticClass: "list" },
-                                      [
-                                        _c("p", [
-                                          _vm._v(
-                                            _vm._s(item.label) +
-                                              " : " +
-                                              _vm._s(item.data)
-                                          )
-                                        ])
-                                      ]
-                                    )
-                                  }),
-                                  _vm._v(" "),
-                                  _vm._l(_vm.customer_staff, function(item, i) {
-                                    return _c(
-                                      "div",
-                                      { key: "D" + i, staticClass: "list" },
-                                      [
-                                        _c("p", [
-                                          _vm._v(
-                                            _vm._s(item.label) +
-                                              " : " +
-                                              _vm._s(item.data)
-                                          )
-                                        ])
-                                      ]
-                                    )
-                                  })
-                                ],
-                                2
-                              )
-                            ],
-                            1
-                          )
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "v-col",
-                        { attrs: { col: "12", md: "12" } },
-                        [
-                          _c(
-                            "v-card",
-                            { staticClass: "mx-auto" },
-                            [
-                              _c("v-card-title", [_vm._v("Проект")]),
-                              _vm._v(" "),
-                              _c(
-                                "v-card-text",
-                                _vm._l(_vm.project, function(item, i) {
-                                  return _c(
-                                    "div",
-                                    { key: "E" + i, staticClass: "list" },
+                                  _c(
+                                    "v-col",
+                                    { attrs: { cols: "12", md: "4" } },
                                     [
-                                      _c("p", [
-                                        _vm._v(
-                                          _vm._s(item.label) +
-                                            " : " +
-                                            _vm._s(item.data)
-                                        )
-                                      ])
-                                    ]
+                                      _c(
+                                        "v-card",
+                                        { attrs: { flat: "" } },
+                                        [
+                                          _c("v-card-text", [
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Название")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.project.name.data)
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Адрес")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.project.address.data)
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Дата")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.project.date.data)
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Время")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.project.time.data)
+                                              )
+                                            ])
+                                          ])
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-col",
+                                    { attrs: { cols: "12", md: "8" } },
+                                    [
+                                      _c(
+                                        "v-card",
+                                        { attrs: { flat: "" } },
+                                        [
+                                          _c("v-card-title", [
+                                            _vm._v("Проделанная работа")
+                                          ]),
+                                          _vm._v(" "),
+                                          _c(
+                                            "v-card-text",
+                                            [
+                                              _c("v-textarea", {
+                                                attrs: {
+                                                  value: _vm.project.work.data,
+                                                  "no-resize": "",
+                                                  height: "200px",
+                                                  solo: "",
+                                                  flat: "",
+                                                  readonly: ""
+                                                }
+                                              })
+                                            ],
+                                            1
+                                          )
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
                                   )
-                                }),
-                                0
+                                ],
+                                1
                               )
                             ],
                             1
@@ -40043,25 +40130,304 @@ var render = function() {
                       ),
                       _vm._v(" "),
                       _c(
-                        "v-col",
-                        { attrs: { col: "12", md: "6" } },
+                        "v-expansion-panel",
                         [
                           _c(
-                            "v-card",
-                            { staticClass: "mx-auto" },
+                            "v-expansion-panel-header",
+                            { staticClass: "title" },
+                            [_vm._v("Дилер")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-expansion-panel-content",
                             [
-                              _c("v-card-title", [_vm._v("Конкуренты")]),
-                              _vm._v(" "),
                               _c(
-                                "v-card-text",
+                                "v-row",
+                                [
+                                  _c(
+                                    "v-col",
+                                    { attrs: { cols: "12", md: "6" } },
+                                    [
+                                      _c(
+                                        "v-card",
+                                        { attrs: { flat: "" } },
+                                        [
+                                          _c("v-card-text", [
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("ИНН")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.dealer.inn.data)
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("КПП")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.dealer.kpp.data)
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Имя")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.dealer.name.data)
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Адрес")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.dealer.address.data)
+                                              )
+                                            ])
+                                          ])
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-col",
+                                    { attrs: { cols: "12", md: "6" } },
+                                    [
+                                      _c(
+                                        "v-card",
+                                        { attrs: { flat: "" } },
+                                        [
+                                          _c("v-card-text", [
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Представитель")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(
+                                                  _vm.dealer_staff.name.data
+                                                )
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Телефон")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(
+                                                  _vm.dealer_staff.phone.data
+                                                )
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Почта")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(
+                                                  _vm.dealer_staff.email.data
+                                                )
+                                              )
+                                            ])
+                                          ])
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              )
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-expansion-panel",
+                        [
+                          _c(
+                            "v-expansion-panel-header",
+                            { staticClass: "title" },
+                            [_vm._v("Заказчик")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-expansion-panel-content",
+                            [
+                              _c(
+                                "v-row",
+                                [
+                                  _c(
+                                    "v-col",
+                                    { attrs: { cols: "12", md: "6" } },
+                                    [
+                                      _c(
+                                        "v-card",
+                                        { attrs: { flat: "" } },
+                                        [
+                                          _c("v-card-text", [
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("ИНН")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.customer.inn.data)
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("КПП")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.customer.kpp.data)
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Имя")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.customer.name.data)
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Адрес")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(
+                                                  _vm.customer.address.data
+                                                )
+                                              )
+                                            ])
+                                          ])
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-col",
+                                    { attrs: { cols: "12", md: "6" } },
+                                    [
+                                      _c(
+                                        "v-card",
+                                        { attrs: { flat: "" } },
+                                        [
+                                          _c("v-card-text", [
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Представитель")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(
+                                                  _vm.customer_staff.name.data
+                                                )
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Телефон")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(
+                                                  _vm.customer_staff.phone.data
+                                                )
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Почта")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(
+                                                  _vm.customer_staff.email.data
+                                                )
+                                              )
+                                            ])
+                                          ])
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              )
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-expansion-panel",
+                        [
+                          _c(
+                            "v-expansion-panel-header",
+                            { staticClass: "title" },
+                            [_vm._v("Конкуренты")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-expansion-panel-content",
+                            [
+                              _c(
+                                "v-list",
                                 _vm._l(_vm.opponents, function(item, i) {
                                   return _c(
-                                    "div",
-                                    { key: "F" + i, staticClass: "list" },
-                                    [_c("p", [_vm._v(_vm._s(item.name))])]
+                                    "v-list-item",
+                                    { key: "C" + i },
+                                    [
+                                      _c(
+                                        "v-list-item-content",
+                                        [
+                                          _c("v-list-item-title", [
+                                            _vm._v(_vm._s(item.name))
+                                          ])
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
                                   )
                                 }),
-                                0
+                                1
                               )
                             ],
                             1
@@ -40071,26 +40437,25 @@ var render = function() {
                       ),
                       _vm._v(" "),
                       _c(
-                        "v-col",
-                        { attrs: { col: "12", md: "6" } },
+                        "v-expansion-panel",
                         [
                           _c(
-                            "v-card",
-                            { staticClass: "mx-auto" },
+                            "v-expansion-panel-header",
+                            { staticClass: "title" },
+                            [_vm._v("Детали")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-expansion-panel-content",
                             [
-                              _c("v-card-title", [_vm._v("Детали")]),
-                              _vm._v(" "),
-                              _c(
-                                "v-card-text",
-                                _vm._l(_vm.products, function(item, i) {
-                                  return _c(
-                                    "div",
-                                    { key: "G" + i, staticClass: "list" },
-                                    [_c("p", [_vm._v(_vm._s(item.name))])]
-                                  )
-                                }),
-                                0
-                              )
+                              _c("v-data-table", {
+                                staticClass: "elevation-1",
+                                attrs: {
+                                  headers: _vm.headers,
+                                  items: _vm.products,
+                                  "item-key": "name"
+                                }
+                              })
                             ],
                             1
                           )
@@ -40627,152 +40992,212 @@ var render = function() {
                             "v-card-text",
                             [
                               _c(
-                                "v-row",
+                                "v-form",
+                                {
+                                  ref: "form",
+                                  attrs: { "lazy-validation": "" },
+                                  model: {
+                                    value: _vm.valid,
+                                    callback: function($$v) {
+                                      _vm.valid = $$v
+                                    },
+                                    expression: "valid"
+                                  }
+                                },
                                 [
                                   _c(
-                                    "v-col",
-                                    { attrs: { cols: "12", md: "4" } },
+                                    "v-row",
                                     [
-                                      _c("v-autocomplete", {
-                                        attrs: {
-                                          items: _vm.entires,
-                                          "search-input": _vm.search,
-                                          color: "grey",
-                                          label: "Артикул",
-                                          outlined: "",
-                                          "hide-details": "",
-                                          "no-filter": "",
-                                          "item-text": "name",
-                                          "return-object": "",
-                                          loading: _vm.isLoading
-                                        },
-                                        on: {
-                                          "update:searchInput": function(
-                                            $event
-                                          ) {
-                                            _vm.search = $event
-                                          },
-                                          "update:search-input": function(
-                                            $event
-                                          ) {
-                                            _vm.search = $event
-                                          }
-                                        },
-                                        scopedSlots: _vm._u([
-                                          {
-                                            key: "item",
-                                            fn: function(ref) {
-                                              var item = ref.item
-                                              return [_vm._v(_vm._s(item.name))]
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12", md: "4" } },
+                                        [
+                                          _c("v-autocomplete", {
+                                            attrs: {
+                                              items: _vm.entires,
+                                              "search-input": _vm.search,
+                                              color: "grey",
+                                              label: "Артикул",
+                                              outlined: "",
+                                              "hide-details": "",
+                                              "no-filter": "",
+                                              "item-text": "name",
+                                              "return-object": "",
+                                              loading: _vm.isLoading
+                                            },
+                                            on: {
+                                              "update:searchInput": function(
+                                                $event
+                                              ) {
+                                                _vm.search = $event
+                                              },
+                                              "update:search-input": function(
+                                                $event
+                                              ) {
+                                                _vm.search = $event
+                                              }
+                                            },
+                                            scopedSlots: _vm._u([
+                                              {
+                                                key: "item",
+                                                fn: function(ref) {
+                                                  var item = ref.item
+                                                  return [
+                                                    _vm._v(_vm._s(item.name))
+                                                  ]
+                                                }
+                                              },
+                                              {
+                                                key: "selection",
+                                                fn: function(ref) {
+                                                  var item = ref.item
+                                                  return [
+                                                    _vm._v(_vm._s(item.article))
+                                                  ]
+                                                }
+                                              }
+                                            ]),
+                                            model: {
+                                              value: _vm.product,
+                                              callback: function($$v) {
+                                                _vm.product = $$v
+                                              },
+                                              expression: "product"
                                             }
-                                          },
-                                          {
-                                            key: "selection",
-                                            fn: function(ref) {
-                                              var item = ref.item
-                                              return [
-                                                _vm._v(_vm._s(item.article))
+                                          })
+                                        ],
+                                        1
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12", md: "8" } },
+                                        [
+                                          _c("v-text-field", {
+                                            attrs: {
+                                              value:
+                                                _vm.product != undefined
+                                                  ? _vm.product.name
+                                                  : "",
+                                              label: "Название",
+                                              solo: "",
+                                              flat: "",
+                                              readonly: "",
+                                              rules: [
+                                                function(v) {
+                                                  return (
+                                                    !!v || "Выберите продукт"
+                                                  )
+                                                }
                                               ]
                                             }
-                                          }
-                                        ]),
-                                        model: {
-                                          value: _vm.product,
-                                          callback: function($$v) {
-                                            _vm.product = $$v
-                                          },
-                                          expression: "product"
-                                        }
-                                      })
-                                    ],
-                                    1
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "v-col",
-                                    { attrs: { cols: "12", md: "8" } },
-                                    [
-                                      _c("v-text-field", {
-                                        attrs: {
-                                          label: "Название",
-                                          solo: "",
-                                          flat: "",
-                                          readonly: ""
-                                        },
-                                        model: {
-                                          value: _vm.product.name,
-                                          callback: function($$v) {
-                                            _vm.$set(_vm.product, "name", $$v)
-                                          },
-                                          expression: "product.name"
-                                        }
-                                      })
-                                    ],
-                                    1
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "v-col",
-                                    { attrs: { cols: "12", md: "4" } },
-                                    [
-                                      _c("v-text-field", {
-                                        attrs: {
-                                          label: "Количество",
-                                          outlined: ""
-                                        },
-                                        on: { change: _vm.onChangeCount },
-                                        model: {
-                                          value: _vm.count,
-                                          callback: function($$v) {
-                                            _vm.count = $$v
-                                          },
-                                          expression: "count"
-                                        }
-                                      })
-                                    ],
-                                    1
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "v-col",
-                                    { attrs: { cols: "12", md: "4" } },
-                                    [
-                                      _c("v-text-field", {
-                                        attrs: {
-                                          label: "Цена за единицу",
-                                          outlined: ""
-                                        },
-                                        on: { change: _vm.onChangePrice },
-                                        model: {
-                                          value: _vm.price,
-                                          callback: function($$v) {
-                                            _vm.price = $$v
-                                          },
-                                          expression: "price"
-                                        }
-                                      })
-                                    ],
-                                    1
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "v-col",
-                                    { attrs: { cols: "12", md: "4" } },
-                                    [
-                                      _c("v-text-field", {
-                                        attrs: {
-                                          label: "Итоговая сумма",
-                                          outlined: ""
-                                        },
-                                        on: { change: _vm.onChangeTotal },
-                                        model: {
-                                          value: _vm.total,
-                                          callback: function($$v) {
-                                            _vm.total = $$v
-                                          },
-                                          expression: "total"
-                                        }
-                                      })
+                                          })
+                                        ],
+                                        1
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12", md: "4" } },
+                                        [
+                                          _c("v-text-field", {
+                                            attrs: {
+                                              label: "Количество",
+                                              outlined: "",
+                                              rules: [
+                                                function(v) {
+                                                  return (
+                                                    !!v || "Введите количество"
+                                                  )
+                                                },
+                                                function(v) {
+                                                  return (
+                                                    /^\d+(\.\d+)?$/.test(v) ||
+                                                    "Неверный формат данных"
+                                                  )
+                                                }
+                                              ]
+                                            },
+                                            on: { change: _vm.onChangeCount },
+                                            model: {
+                                              value: _vm.count,
+                                              callback: function($$v) {
+                                                _vm.count = $$v
+                                              },
+                                              expression: "count"
+                                            }
+                                          })
+                                        ],
+                                        1
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12", md: "4" } },
+                                        [
+                                          _c("v-text-field", {
+                                            attrs: {
+                                              label: "Цена за единицу",
+                                              outlined: "",
+                                              rules: [
+                                                function(v) {
+                                                  return !!v || "Введите цену"
+                                                },
+                                                function(v) {
+                                                  return (
+                                                    /^\d+(\.\d+)?$/.test(v) ||
+                                                    "Неверный формат данных"
+                                                  )
+                                                }
+                                              ]
+                                            },
+                                            on: { change: _vm.onChangePrice },
+                                            model: {
+                                              value: _vm.price,
+                                              callback: function($$v) {
+                                                _vm.price = $$v
+                                              },
+                                              expression: "price"
+                                            }
+                                          })
+                                        ],
+                                        1
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12", md: "4" } },
+                                        [
+                                          _c("v-text-field", {
+                                            attrs: {
+                                              label: "Итоговая сумма",
+                                              outlined: "",
+                                              rules: [
+                                                function(v) {
+                                                  return (
+                                                    !!v || "Введите общую сумму"
+                                                  )
+                                                },
+                                                function(v) {
+                                                  return (
+                                                    /^\d+(\.\d+)?$/.test(v) ||
+                                                    "Неверный формат данных"
+                                                  )
+                                                }
+                                              ]
+                                            },
+                                            on: { change: _vm.onChangeTotal },
+                                            model: {
+                                              value: _vm.total,
+                                              callback: function($$v) {
+                                                _vm.total = $$v
+                                              },
+                                              expression: "total"
+                                            }
+                                          })
+                                        ],
+                                        1
+                                      )
                                     ],
                                     1
                                   )
@@ -97563,6 +97988,15 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
 window.Vue.use(vuetify__WEBPACK_IMPORTED_MODULE_0___default.a);
+
+window.debounce = function (callback, time) {
+  var timer;
+  return function () {
+    clearTimeout(timer);
+    timer = setTimeout(callback, time);
+  };
+};
+
 window.vueApp = new Vue({
   vuetify: new vuetify__WEBPACK_IMPORTED_MODULE_0___default.a(),
   router: _routes__WEBPACK_IMPORTED_MODULE_1__["default"],
