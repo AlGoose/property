@@ -12,9 +12,4 @@ class Staff extends Model
     {
         return $this->morphTo();
     }
-
-    public function projects()
-    {
-        return $this->hasMany(Project::class);
-    }
 }

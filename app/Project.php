@@ -62,11 +62,7 @@ class Project extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class)->withTimestamps();
+        return $this->belongsToMany(Product::class)->withTimestamps()->withPivot('count','price');
     }
 
-    public function contacts()
-    {
-        return $this->morphMany(Staff::class, 'entity');
-    }
 }
