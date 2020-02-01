@@ -2,8 +2,8 @@
   <v-card class="mx-auto">
     <v-card-title>Проект</v-card-title>
     <v-card-text>
-      <v-text-field v-model="name" label="Название" outlined @change="sendData"></v-text-field>
-      <v-text-field v-model="address" label="Адрес" outlined @change="sendData"></v-text-field>
+      <v-text-field v-model="name" label="Название" outlined @change="sendData" :readonly="isEdit"></v-text-field>
+      <v-text-field v-model="address" label="Адрес" outlined @change="sendData" :readonly="isEdit"></v-text-field>
       <v-textarea
         v-model="work"
         height="200"
@@ -43,6 +43,7 @@
             transition="scale-transition"
             offset-y
             min-width="290px"
+            :disabled="isEdit"
           >
             <template v-slot:activator="{ on }">
               <v-text-field v-model="time" label="Дата заключения" readonly outlined v-on="on"></v-text-field>
@@ -68,8 +69,9 @@ export default {
     if (this.address_prop) {
       this.address = this.address_prop;
     }
+    console.log("MACHETE");
   },
-  props: ["address_prop"],
+  props: ["address_prop", "isEdit", "projectData"],
   data: () => ({
     name: null,
     address: null,
@@ -83,6 +85,15 @@ export default {
   watch: {
     address_prop(value) {
       this.address = value;
+    },
+
+    projectData(value) {
+      console.log("LION", this.projectData);
+      this.name = this.projectData.name;
+      this.address = this.projectData.address;
+      this.work = this.projectData.work;
+      this.date = this.projectData.date;
+      this.time = this.projectData.time;
     }
   },
 

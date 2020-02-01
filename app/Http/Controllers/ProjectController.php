@@ -118,8 +118,16 @@ class ProjectController extends Controller
      */
     public function edit(Request $request, Project $project) //TODO: Добавить view
     {
+        $project->user = $project->user()->get()[0];
+
         $project->dealer = $project->dealer()->get()[0];
+        $project->dealer_staff = $project->dealer_staff()->get()[0];
+
+        $project->customer = $project->customer()->get()[0];
+        $project->customer_staff = $project->customer_staff()->get()[0];
+
         $project->opponents = $project->opponents()->get();
+        $project->products = $project->products()->get();
 
         if ($request->ajax()) return $project;
 

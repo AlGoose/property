@@ -14,6 +14,7 @@
         return-object
         item-text="name"
         :loading="isLoading"
+        :disabled="isEdit"
       >
         <template v-slot:item="{ item }">{{item.name}}, КПП:{{item.kpp}}</template>
         <template v-slot:selection="{ item }">{{item.inn}}, КПП:{{item.kpp}}</template>
@@ -33,6 +34,8 @@ export default {
   components: {
     StaffComponent
   },
+  props: ["isEdit", "customerData"],
+
   data: () => ({
     search: "",
     company: { inn: "" },
@@ -42,6 +45,11 @@ export default {
   }),
 
   watch: {
+    customerData(val) {
+      console.log("DOG", this.dealerData);
+      this.company = val;
+    },
+
     company(val) {
       axios
         .post("/customer/findCustomer", { inn: val.inn, kpp: val.kpp })

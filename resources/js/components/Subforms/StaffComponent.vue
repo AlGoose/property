@@ -24,17 +24,34 @@
             <span class="headline">Добавить представителя</span>
           </v-card-title>
           <v-card-text>
-            <v-row>
-              <v-col cols="12">
-                <v-text-field v-model="agentForm.name" label="Имя" outlined></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="agentForm.phone" label="Телефон" outlined></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="agentForm.email" label="Почта" outlined></v-text-field>
-              </v-col>
-            </v-row>
+            <v-form ref="form" v-model="valid" lazy-validation>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field
+                    v-model="agentForm.name"
+                    label="Имя"
+                    outlined
+                    :rules="[v => !!v || 'Введите имя']"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="agentForm.phone"
+                    label="Телефон"
+                    outlined
+                    :rules="phoneRules"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="agentForm.email"
+                    label="Почта"
+                    outlined
+                    :rules="emailRules"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-form>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -52,6 +69,18 @@ export default {
   props: ["entity", "mode"],
 
   data: () => ({
+    phoneRules: [
+      v => !!v || "Введите номер телефона",
+      v => /^(([0-9]){10})$/.test(v) || "Неверный формат номера"
+    ],
+    emailRules: [
+      v => !!v || "Введите почту",
+      v =>
+        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+          v
+        ) || "Неверный формат почты"
+    ],
+    valid: true,
     dialog: false,
     isLoading: false,
     agent_id: null,
@@ -79,8 +108,7 @@ export default {
     entity(val) {
       if (this.entity.contacts === undefined) {
         this.agent_id = null;
-        this.agents = [],
-        this.dialog = true;
+        (this.agents = []), (this.dialog = true);
       } else {
         this.agents = this.entity.contacts;
       }
@@ -93,17 +121,19 @@ export default {
 
   methods: {
     addAgent() {
-      this.dialog = false;
+      if (this.$refs.form.validate()) {
+        this.dialog = false;
 
-      axios.post("/staff", this.agentForm).then(request => {
-        this.agents.push(request.data);
-        this.agent_id = request.data.id;
-      }),
-        (this.agentForm = {
-          name: null,
-          phone: null,
-          email: null
-        });
+        axios.post("/staff", this.agentForm).then(request => {
+          this.agents.push(request.data);
+          this.agent_id = request.data.id;
+        }),
+          (this.agentForm = {
+            name: null,
+            phone: null,
+            email: null
+          });
+      }
     },
 
     closeDialog() {

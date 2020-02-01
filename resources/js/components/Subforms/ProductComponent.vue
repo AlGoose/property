@@ -83,7 +83,7 @@
           </v-dialog>
         </v-row>
 
-        <v-simple-table class="table" v-if="products.length">
+        <!-- <v-simple-table class="table" v-if="products.length">
           <template v-slot:default>
             <thead>
               <tr>
@@ -107,7 +107,18 @@
               </tr>
             </tbody>
           </template>
-        </v-simple-table>
+        </v-simple-table>-->
+        <v-data-table v-if="products.length" :headers="headers" :items="products" item-key="name" class="elevation-1">
+          <template v-slot:item="{ item }">
+            <td>{{ item.name }}</td>
+            <td>{{ item.count }}</td>
+            <td>{{ item.price }}</td>
+            <td>{{ item.total }}</td>
+            <td>
+              <v-icon @click="removeProduct(item,i)">mdi-minus-circle-outline</v-icon>
+            </td>
+          </template>
+        </v-data-table>
       </v-card-text>
     </v-card>
   </div>
@@ -115,7 +126,23 @@
 
 <script>
 export default {
+  props: ["productsData"],
+
   data: () => ({
+    headers: [
+      {
+        text: "Название продукта",
+        align: "left",
+        value: "name"
+      },
+      { text: "Количество", value: "pivot.count" },
+      { text: "Цена за единицу (₽)", value: "pivot.price" },
+      { text: "Общая стоимость (₽)", value: "pivot.total" },
+      {
+        text: "",
+        sortable: false
+      }
+    ],
     valid: true,
     dialog: false,
     products: [],
@@ -130,6 +157,14 @@ export default {
   }),
 
   watch: {
+    productsData(val) {
+      console.log("CAT", val);
+      this.products = val;
+      this.products.forEach(item => {
+        item.pivot.total = item.pivot.count * item.pivot.price;
+      });
+    },
+
     search() {
       this.inputArticle();
     },
@@ -138,6 +173,7 @@ export default {
       this.$emit("products", value);
     }
   },
+
   created() {
     this.inputArticle = window.debounce(this.searchProduct, 500);
   },

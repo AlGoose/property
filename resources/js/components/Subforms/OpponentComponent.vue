@@ -28,6 +28,7 @@
 
 <script>
 export default {
+  props: ["opponentsData"],
   data: () => ({
     opponent: null,
     opponents: [],
@@ -36,6 +37,14 @@ export default {
   }),
 
   watch: {
+    opponentsData(val) {
+      console.log('FISH', val);
+      val.forEach(item => {
+        this.opponents.push(item.name);
+        this.ids.push(item.id);
+      });
+    },
+
     ids(val) {
       this.$emit("opponents", val);
     }

@@ -1986,6 +1986,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 
 
 
@@ -2004,63 +2009,36 @@ __webpack_require__.r(__webpack_exports__);
     mask: vue_the_mask__WEBPACK_IMPORTED_MODULE_0__["mask"]
   },
   mounted: function mounted() {
-    console.log("FORM", this.$route.params.address);
+    var _this = this;
+
     var newThis = this;
 
     if (this.$route.name === "edit") {
-      this.mode = "edit";
+      this.isEdit = true;
 
       if (window.project == undefined) {
         axios.get("/project/" + this.$route.params.id + "/edit").then(function (response) {
           console.log("AXIOS");
           console.log(response);
-
-          for (var prop in newThis.dealer) {
-            newThis.dealer[prop].data = response.data.dealer[prop];
-          }
-
-          for (var _prop in newThis.form) {
-            if (_prop === "opponents") {
-              response.data.opponents.forEach(function (item) {
-                newThis.form.opponents.data.push(item.name);
-              });
-            } else {
-              newThis.form[_prop].data = response.data[_prop];
-            }
-          }
+          _this.testData = response.data;
         })["catch"](function (error) {
           console.log(error);
         });
       } else {
         console.log("BLADE");
         console.log(window.project);
-
-        for (var prop in newThis.dealer) {
-          newThis.dealer[prop].data = window.project.dealer[prop];
-        }
-
-        for (var _prop2 in newThis.form) {
-          if (_prop2 === "opponents") {
-            window.project.opponents.forEach(function (item) {
-              newThis.form.opponents.data.push(item.name);
-            });
-          } else {
-            newThis.form[_prop2].data = window.project[_prop2];
-          }
-        }
-
-        window.project = undefined;
+        this.testData = window.project;
       }
     } else {
       if (this.$route.params.address) {
-        console.log("SIGN");
         this.address = this.$route.params.address;
       }
     }
   },
   data: function data() {
     return {
-      mode: "create",
+      testData: {},
+      isEdit: false,
       dialog: false,
       address: null,
       formData: {}
@@ -2068,10 +2046,14 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     addForm: function addForm() {
-      var _this = this;
+      var _this2 = this;
 
       axios.post("/project", this.formData).then(function (response) {
-        _this.dialog = false;
+        _this2.dialog = false;
+
+        _this2.$router.push({
+          name: "home"
+        });
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2642,10 +2624,7 @@ __webpack_require__.r(__webpack_exports__);
     edit: function edit() {
       console.log(window.project);
       this.$router.push({
-        name: "edit",
-        params: {
-          mode: "edit"
-        }
+        name: "edit"
       });
     },
     back: function back() {
@@ -2697,11 +2676,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
     StaffComponent: _StaffComponent__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
+  props: ["isEdit", "customerData"],
   data: function data() {
     return {
       search: "",
@@ -2714,6 +2695,10 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   watch: {
+    customerData: function customerData(val) {
+      console.log("DOG", this.dealerData);
+      this.company = val;
+    },
     company: function company(val) {
       var _this = this;
 
@@ -2820,12 +2805,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
  //7728168971
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
     StaffComponent: _StaffComponent__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
+  props: ["isEdit", "dealerData"],
   data: function data() {
     return {
       search: "",
@@ -2838,6 +2825,10 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   watch: {
+    dealerData: function dealerData(val) {
+      console.log("MONKEY", this.dealerData);
+      this.company = val;
+    },
     company: function company(val) {
       var _this = this;
 
@@ -2873,16 +2864,18 @@ __webpack_require__.r(__webpack_exports__);
       var _this3 = this;
 
       if (!this.dealer.id) {
+        console.log(1);
         axios.post("/dealer", {
           dealer: this.company,
           staff_id: staff
         }).then(function (response) {
-          _this3.$emit('dealer', {
+          _this3.$emit("dealer", {
             dealer_id: response.data.id,
             dealer_staff_id: staff
           });
         });
       } else {
+        console.log(2);
         axios.post("/dealer", {
           dealer: {
             inn: this.company.inn,
@@ -2892,7 +2885,7 @@ __webpack_require__.r(__webpack_exports__);
           },
           staff_id: staff
         }).then(function (response) {
-          _this3.$emit('dealer', {
+          _this3.$emit("dealer", {
             dealer_id: response.data.id,
             dealer_staff_id: staff
           });
@@ -2942,6 +2935,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: ["opponentsData"],
   data: function data() {
     return {
       opponent: null,
@@ -2951,13 +2945,23 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   watch: {
+    opponentsData: function opponentsData(val) {
+      var _this = this;
+
+      console.log('FISH', val);
+      val.forEach(function (item) {
+        _this.opponents.push(item.name);
+
+        _this.ids.push(item.id);
+      });
+    },
     ids: function ids(val) {
       this.$emit("opponents", val);
     }
   },
   methods: {
     input: function input(value) {
-      var _this = this;
+      var _this2 = this;
 
       if (value === "") return;
 
@@ -2970,7 +2974,7 @@ __webpack_require__.r(__webpack_exports__);
         name: value
       };
       axios.post("/opponent", opponent).then(function (response) {
-        _this.ids.push(response.data.id); // this.$set(this.ids, this.ids.length, response.data.id);
+        _this2.ids.push(response.data.id); // this.$set(this.ids, this.ids.length, response.data.id);
 
       })["catch"](function (error) {
         console.log(error);
@@ -3111,9 +3115,38 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: ["productsData"],
   data: function data() {
     return {
+      headers: [{
+        text: "Название продукта",
+        align: "left",
+        value: "name"
+      }, {
+        text: "Количество",
+        value: "pivot.count"
+      }, {
+        text: "Цена за единицу (₽)",
+        value: "pivot.price"
+      }, {
+        text: "Общая стоимость (₽)",
+        value: "pivot.total"
+      }, {
+        text: "",
+        sortable: false
+      }],
       valid: true,
       dialog: false,
       products: [],
@@ -3128,6 +3161,13 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   watch: {
+    productsData: function productsData(val) {
+      console.log("CAT", val);
+      this.products = val;
+      this.products.forEach(function (item) {
+        item.pivot.total = item.pivot.count * item.pivot.price;
+      });
+    },
     search: function search() {
       this.inputArticle();
     },
@@ -3309,13 +3349,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     if (this.address_prop) {
       this.address = this.address_prop;
     }
+
+    console.log("MACHETE");
   },
-  props: ["address_prop"],
+  props: ["address_prop", "isEdit", "projectData"],
   data: function data() {
     return {
       name: null,
@@ -3330,6 +3373,14 @@ __webpack_require__.r(__webpack_exports__);
   watch: {
     address_prop: function address_prop(value) {
       this.address = value;
+    },
+    projectData: function projectData(value) {
+      console.log("LION", this.projectData);
+      this.name = this.projectData.name;
+      this.address = this.projectData.address;
+      this.work = this.projectData.work;
+      this.date = this.projectData.date;
+      this.time = this.projectData.time;
     }
   },
   methods: {
@@ -3405,10 +3456,38 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["entity", "mode"],
   data: function data() {
     return {
+      phoneRules: [function (v) {
+        return !!v || "Введите номер телефона";
+      }, function (v) {
+        return /^(([0-9]){10})$/.test(v) || "Неверный формат номера";
+      }],
+      emailRules: [function (v) {
+        return !!v || "Введите почту";
+      }, function (v) {
+        return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v) || "Неверный формат почты";
+      }],
+      valid: true,
       dialog: false,
       isLoading: false,
       agent_id: null,
@@ -3453,16 +3532,18 @@ __webpack_require__.r(__webpack_exports__);
     addAgent: function addAgent() {
       var _this2 = this;
 
-      this.dialog = false;
-      axios.post("/staff", this.agentForm).then(function (request) {
-        _this2.agents.push(request.data);
+      if (this.$refs.form.validate()) {
+        this.dialog = false;
+        axios.post("/staff", this.agentForm).then(function (request) {
+          _this2.agents.push(request.data);
 
-        _this2.agent_id = request.data.id;
-      }), this.agentForm = {
-        name: null,
-        phone: null,
-        email: null
-      };
+          _this2.agent_id = request.data.id;
+        }), this.agentForm = {
+          name: null,
+          phone: null,
+          email: null
+        };
+      }
     },
     closeDialog: function closeDialog() {
       this.dialog = false;
@@ -39706,24 +39787,10 @@ var render = function() {
           _c(
             "v-col",
             { attrs: { cols: "6" } },
-            [_c("DealerComponent", { on: { dealer: _vm.saveDealer } })],
-            1
-          ),
-          _vm._v(" "),
-          _c(
-            "v-col",
-            { attrs: { cols: "6" } },
-            [_c("CustomerComponent", { on: { customer: _vm.saveCustomer } })],
-            1
-          ),
-          _vm._v(" "),
-          _c(
-            "v-col",
-            { attrs: { cols: "12" } },
             [
-              _c("ProjectComponent", {
-                attrs: { address_prop: _vm.address },
-                on: { project: _vm.saveProject }
+              _c("DealerComponent", {
+                attrs: { dealerData: _vm.testData.dealer, isEdit: _vm.isEdit },
+                on: { dealer: _vm.saveDealer }
               })
             ],
             1
@@ -39732,14 +39799,61 @@ var render = function() {
           _c(
             "v-col",
             { attrs: { cols: "6" } },
-            [_c("OpponentComponent", { on: { opponents: _vm.saveOpponents } })],
+            [
+              _c("CustomerComponent", {
+                attrs: {
+                  customerData: _vm.testData.customer,
+                  isEdit: _vm.isEdit
+                },
+                on: { customer: _vm.saveCustomer }
+              })
+            ],
             1
           ),
           _vm._v(" "),
           _c(
             "v-col",
-            { attrs: { cols: "6" } },
-            [_c("ProductComponent", { on: { products: _vm.saveProducts } })],
+            { attrs: { cols: "12" } },
+            [
+              _c("ProjectComponent", {
+                attrs: {
+                  address_prop: _vm.address,
+                  isEdit: _vm.isEdit,
+                  projectData: {
+                    name: _vm.testData.name,
+                    address: _vm.testData.address,
+                    work: _vm.testData.work,
+                    date: _vm.testData.date,
+                    time: _vm.testData.time
+                  }
+                },
+                on: { project: _vm.saveProject }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "v-col",
+            { attrs: { cols: "5" } },
+            [
+              _c("OpponentComponent", {
+                attrs: { opponentsData: _vm.testData.opponents },
+                on: { opponents: _vm.saveOpponents }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "v-col",
+            { attrs: { cols: "7" } },
+            [
+              _c("ProductComponent", {
+                attrs: { productsData: _vm.testData.products },
+                on: { products: _vm.saveProducts }
+              })
+            ],
             1
           )
         ],
@@ -39747,14 +39861,9 @@ var render = function() {
       ),
       _vm._v(" "),
       _vm.$route.name === "edit"
-        ? _c(
-            "v-btn",
-            {
-              attrs: { block: "", color: "indigo", outlined: "" },
-              on: { click: _vm.validate }
-            },
-            [_vm._v("Изменить форму")]
-          )
+        ? _c("v-btn", { attrs: { block: "", color: "indigo", outlined: "" } }, [
+            _vm._v("Изменить форму")
+          ])
         : _c(
             "v-btn",
             {
@@ -40620,7 +40729,8 @@ var render = function() {
               "no-filter": "",
               "return-object": "",
               "item-text": "name",
-              loading: _vm.isLoading
+              loading: _vm.isLoading,
+              disabled: _vm.isEdit
             },
             on: {
               "update:searchInput": function($event) {
@@ -40722,7 +40832,8 @@ var render = function() {
               "no-filter": "",
               "return-object": "",
               "item-text": "name",
-              loading: _vm.isLoading
+              loading: _vm.isLoading,
+              disabled: _vm.isEdit
             },
             on: {
               "update:searchInput": function($event) {
@@ -41244,88 +41355,52 @@ var render = function() {
               ),
               _vm._v(" "),
               _vm.products.length
-                ? _c("v-simple-table", {
-                    staticClass: "table",
+                ? _c("v-data-table", {
+                    staticClass: "elevation-1",
+                    attrs: {
+                      headers: _vm.headers,
+                      items: _vm.products,
+                      "item-key": "name"
+                    },
                     scopedSlots: _vm._u(
                       [
                         {
-                          key: "default",
-                          fn: function() {
+                          key: "item",
+                          fn: function(ref) {
+                            var item = ref.item
                             return [
-                              _c("thead", [
-                                _c("tr", [
-                                  _c("th", { staticClass: "text-left" }, [
-                                    _vm._v("Артикул")
-                                  ]),
-                                  _vm._v(" "),
-                                  _c("th", { staticClass: "text-left" }, [
-                                    _vm._v("Наименование")
-                                  ]),
-                                  _vm._v(" "),
-                                  _c("th", { staticClass: "text-left" }, [
-                                    _vm._v("Количество")
-                                  ]),
-                                  _vm._v(" "),
-                                  _c("th", { staticClass: "text-left" }, [
-                                    _vm._v("Цена")
-                                  ]),
-                                  _vm._v(" "),
-                                  _c("th", { staticClass: "text-left" }, [
-                                    _vm._v("Итог")
-                                  ])
-                                ])
-                              ]),
+                              _c("td", [_vm._v(_vm._s(item.name))]),
+                              _vm._v(" "),
+                              _c("td", [_vm._v(_vm._s(item.count))]),
+                              _vm._v(" "),
+                              _c("td", [_vm._v(_vm._s(item.price))]),
+                              _vm._v(" "),
+                              _c("td", [_vm._v(_vm._s(item.total))]),
                               _vm._v(" "),
                               _c(
-                                "tbody",
-                                _vm._l(_vm.products, function(item, i) {
-                                  return _c(
-                                    "tr",
-                                    { key: i, attrs: { valign: "middle" } },
-                                    [
-                                      _c("td", [_vm._v(_vm._s(item.code))]),
-                                      _vm._v(" "),
-                                      _c("td", [_vm._v(_vm._s(item.name))]),
-                                      _vm._v(" "),
-                                      _c("td", [_vm._v(_vm._s(item.count))]),
-                                      _vm._v(" "),
-                                      _c("td", [_vm._v(_vm._s(item.price))]),
-                                      _vm._v(" "),
-                                      _c("td", [_vm._v(_vm._s(item.total))]),
-                                      _vm._v(" "),
-                                      _c(
-                                        "td",
-                                        [
-                                          _c(
-                                            "v-icon",
-                                            {
-                                              on: {
-                                                click: function($event) {
-                                                  return _vm.removeProduct(
-                                                    item,
-                                                    i
-                                                  )
-                                                }
-                                              }
-                                            },
-                                            [_vm._v("mdi-minus-circle-outline")]
-                                          )
-                                        ],
-                                        1
-                                      )
-                                    ]
+                                "td",
+                                [
+                                  _c(
+                                    "v-icon",
+                                    {
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.removeProduct(item, _vm.i)
+                                        }
+                                      }
+                                    },
+                                    [_vm._v("mdi-minus-circle-outline")]
                                   )
-                                }),
-                                0
+                                ],
+                                1
                               )
                             ]
-                          },
-                          proxy: true
+                          }
                         }
                       ],
                       null,
                       false,
-                      3765538223
+                      1340021514
                     )
                   })
                 : _vm._e()
@@ -41371,7 +41446,7 @@ var render = function() {
         "v-card-text",
         [
           _c("v-text-field", {
-            attrs: { label: "Название", outlined: "" },
+            attrs: { label: "Название", outlined: "", readonly: _vm.isEdit },
             on: { change: _vm.sendData },
             model: {
               value: _vm.name,
@@ -41383,7 +41458,7 @@ var render = function() {
           }),
           _vm._v(" "),
           _c("v-text-field", {
-            attrs: { label: "Адрес", outlined: "" },
+            attrs: { label: "Адрес", outlined: "", readonly: _vm.isEdit },
             on: { change: _vm.sendData },
             model: {
               value: _vm.address,
@@ -41507,7 +41582,8 @@ var render = function() {
                         "nudge-right": 20,
                         transition: "scale-transition",
                         "offset-y": "",
-                        "min-width": "290px"
+                        "min-width": "290px",
+                        disabled: _vm.isEdit
                       },
                       scopedSlots: _vm._u([
                         {
@@ -41695,58 +41771,91 @@ var render = function() {
                     "v-card-text",
                     [
                       _c(
-                        "v-row",
+                        "v-form",
+                        {
+                          ref: "form",
+                          attrs: { "lazy-validation": "" },
+                          model: {
+                            value: _vm.valid,
+                            callback: function($$v) {
+                              _vm.valid = $$v
+                            },
+                            expression: "valid"
+                          }
+                        },
                         [
                           _c(
-                            "v-col",
-                            { attrs: { cols: "12" } },
+                            "v-row",
                             [
-                              _c("v-text-field", {
-                                attrs: { label: "Имя", outlined: "" },
-                                model: {
-                                  value: _vm.agentForm.name,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.agentForm, "name", $$v)
-                                  },
-                                  expression: "agentForm.name"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "v-col",
-                            { attrs: { cols: "12", md: "6" } },
-                            [
-                              _c("v-text-field", {
-                                attrs: { label: "Телефон", outlined: "" },
-                                model: {
-                                  value: _vm.agentForm.phone,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.agentForm, "phone", $$v)
-                                  },
-                                  expression: "agentForm.phone"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "v-col",
-                            { attrs: { cols: "12", md: "6" } },
-                            [
-                              _c("v-text-field", {
-                                attrs: { label: "Почта", outlined: "" },
-                                model: {
-                                  value: _vm.agentForm.email,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.agentForm, "email", $$v)
-                                  },
-                                  expression: "agentForm.email"
-                                }
-                              })
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12" } },
+                                [
+                                  _c("v-text-field", {
+                                    attrs: {
+                                      label: "Имя",
+                                      outlined: "",
+                                      rules: [
+                                        function(v) {
+                                          return !!v || "Введите имя"
+                                        }
+                                      ]
+                                    },
+                                    model: {
+                                      value: _vm.agentForm.name,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.agentForm, "name", $$v)
+                                      },
+                                      expression: "agentForm.name"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", md: "6" } },
+                                [
+                                  _c("v-text-field", {
+                                    attrs: {
+                                      label: "Телефон",
+                                      outlined: "",
+                                      rules: _vm.phoneRules
+                                    },
+                                    model: {
+                                      value: _vm.agentForm.phone,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.agentForm, "phone", $$v)
+                                      },
+                                      expression: "agentForm.phone"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", md: "6" } },
+                                [
+                                  _c("v-text-field", {
+                                    attrs: {
+                                      label: "Почта",
+                                      outlined: "",
+                                      rules: _vm.emailRules
+                                    },
+                                    model: {
+                                      value: _vm.agentForm.email,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.agentForm, "email", $$v)
+                                      },
+                                      expression: "agentForm.email"
+                                    }
+                                  })
+                                ],
+                                1
+                              )
                             ],
                             1
                           )

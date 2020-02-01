@@ -5,29 +5,34 @@
 
     <v-row>
       <v-col cols="6">
-        <DealerComponent @dealer="saveDealer"></DealerComponent>
+        <DealerComponent :dealerData="testData.dealer" :isEdit="isEdit" @dealer="saveDealer"></DealerComponent>
       </v-col>
       <v-col cols="6">
-        <CustomerComponent @customer="saveCustomer"></CustomerComponent>
+        <CustomerComponent :customerData="testData.customer" :isEdit="isEdit" @customer="saveCustomer"></CustomerComponent>
       </v-col>
       <v-col cols="12">
-        <ProjectComponent v-bind:address_prop="address" @project="saveProject"></ProjectComponent>
+        <ProjectComponent
+          :address_prop="address"
+          :isEdit="isEdit"
+          :projectData="{
+            name: testData.name,
+            address: testData.address,
+            work: testData.work,
+            date: testData.date,
+            time: testData.time,
+          }"
+          @project="saveProject"
+        ></ProjectComponent>
       </v-col>
-      <v-col cols="6">
-        <OpponentComponent @opponents="saveOpponents"></OpponentComponent>
+      <v-col cols="5">
+        <OpponentComponent :opponentsData="testData.opponents" @opponents="saveOpponents"></OpponentComponent>
       </v-col>
-      <v-col cols="6">
-        <ProductComponent @products="saveProducts"></ProductComponent>
+      <v-col cols="7">
+        <ProductComponent :productsData="testData.products" @products="saveProducts"></ProductComponent>
       </v-col>
     </v-row>
     <!-- <v-form ref="form" v-model="valid" lazy-validation> -->
-    <v-btn
-      v-if="$route.name === 'edit'"
-      block
-      color="indigo"
-      outlined
-      @click="validate"
-    >Изменить форму</v-btn>
+    <v-btn v-if="$route.name === 'edit'" block color="indigo" outlined>Изменить форму</v-btn>
     <v-btn v-else block color="indigo" outlined @click="dialog = true">Добавить форму</v-btn>
     <!-- </v-form> -->
 
@@ -64,60 +69,35 @@ export default {
   directives: { mask },
 
   mounted() {
-    console.log("FORM", this.$route.params.address);
     let newThis = this;
     if (this.$route.name === "edit") {
-      this.mode = "edit";
+      this.isEdit = true;
       if (window.project == undefined) {
         axios
           .get("/project/" + this.$route.params.id + "/edit")
-          .then(function(response) {
+          .then(response => {
             console.log("AXIOS");
             console.log(response);
-            for (let prop in newThis.dealer) {
-              newThis.dealer[prop].data = response.data.dealer[prop];
-            }
-            for (let prop in newThis.form) {
-              if (prop === "opponents") {
-                response.data.opponents.forEach(item => {
-                  newThis.form.opponents.data.push(item.name);
-                });
-              } else {
-                newThis.form[prop].data = response.data[prop];
-              }
-            }
+            this.testData = response.data;
           })
-          .catch(function(error) {
+          .catch(error => {
             console.log(error);
           });
       } else {
         console.log("BLADE");
         console.log(window.project);
-        for (let prop in newThis.dealer) {
-          newThis.dealer[prop].data = window.project.dealer[prop];
-        }
-        for (let prop in newThis.form) {
-          if (prop === "opponents") {
-            window.project.opponents.forEach(item => {
-              newThis.form.opponents.data.push(item.name);
-            });
-          } else {
-            newThis.form[prop].data = window.project[prop];
-          }
-        }
-        window.project = undefined;
+        this.testData = window.project;
       }
     } else {
       if (this.$route.params.address) {
-        console.log("SIGN");
-
         this.address = this.$route.params.address;
       }
     }
   },
 
   data: () => ({
-    mode: "create",
+    testData: {},
+    isEdit: false,
     dialog: false,
     address: null,
     formData: {}
@@ -129,6 +109,9 @@ export default {
         .post("/project", this.formData)
         .then(response => {
           this.dialog = false;
+          this.$router.push({
+            name: "home"
+          });
         })
         .catch(error => {
           console.log(error);

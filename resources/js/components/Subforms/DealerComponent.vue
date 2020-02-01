@@ -14,6 +14,7 @@
         return-object
         item-text="name"
         :loading="isLoading"
+        :disabled="isEdit"
       >
         <template v-slot:item="{ item }">{{item.name}}, КПП:{{item.kpp}}</template>
         <template v-slot:selection="{ item }">{{item.inn}}, КПП:{{item.kpp}}</template>
@@ -33,6 +34,7 @@ export default {
   components: {
     StaffComponent
   },
+  props: ["isEdit", "dealerData"],
   data: () => ({
     search: "",
     company: { inn: "" },
@@ -42,6 +44,11 @@ export default {
   }),
 
   watch: {
+    dealerData(val) {
+      console.log("MONKEY", this.dealerData);
+      this.company = val;
+    },
+
     company(val) {
       axios
         .post("/dealer/findDealer", { inn: val.inn, kpp: val.kpp })
@@ -78,15 +85,18 @@ export default {
   methods: {
     saveStaff(staff) {
       if (!this.dealer.id) {
+        console.log(1);
         axios
           .post("/dealer", { dealer: this.company, staff_id: staff })
           .then(response => {
-            this.$emit('dealer', {
+            this.$emit("dealer", {
               dealer_id: response.data.id,
               dealer_staff_id: staff
             });
           });
       } else {
+        console.log(2);
+
         axios
           .post("/dealer", {
             dealer: {
@@ -98,7 +108,7 @@ export default {
             staff_id: staff
           })
           .then(response => {
-            this.$emit('dealer', {
+            this.$emit("dealer", {
               dealer_id: response.data.id,
               dealer_staff_id: staff
             });
