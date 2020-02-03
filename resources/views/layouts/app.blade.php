@@ -30,7 +30,7 @@
         text-decoration: none;
         cursor: pointer;
         border-radius: 25px;
-
+        border: 1px solid transparent;
     }
     .link:hover {
         border: 1px solid black;

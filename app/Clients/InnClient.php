@@ -10,9 +10,6 @@ class InnClient extends GuzzleClient
 
     private function __construct(array $config = [])
     {
-        // $headers = ['Content-Type' => 'application/json', 'Accept' => 'application/json', 'Authorization' => 'Token 9a4f6cd37ac0af31b81068987f7a5e5fedb673da'];
-        // $request = new GRequest('POST', 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party', $headers, json_encode($body));
-
         $headers = [
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',

@@ -2,20 +2,26 @@
   <v-card class="mx-auto" v-if="projectData">
     <v-card-title>Проект</v-card-title>
     <v-card-text>
-      <v-text-field v-model="name" label="Название" outlined @change="sendData" :readonly="isEdit"></v-text-field>
       <v-text-field
-              v-model="address"
-              label="Адрес"
-              outlined
-              :rules="[v => (v && v.length >= 10) || 'Name must be less than 10 characters']"
-
-              @change="sendData"
-              :readonly="isEdit"></v-text-field>
+        v-model="projectData.name"
+        label="Название"
+        outlined
+        @change="sendData"
+        :readonly="isEdit"
+        :rules="[v => !!v || 'Name is required']"
+      ></v-text-field>
+      <v-text-field
+        v-model="projectData.address"
+        label="Адрес"
+        outlined
+        :rules="[v => !!v || 'Address is required']"
+        @change="sendData"
+        :readonly="isEdit"
+      ></v-text-field>
       <v-textarea
         v-model="projectData.work"
         height="200"
         no-resize
-        :rules="[v => (v && v.length <= 10) || 'Name must be less than 10 characters']"
         outlined
         label="Проделанная работа"
         @change="sendData"
@@ -31,13 +37,20 @@
             min-width="290px"
           >
             <template v-slot:activator="{ on }">
-              <v-text-field v-model="date" label="Срок реализации" readonly outlined v-on="on"></v-text-field>
+              <v-text-field
+                v-model="projectData.date"
+                label="Срок реализации"
+                readonly
+                outlined
+                v-on="on"
+                :rules="[v => !!v || 'Date is required']"
+              ></v-text-field>
             </template>
             <v-date-picker
               no-title
               scrollable
               locale="Rus"
-              v-model="date"
+              v-model="projectData.date"
               @input="dateMenu = false"
               @change="sendData"
             ></v-date-picker>
@@ -54,13 +67,20 @@
             :disabled="isEdit"
           >
             <template v-slot:activator="{ on }">
-              <v-text-field v-model="time" label="Дата заключения" readonly outlined v-on="on"></v-text-field>
+              <v-text-field
+                v-model="projectData.time"
+                label="Дата заключения"
+                readonly
+                outlined
+                v-on="on"
+                :rules="[v => !!v || 'Date is required']"
+              ></v-text-field>
             </template>
             <v-date-picker
               no-title
               scrollable
               locale="Rus"
-              v-model="time"
+              v-model="projectData.time"
               @input="timeMenu = false"
               @change="sendData"
             ></v-date-picker>
@@ -73,49 +93,26 @@
 
 <script>
 export default {
-  mounted() {
-    if (this.address_prop) {
-      this.address = this.address_prop;
-    }
-    console.log("MACHETE");
-  },
+  // mounted() {
+  //   console.log('Updated');
+  //   this.sendData();
+  // },
+
   props: ["address_prop", "isEdit", "projectData"],
+
   data: () => ({
-    name: null,
-    address: null,
-    work: null,
-    date: new Date().toISOString().substr(0, 10),
-    time: new Date().toISOString().substr(0, 10),
     dateMenu: false,
-      instans:{},
     timeMenu: false
   }),
-mounted(){
-    this.instans = this.$props
-},
-
-  watch: {
-    address_prop(value) {
-      this.address = value;
-    },
-
-    /*projectData(value, oldValue) {
-
-        if(oldValue.name!==undefined) return;
-        console.log('Reload');
-        console.log(value,oldValue);*/
-
-  //  }
-  },
 
   methods: {
     sendData() {
       this.$emit("project", {
-        name: this.name,
-        address: this.address,
-        work: this.work,
-        date: this.date,
-        time: this.time
+        name: this.projectData.name,
+        address: this.projectData.address,
+        work: this.projectData.work,
+        date: this.projectData.date,
+        time: this.projectData.time
       });
     }
   }

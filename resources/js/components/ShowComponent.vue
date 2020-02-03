@@ -130,11 +130,21 @@
               <v-expansion-panel-header class="title">Детали</v-expansion-panel-header>
               <v-expansion-panel-content>
                 <v-data-table
+                  v-if="products.length"
                   :headers="headers"
                   :items="products"
                   item-key="name"
                   class="elevation-1"
-                ></v-data-table>
+                >
+                  <template v-slot:item="{ item }">
+                    <tr>
+                      <td>{{ item.name }}</td>
+                      <td>{{ item.pivot.count }}</td>
+                      <td>{{ item.pivot.price }}</td>
+                      <td>{{ item.pivot.total }}</td>
+                    </tr>
+                  </template>
+                </v-data-table>
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-expansion-panels>

@@ -19,7 +19,6 @@ class DataController extends Controller
         $response = json_decode($response->getBody()->getContents());
         $result = [];
         foreach ($response->suggestions as $item) {
-
             $result[] = [
                 'inn' => $item->data->inn,
                 'kpp' => $item->data->kpp,
@@ -34,7 +33,6 @@ class DataController extends Controller
     {
         $client = ZkabelClient::getInstance();
         $response = $client->get('catalog/findItemByArticle/?q=' . $id);
-
 
         return $response->getBody();
     }

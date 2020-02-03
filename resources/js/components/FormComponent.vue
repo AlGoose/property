@@ -1,51 +1,57 @@
 <template>
   <v-container fluid>
-     <v-form
-             ref="form"
-             v-model="valid"
-             lazy-validation>
-    <h3 align="center" v-if="$route.name === 'edit'">Изменение проекта</h3>
-    <h3 align="center" v-else>Создание проекта</h3>
+    <v-form ref="form" v-model="valid" lazy-validation>
+      <h3 align="center" v-if="$route.name === 'edit'">Изменение проекта</h3>
+      <h3 align="center" v-else>Создание проекта</h3>
 
-    <v-row>
-      <v-col cols="6">
-        <DealerComponent :dealerData="testData.dealer" :isEdit="isEdit"  @dealer="saveDealer"></DealerComponent>
-      </v-col>
-      <v-col cols="6">
-        <CustomerComponent :customerData="testData.customer" :isEdit="isEdit" @customer="saveCustomer"></CustomerComponent>
-      </v-col>
-      <v-col cols="12">
-        <ProjectComponent
-          :address_prop="address"
-          :isEdit="isEdit"
-          :projectData="testData"
-          @project="saveProject"
-        ></ProjectComponent>
-      </v-col>
-      <v-col cols="5">
-        <OpponentComponent :opponentsData="testData.opponents" @opponents="saveOpponents"></OpponentComponent>
-      </v-col>
-      <v-col cols="7">
-        <ProductComponent :productsData="testData.products" @products="saveProducts"></ProductComponent>
-      </v-col>
-    </v-row>
-    <!-- <v-form ref="form" v-model="valid" lazy-validation> -->
-    <v-btn v-if="$route.name === 'edit'" block color="indigo" @click="dialog = true" outlined>Изменить форму</v-btn>
-    <v-btn v-else block color="indigo" outlined @click="dialog = true">Добавить форму</v-btn>
-    <!-- </v-form> -->
+      <v-row>
+        <v-col cols="6">
+          <DealerComponent :dealerData="testData.dealer" :isEdit="isEdit" @dealer="saveDealer"></DealerComponent>
+        </v-col>
+        <v-col cols="6">
+          <CustomerComponent
+            :customerData="testData.customer"
+            :isEdit="isEdit"
+            @customer="saveCustomer"
+          ></CustomerComponent>
+        </v-col>
+        <v-col cols="12">
+          <ProjectComponent
+            :address_prop="address"
+            :isEdit="isEdit"
+            :projectData="testData"
+            @project="saveProject"
+          ></ProjectComponent>
+        </v-col>
+        <v-col cols="5">
+          <OpponentComponent :opponentsData="testData.opponents" @opponents="saveOpponents"></OpponentComponent>
+        </v-col>
+        <v-col cols="7">
+          <ProductComponent :productsData="testData.products" @products="saveProducts"></ProductComponent>
+        </v-col>
+      </v-row>
 
-    <v-row justify="center">
-      <v-dialog v-model="dialog" width="210px">
-        <v-card>
-          <v-card-title>Все верно?</v-card-title>
-          <v-card-actions>
-            <v-btn depressed color="error" @click="dialog = false">Отмена</v-btn>
-            <v-btn depressed color="success" @click="addForm">Добавить</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-row>
-     </v-form>
+      <v-btn
+        v-if="$route.name === 'edit'"
+        block
+        color="indigo"
+        @click="validate"
+        outlined
+      >Изменить форму</v-btn>
+      <v-btn v-else block color="indigo" outlined @click="validate">Добавить форму</v-btn>
+
+      <v-row justify="center">
+        <v-dialog v-model="dialog" width="210px">
+          <v-card>
+            <v-card-title>Все верно?</v-card-title>
+            <v-card-actions>
+              <v-btn depressed color="error" @click="dialog = false">Отмена</v-btn>
+              <v-btn depressed color="success" @click="isEdit ? editForm() : addForm()">Добавить</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-row>
+    </v-form>
   </v-container>
 </template>
 
@@ -68,7 +74,7 @@ export default {
   directives: { mask },
 
   mounted() {
-      console.log('mounted')
+    console.log("mounted");
 
     let newThis = this;
     if (this.$route.name === "edit") {
@@ -89,7 +95,6 @@ export default {
         console.log("BLADE");
         console.log(window.project);
         this.testData = window.project;
-
       }
     } else {
       if (this.$route.params.address) {
@@ -104,18 +109,12 @@ export default {
     dialog: false,
     address: null,
     formData: {},
-      valid: true,
+    valid: true
   }),
-    watch:{
-        testData(val){
-          console.log('change testData')
-      }
-    },
 
   methods: {
     addForm() {
-        this.validate();
-        if(!this.valid) return;
+      console.log('ADDFORM');
       axios
         .post("/project", this.formData)
         .then(response => {
@@ -128,11 +127,27 @@ export default {
           console.log(error);
         });
     },
-      validate () {
-          if (this.$refs.form.validate()) {
-              this.snackbar = true
-          }
-      },
+
+    editForm() {
+      console.log('EDITFORM');
+      axios
+        .put("/project/" + this.$route.params.id, this.formData)
+        .then(response => {
+          this.dialog = false;
+          this.$router.go(-1);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    validate() {
+      if (this.$refs.form.validate()) {
+        console.log('NORM');
+        this.dialog = true
+      }
+    },
+
     saveDealer(value) {
       this.formData.dealer = value;
       console.log("FormData | ", this.formData);

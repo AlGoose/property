@@ -69,7 +69,7 @@ class ProjectController extends Controller
      */
     public function store(ProjectRequest $request)
     {
-        \Debugbar::info($request->all());
+        // \Debugbar::info($request->all());
         $project = new Project($request->project);
 
         $project->user()->associate(\Auth::user());
@@ -116,7 +116,7 @@ class ProjectController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request, Project $project) //TODO: Добавить view
+    public function edit(Request $request, Project $project)
     {
         $project->user = $project->user()->first();
 
@@ -124,7 +124,7 @@ class ProjectController extends Controller
         $project->dealer->current_staff = $project->dealer_staff()->first();
 
         $project->customer = $project->customer()->first();
-        $project->customer_staff = $project->customer_staff()->first();
+        $project->customer->current_staff = $project->customer_staff()->first();
 
         $project->opponents = $project->opponents()->get();
         $project->products = $project->products()->get();
@@ -141,14 +141,19 @@ class ProjectController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Project $project)
     {
-        $project = Project::find($id);
-        $project = $request->all();
+        // \Debugbar::info($request->all());
+
+        $project->work = $request->project['work'];
+        $project->date = $request->project['date'];
+        $project->time = $request->project['time'];
+        $project->customer_staff()->associate(Staff::find($request->customer['customer_staff_id']));
+        $project->dealer_staff()->associate(Staff::find($request->dealer['dealer_staff_id']));
         $project->save();
-        //TODO: Так можно?
-        $project->name = $request->namespace;
-        //... или таким образом? Или еще как?
+
+        $project->opponents()->sync($request->opponents);
+        $project->products()->sync($request->products);   
     }
 
     /**

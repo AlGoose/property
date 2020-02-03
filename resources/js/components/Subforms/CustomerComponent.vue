@@ -46,8 +46,11 @@ export default {
 
   watch: {
     customerData(val) {
-      console.log("DOG", this.dealerData);
-      this.company = val;
+      console.log("DOG", this.customerData);
+      if (this.isEdit) {
+        this.company = val;
+        this.companies.push(val);
+      }
     },
 
     company(val) {
@@ -58,6 +61,16 @@ export default {
             this.customer = {};
           } else {
             this.customer = response.data;
+          }
+          if (
+            this.customerData !== undefined &&
+            this.customerData.current_staff !== undefined
+          ) {
+            this.$set(
+              this.customer,
+              "current_staff",
+              this.customerData.current_staff
+            );
           }
         })
         .catch(e => {

@@ -12,7 +12,7 @@
 */
 Auth::routes();
 
-Route::get('/addresses', 'ProjectController@addresses');
+Route::post('/addresses', 'AddressController@addresses');
 
 Route::post('/dealer/findDealer/', 'DealerController@findDealer');
 Route::post('/customer/findCustomer/', 'CustomerController@findCustomer');

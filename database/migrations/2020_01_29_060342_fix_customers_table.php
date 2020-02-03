@@ -31,6 +31,7 @@ class FixCustomersTable extends Migration
         Schema::table('customers', function (Blueprint $table) {
             $table->dropColumn('kpp');
             $table->dropColumn('address');
+            $table->integer('inn')->change();
             $table->dropSoftDeletes();
         });
     }
