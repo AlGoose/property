@@ -21,6 +21,7 @@ class AddressController extends Controller
 
   public function addresses(Request $request)
   {
+    \Debugbar::info($request->all());
     if ($request->address == '') {
       return array();
     } else {

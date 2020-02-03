@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Staff;
 use Illuminate\Http\Request;
 
 class StaffController extends Controller
@@ -39,6 +40,9 @@ class StaffController extends Controller
     public function store(Request $request)
     {
         //
+        \Debugbar::info($request->all());
+        $staff = Staff::create($request->all());
+        return $staff;
     }
 
     /**

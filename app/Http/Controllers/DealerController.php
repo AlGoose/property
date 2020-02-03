@@ -4,9 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Dealer;
 use App\Staff;
-// use Illuminate\Http\Request;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Client;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
 
 class DealerController extends Controller
 {
@@ -14,6 +13,7 @@ class DealerController extends Controller
     {
         $this->middleware('auth');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -37,35 +37,45 @@ class DealerController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        \Debugbar::info($request->all());
-
-        $dealer = Dealer::firstOrCreate(
-            ['inn' => $request->inn],
-            ['name' => $request->name]
-        );
+        // \Debugbar::info($request->all());
+        $dealer = Dealer::firstOrCreate($request->dealer);
+        $staff = Staff::find($request->staff_id);
+        $staff->entity()->associate($dealer)->save();
         return $dealer;
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Dealer $dealer)
     {
+        return $dealer;
         //
+    }
+
+    public function findDealer(Request $request)
+    {
+        \Debugbar::info($request->all());
+        try {
+            $result = Dealer::where(['inn' => $request->inn, 'kpp' => $request->kpp])->with('contacts')->firstOrFail();
+        } catch (ModelNotFoundException $exception) {
+            return null;
+        }
+        return $result;
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -76,8 +86,8 @@ class DealerController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -88,30 +98,11 @@ class DealerController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         //
-    }
-
-    public function findByInn($id)
-    {
-        $client = new Client(['timeout'  => 2.0]);
-
-        $headers = ['Content-Type' => 'application/json', 'Accept' => 'application/json', 'Authorization' => 'Token 9a4f6cd37ac0af31b81068987f7a5e5fedb673da'];
-        // $body = ['query' => '5405340660'];
-        // 7728168971 АЛЬФАБАНК
-        $body = ['query' => $id];
-        $request = new Request('POST', 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party', $headers, json_encode($body));
-
-        $response = $client->send($request);
-        return $response->getBody();
-    }
-
-    public function getStaff($id) {
-        $staff = Dealer::find($id)->contacts()->get();
-        return $staff;
     }
 }

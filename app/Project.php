@@ -16,7 +16,7 @@ class Project extends Model
      * @var array
      */
     protected $dates = ['deleted_at'];
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -40,6 +40,21 @@ class Project extends Model
         return $this->belongsTo(Dealer::class);
     }
 
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function dealer_staff() //FIXME: В Staff норм ссылки?
+    {
+        return $this->belongsTo(Staff::class);
+    }
+
+    public function customer_staff()
+    {
+        return $this->belongsTo(Staff::class);
+    }
+
     public function opponents()
     {
         return $this->belongsToMany(Opponent::class)->withTimestamps();
@@ -47,11 +62,7 @@ class Project extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class)->withTimestamps();
+        return $this->belongsToMany(Product::class)->withTimestamps()->withPivot('count','price');
     }
 
-    public function contacts()
-    {
-        return $this->morphMany(Staff::class, 'entity');
-    }
 }

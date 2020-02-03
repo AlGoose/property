@@ -17,7 +17,7 @@
           <v-list-item-group v-model="model" mandatory color="indigo">
             <v-list-item v-for="(item, i) in opponents" :key="i">
               <v-list-item-title v-text="item"></v-list-item-title>
-              <v-icon @click="remove(item)">mdi-minus-circle-outline</v-icon>
+              <v-icon @click="remove(item,i)">mdi-minus-circle-outline</v-icon>
             </v-list-item>
           </v-list-item-group>
         </v-list>
@@ -28,11 +28,26 @@
 
 <script>
 export default {
+  props: ["opponentsData"],
   data: () => ({
     opponent: null,
     opponents: [],
+    ids: [],
     model: 1
   }),
+
+  watch: {
+    opponentsData(val) {
+      val.forEach(item => {
+        this.opponents.push(item.name);
+        this.ids.push(item.id);
+      });
+    },
+
+    ids(val) {
+      this.$emit("opponents", val);
+    }
+  },
 
   methods: {
     input(value) {
@@ -49,10 +64,11 @@ export default {
 
       axios
         .post("/opponent", opponent)
-        .then(function(response) {
-          console.log(response);
+        .then(response => {
+          this.ids.push(response.data.id);
+          // this.$set(this.ids, this.ids.length, response.data.id);
         })
-        .catch(function(error) {
+        .catch(error => {
           console.log(error);
         });
 
@@ -60,8 +76,9 @@ export default {
       this.opponent = "";
     },
 
-    remove(item) {
-      this.opponents.splice(this.opponents.indexOf(item), 1);
+    remove(item, i) {
+      this.opponents.splice(i, 1);
+      this.ids.splice(i, 1);
     }
   }
 };

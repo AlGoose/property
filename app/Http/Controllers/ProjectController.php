@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Dealer;
-use App\Opponent;
-use App\Product;
 use App\Project;
 use App\Staff;
+use App\Customer;
 use Illuminate\Http\Request;
 use App\Http\Requests\ProjectRequest;
 
@@ -42,16 +41,10 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
         $projects = Project::paginate(5);
-        // $dealer = Dealer::find(3);
-        // \Debugbar::info($dealer->contacts()->get()[0]->name);
-        // \Debugbar::info($projects->all());
-
         foreach ($projects as $item) {
-            // \Debugbar::info($item->user()->get()[0]->name);
             $item->manager = $item->user()->get()[0]->name;
             $item->dealer = $item->dealer()->get()[0]->name;
         }
-
 
         if ($request->ajax()) return $projects;
 
@@ -77,37 +70,20 @@ class ProjectController extends Controller
     public function store(ProjectRequest $request)
     {
         \Debugbar::info($request->all());
-        \Debugbar::info($request->dealer);
+        $project = new Project($request->project);
 
-        $project = new Project;
-        $project->name = $request->project['name'];
-        $project->address = $request->project['address'];
-        $project->customer = $request->project['customer'];
-        $project->date = $request->project['date'];
-        $project->work = $request->project['work'];
         $project->user()->associate(\Auth::user());
 
-        $dealer = Dealer::firstOrCreate(
-            ['name' => $request->dealer['name']],
-            ['address' =>  'ADDRESS'],
-            ['inn' =>  intval($request->dealer['inn'])] //TODO: ПОЧЕМУ ЗАПИСЫВАЕТСЯ NULL?
-        );
-        $project->dealer()->associate($dealer)->save();
+        $project->customer()->associate(Customer::find($request->customer['customer_id']));
+        $project->customer_staff()->associate(Staff::find($request->customer['customer_staff_id']));
 
-        foreach ($request->project['opponents'] as $name) {
-            \Debugbar::info($name);
-            $opponent = Opponent::firstOrCreate(
-                ['name' => $name]
-            );
-            $project->opponents()->attach($opponent->id);
-        }
+        $project->dealer()->associate(Dealer::find($request->dealer['dealer_id']));
+        $project->dealer_staff()->associate(Staff::find($request->dealer['dealer_staff_id']));
 
-        $product = Product::firstOrCreate(
-            ['code' => 'CODE'],
-            ['name' => 'NAME'],
-            ['price' => intval('10')]
-        );
-        $project->products()->attach($product->id, ['count' => 5]);
+        $project->save();
+
+        $project->opponents()->attach($request->opponents);
+        $project->products()->attach($request->products);   
     }
 
     /**
@@ -118,9 +94,16 @@ class ProjectController extends Controller
      */
     public function show(Request $request, Project $project)
     {
+        $project->user = $project->user()->get()[0];
+
         $project->dealer = $project->dealer()->get()[0];
-        \Debugbar::info($project->opponents()->get());
+        $project->dealer_staff = $project->dealer_staff()->get()[0];
+
+        $project->customer = $project->customer()->get()[0];
+        $project->customer_staff = $project->customer_staff()->get()[0];
+
         $project->opponents = $project->opponents()->get();
+        $project->products = $project->products()->get();
 
         if ($request->ajax()) return $project;
 
@@ -133,10 +116,18 @@ class ProjectController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request, Project $project) //TODO: Добавить view
+    public function edit(Request $request, Project $project)
     {
-        $project->dealer = $project->dealer()->get()[0];
+        $project->user = $project->user()->first();
+
+        $project->dealer = $project->dealer()->first();
+        $project->dealer->current_staff = $project->dealer_staff()->first();
+
+        $project->customer = $project->customer()->first();
+        $project->customer->current_staff = $project->customer_staff()->first();
+
         $project->opponents = $project->opponents()->get();
+        $project->products = $project->products()->get();
 
         if ($request->ajax()) return $project;
 
@@ -150,14 +141,19 @@ class ProjectController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Project $project)
     {
-        $project = Project::find($id);
-        $project = $request->all();
+        // \Debugbar::info($request->all());
+
+        $project->work = $request->project['work'];
+        $project->date = $request->project['date'];
+        $project->time = $request->project['time'];
+        $project->customer_staff()->associate(Staff::find($request->customer['customer_staff_id']));
+        $project->dealer_staff()->associate(Staff::find($request->dealer['dealer_staff_id']));
         $project->save();
-        //TODO: Так можно?
-        $project->name = $request->namespace;
-        //... или таким образом? Или еще как?
+
+        $project->opponents()->sync($request->opponents);
+        $project->products()->sync($request->products);
     }
 
     /**

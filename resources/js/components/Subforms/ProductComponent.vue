@@ -13,51 +13,66 @@
                 <span class="headline">Добавить товар</span>
               </v-card-title>
               <v-card-text>
-                <v-row>
-                  <v-col cols="12" md="12">
-                    <v-autocomplete
-                      v-model="product"
-                      :items="entires"
-                      :search-input.sync="search"
-                      color="grey"
-                      label="Артикул"
-                      outlined
-                      item-text="name"
-                      item-value="name"
-                      return-object
-                    ></v-autocomplete>
-                  </v-col>
-                  <v-col cols="12" md="4">
-                    <v-text-field v-model="code" label="Артикул" solo readonly></v-text-field>
-                  </v-col>
-                  <v-col cols="12" md="8">
-                    <v-text-field v-model="name" label="Название" solo readonly></v-text-field>
-                  </v-col>
-                  <v-col cols="12" md="4">
-                    <v-text-field
-                      v-model="count"
-                      label="Количество"
-                      outlined
-                      @change="onChangeCount"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" md="4">
-                    <v-text-field
-                      v-model="price"
-                      label="Цена за единицу"
-                      outlined
-                      @change="onChangePrice"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" md="4">
-                    <v-text-field
-                      v-model="total"
-                      label="Итоговая сумма"
-                      outlined
-                      @change="onChangeTotal"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
+                <v-form ref="form" v-model="valid" lazy-validation>
+                  <v-row>
+                    <v-col cols="12" md="4">
+                      <v-autocomplete
+                        v-model="product"
+                        :items="entires"
+                        :search-input.sync="search"
+                        color="grey"
+                        label="Артикул"
+                        outlined
+                        hide-details
+                        no-filter
+                        item-text="name"
+                        return-object
+                        :loading="isLoading"
+                      >
+                        <template v-slot:item="{ item }">{{item.name}}</template>
+                        <template v-slot:selection="{ item }">{{item.article}}</template>
+                      </v-autocomplete>
+                    </v-col>
+                    <v-col cols="12" md="8">
+                      <v-text-field
+                        :value="product != undefined ? product.name : ''"
+                        label="Название"
+                        solo
+                        flat
+                        readonly
+                        :rules="[v => !!v || 'Выберите продукт']"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="4">
+                      <v-text-field
+                        v-model="count"
+                        label="Количество"
+                        outlined
+                        @change="onChangeCount"
+                        :rules="[v => !!v || 'Введите количество', v => /^\d+(\.\d+)?$/.test(v) || 'Неверный формат данных']"
+                      ></v-text-field>
+                      <!-- /^\d+(\.\d+)?$/ -->
+                    </v-col>
+                    <v-col cols="12" md="4">
+                      <v-text-field
+                        v-model="price"
+                        label="Цена за единицу"
+                        outlined
+                        @change="onChangePrice"
+                        :rules="[v => !!v || 'Введите цену', v => /^\d+(\.\d+)?$/.test(v) || 'Неверный формат данных']"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="4">
+                      <v-text-field
+                        v-model="total"
+                        label="Итоговая сумма"
+                        outlined
+                        @change="onChangeTotal"
+                        :rules="[v => !!v || 'Введите общую сумму', v => /^\d+(\.\d+)?$/.test(v) || 'Неверный формат данных']"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-form>
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
@@ -68,31 +83,25 @@
           </v-dialog>
         </v-row>
 
-        <v-simple-table class="table" v-if="products.length">
-          <template v-slot:default>
-            <thead>
-              <tr>
-                <th class="text-left">Артикул</th>
-                <th class="text-left">Наименование</th>
-                <th class="text-left">Количество</th>
-                <th class="text-left">Цена</th>
-                <th class="text-left">Итог</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr valign="middle" v-for="(item, i) in products" :key="i">
-                <td>{{ item.code }}</td>
-                <td>{{ item.name }}</td>
-                <td>{{ item.count }}</td>
-                <td>{{ item.price }}</td>
-                <td>{{ item.total }}</td>
-                <td>
-                  <v-icon @click="removeProduct(item,i)">mdi-minus-circle-outline</v-icon>
-                </td>
-              </tr>
-            </tbody>
+        <v-data-table
+          v-if="products.length"
+          :headers="headers"
+          :items="products"
+          item-key="name"
+          class="elevation-1"
+        >
+          <template v-slot:item="{ item, index }">
+            <tr>
+              <td>{{ item.name }}</td>
+              <td>{{ item.pivot.count }}</td>
+              <td>{{ item.pivot.price }}</td>
+              <td>{{ item.pivot.total }}</td>
+              <td>
+                <v-icon @click="removeProduct(item, index)">mdi-minus-circle-outline</v-icon>
+              </td>
+            </tr>
           </template>
-        </v-simple-table>
+        </v-data-table>
       </v-card-text>
     </v-card>
   </div>
@@ -100,126 +109,160 @@
 
 <script>
 export default {
+  props: ["productsData"],
+
   data: () => ({
+    headers: [
+      {
+        text: "Название продукта",
+        align: "left",
+        value: "name"
+      },
+      { text: "Количество", value: "pivot.count" },
+      { text: "Цена за единицу (₽)", value: "pivot.price" },
+      { text: "Общая стоимость (₽)", value: "pivot.total" },
+      {
+        text: "",
+        sortable: false
+      }
+    ],
+    valid: true,
     dialog: false,
     products: [],
     entires: [],
     search: null,
-    product: null,
-    code: null,
-    name: null,
+    product: {},
     count: null,
     price: null,
     total: null,
-    isLoading: false
+    isLoading: false,
+    ids: {}
   }),
 
   watch: {
-    search(val) {
-      console.log(val);
-      if (this.isLoading) return;
-      if (val === null || val.length < 7) return;
-
-      let isValid = true;
-      for (let i = 0; i < this.entires.length; i++) {
-        if (this.entires[i].name === val) {
-          isValid = false;
-        }
-      }
-      if (!isValid) return;
-
-      let newThis = this;
-      this.isLoading = true;
-      this.entires = [];
-
-      axios
-        .get("/product/findById/" + val)
-        .then(function(response) {
-          console.log(response.data.result);
-          response.data.result.forEach(item => {
-            let product = {
-              code: item.article,
-              name: item.name
-            };
-            newThis.entires.push(product);
-            newThis.isLoading = false;
-          });
-          newThis.isLoading = false;
-        })
-        .catch(function(error) {
-          console.log(error);
-          newThis.isLoading = false;
-        });
+    productsData(val) {
+      this.products = val;
+      this.products.forEach(item => {
+        item.pivot.total = item.pivot.count * item.pivot.price;
+        // item.total = item.count * item.price;
+      });
     },
 
-    product(val) {
-      console.log(val);
-      this.name = val != null ? val.name : "";
-      this.code = val != null ? val.code : "";
+    search() {
+      this.inputArticle();
+    },
+
+    ids(value) {
+      this.$emit("products", value);
     }
   },
 
+  created() {
+    this.inputArticle = window.debounce(this.searchProduct, 500);
+  },
+
   methods: {
-    onChangeCount(value) {
-      this.total = (parseFloat(value) * parseFloat(this.price)).toFixed(2);
-    },
+    searchProduct() {
+      if (this.search === null || this.search.length < 4) return;
 
-    onChangePrice(value) {
-      this.total = (parseFloat(value) * parseFloat(this.count)).toFixed(2);
-    },
-
-    onChangeTotal(value) {
-      this.price = (parseFloat(value) / parseFloat(this.count)).toFixed(2);
-    },
-
-    addProduct() {
-      let isValid = true;
-      for (let i = 0; i < this.products.length; i++) {
-        if (this.code === this.products[i].code) {
-          isValid = false;
+      for (let i = 0; i < this.entires.length; i++) {
+        if (this.entires[i].name === this.search) {
           return;
         }
       }
-      if (!isValid) return;
 
-      let product = {
-        code: this.code,
-        name: this.name,
-        count: this.count,
-        price: this.price,
-        total: this.total
-      };
+      this.isLoading = true;
 
       axios
-        .post("/product", product)
-        .then(function(response) {
-          console.log(response);
+        .get("/data/findProductById/" + this.search)
+        .then(response => {
+          // console.log(response);
+          this.entires = response.data.result;
+          this.isLoading = false;
         })
-        .catch(function(error) {
+        .catch(error => {
           console.log(error);
+          this.entires = [];
+          this.isLoading = false;
         });
-
-      this.products.push(product);
-      this.code = null;
-      this.name = null;
-      this.count = null;
-      this.price = null;
-      this.total = null;
-      this.product = null;
-      this.dialog = false;
+    },
+    onChangeCount(value) {
+      if (value.match(/^\d+(\.\d+)?$/)) {
+        if (this.price != null && !isNaN(this.price)) {
+          this.total = (parseFloat(value) * parseFloat(this.price)).toFixed(2);
+        }
+      }
     },
 
-    removeProduct(item) {
-      this.products.splice(this.products.indexOf(item), 1);
+    onChangePrice(value) {
+      if (value.match(/^\d+(\.\d+)?$/)) {
+        if (this.count != null && !isNaN(this.count)) {
+          this.total = (parseFloat(value) * parseFloat(this.count)).toFixed(2);
+        }
+      }
+    },
+
+    onChangeTotal(value) {
+      if (value.match(/^\d+(\.\d+)?$/)) {
+        if (this.count != null && !isNaN(this.count)) {
+          this.price = (parseFloat(value) / parseFloat(this.count)).toFixed(2);
+        }
+      }
+    },
+
+    addProduct() {
+      if (this.$refs.form.validate()) {
+        for (let i = 0; i < this.products.length; i++) {
+          if (this.code == this.products[i].code) {
+            return;
+          }
+        }
+
+        let product = {
+          code: this.product.id,
+          article: this.product.article,
+          name: this.product.name
+        };
+
+        axios
+          .post("/product", product)
+          .then(response => {
+            this.$set(this.ids, response.data.id, {
+              price: this.price,
+              count: this.count
+            });
+            product.id = response.data.id;
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
+
+        product.pivot = {
+          price: this.price,
+          count: this.count,
+          total: this.total
+        };
+        this.products.push(product);
+        this.count = null;
+        this.price = null;
+        this.total = null;
+        this.product = {};
+        this.entires = [];
+        this.dialog = false;
+      }
+    },
+
+    removeProduct(item, index) {
+      this.products.splice(index, 1);
+      this.$delete(this.ids, item.id);
     },
 
     closeDialog() {
-      this.code = null;
-      this.name = null;
       this.count = null;
       this.price = null;
       this.total = null;
-      this.product = null;
+      this.product = {};
+      this.entires = [];
       this.dialog = false;
     }
   }

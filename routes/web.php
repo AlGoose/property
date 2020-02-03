@@ -12,27 +12,22 @@
 */
 Auth::routes();
 
-// Route::get('/address', 'AddressController@getAddress');
-Route::get('/addresses', 'ProjectController@addresses');
+Route::post('/addresses', 'AddressController@addresses');
+
+Route::post('/dealer/findDealer/', 'DealerController@findDealer');
+Route::post('/customer/findCustomer/', 'CustomerController@findCustomer');
+
+Route::get('/data/findByInn/{id}', 'DataController@findByInn');
+Route::get('/data/findProductById/{id}', 'DataController@findProductById');
 
 Route::resource('/project', 'ProjectController');
-// Route::get('/test', 'ProjectController@savestaff');
-Route::get('/dealer/findByInn/{id}', 'DealerController@findByInn');
-Route::get('/customer/findByInn/{id}', 'CustomerController@findByInn');
-Route::get('/product/findById/{id}', 'ProductController@findById');
-Route::get('/dealer/getStaff/{id}', 'DealerController@getStaff');
 
 Route::get('/{any}', 'SinglePageController@index')->middleware('auth')->where(['any' => '.*']);
 
-// Route::post('/addProduct', 'ProjectController@addProduct');
-// Route::post('/addDealer', 'ProjectController@addDealer');
-// Route::post('/addCustomer', 'ProjectController@addCustomer');
-// Route::post('/addOpponent', 'ProjectController@addOpponent');
-
 Route::resource('/product', 'ProductController');
 Route::resource('/dealer', 'DealerController');
-
 Route::resource('/customer', 'CustomerController');
 Route::resource('/opponent', 'OpponentController');
 Route::resource('/staff', 'StaffController');
+
 

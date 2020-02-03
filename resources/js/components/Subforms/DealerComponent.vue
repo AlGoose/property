@@ -5,69 +5,124 @@
       <v-autocomplete
         v-model="company"
         :items="companies"
-        :search-input.sync="inn"
+        :search-input.sync="search"
         color="grey"
         label="ИНН"
         outlined
-        item-text="name"
-        item-value="name"
+        hide-details
+        no-filter
         return-object
-      ></v-autocomplete>
+        item-text="name"
+        :loading="isLoading"
+        :disabled="isEdit"
+      >
+        <template v-slot:item="{ item }">{{item.name}}, КПП:{{item.kpp}}</template>
+        <template v-slot:selection="{ item }">{{item.inn}}, КПП:{{item.kpp}}</template>
+      </v-autocomplete>
 
-      <p class="subtitle">ИНН: {{company ? company.inn : ''}}</p>
-      <p class="subtitle">КПП: {{company ? company.kpp : ''}}</p>
       <p class="subtitle">Название: {{company ? company.name : ''}}</p>
       <p class="subtitle">Адрес: {{company ? company.address : ''}}</p>
-      <StaffComponent v-bind:test="company ? company.kpp : ''"></StaffComponent>
+      <StaffComponent v-if="dealer" :entity="dealer" mode="dealer" @staff="saveStaff"></StaffComponent>
     </v-card-text>
   </v-card>
 </template>
 
 <script>
 import StaffComponent from "./StaffComponent";
-
+//7728168971
 export default {
   components: {
     StaffComponent
   },
+  props: ["isEdit", "dealerData"],
   data: () => ({
-    inn: null,
-    kpp: null,
-    name: null,
-    address: null,
-    company: null,
+    search: "",
+    company: { inn: "" },
     isLoading: false,
-    companies: []
+    companies: [],
+    dealer: ""
   }),
 
   watch: {
-    inn(val) {
+    dealerData(val) {
+      if (this.isEdit) {
+        this.company = val;
+        this.companies.push(val);
+      }
+    },
+
+    company(val) {
+      axios
+        .post("/dealer/findDealer", { inn: val.inn, kpp: val.kpp })
+        .then(response => {
+          if (response.data === "") {
+            this.dealer = {};
+          } else {
+            this.dealer = response.data;
+          }
+          if (
+            this.dealerData !== undefined &&
+            this.dealerData.current_staff !== undefined
+          ) {
+            this.$set(
+              this.dealer,
+              "current_staff",
+              this.dealerData.current_staff
+            );
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
+    search(val) {
       if (this.isLoading) return;
       if (val === null || val.length != 10) return;
 
-      let newThis = this;
       this.isLoading = true;
-      this.companies = [];
 
       axios
-        .get("/dealer/findByInn/" + val)
-        .then(function(response) {
-          console.log(response);
-          response.data.suggestions.forEach(item => {
-            let company = {
-              inn: item.data.inn,
-              kpp: item.data.kpp,
-              name: item.value,
-              address: item.data.address.value
-            };
-            newThis.companies.push(company);
-          });
-            newThis.isLoading = false;
+        .get("/data/findByInn/" + val)
+        .then(response => {
+          this.companies = response.data;
+          this.isLoading = false;
         })
         .catch(function(error) {
-          console.log(error);
-          newThis.isLoading = false;
+          this.isLoading = false;
         });
+    }
+  },
+
+  methods: {
+    saveStaff(staff) {
+      if (!this.dealer.id) {
+        axios
+          .post("/dealer", { dealer: this.company, staff_id: staff })
+          .then(response => {
+            this.$emit("dealer", {
+              dealer_id: response.data.id,
+              dealer_staff_id: staff
+            });
+          });
+      } else {
+        axios
+          .post("/dealer", {
+            dealer: {
+              inn: this.company.inn,
+              kpp: this.company.kpp,
+              address: this.company.address,
+              name: this.company.name
+            },
+            staff_id: staff
+          })
+          .then(response => {
+            this.$emit("dealer", {
+              dealer_id: response.data.id,
+              dealer_staff_id: staff
+            });
+          });
+      }
     }
   }
 };

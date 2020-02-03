@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Product;
 use Illuminate\Http\Request;
-use GuzzleHttp\Psr7\Request as GRequest;
-use GuzzleHttp\Client;
 
 class ProductController extends Controller
 {
@@ -41,11 +39,10 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        \Debugbar::info($request->all());
-
+        // \Debugbar::info($request->all());
         $product = Product::firstOrCreate(
-            ['code' => $request->code],
-            ['name' => $request->name]
+            ['article' => $request->article],
+            ['name' => $request->name, 'code' => $request->code]
         );
         return $product;
     }
@@ -93,13 +90,5 @@ class ProductController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    public function findById($id)
-    {
-        $client = new Client(['timeout'  => 2.0]);
-        $request = new GRequest('GET', 'https://www.zkabel.ru/api/catalog/findItemByArticle/?q='.$id);
-        $response = $client->send($request);
-        return $response->getBody();
     }
 }

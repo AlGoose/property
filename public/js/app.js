@@ -1986,6 +1986,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2004,101 +2014,64 @@ __webpack_require__.r(__webpack_exports__);
     mask: vue_the_mask__WEBPACK_IMPORTED_MODULE_0__["mask"]
   },
   mounted: function mounted() {
-    var newThis = this;
+    var _this = this;
 
     if (this.$route.name === "edit") {
-      this.mode = "edit";
+      this.isEdit = true;
 
       if (window.project == undefined) {
         axios.get("/project/" + this.$route.params.id + "/edit").then(function (response) {
-          console.log("AXIOS");
-          console.log(response);
-
-          for (var prop in newThis.dealer) {
-            newThis.dealer[prop].data = response.data.dealer[prop];
-          }
-
-          for (var _prop in newThis.form) {
-            if (_prop === "opponents") {
-              response.data.opponents.forEach(function (item) {
-                newThis.form.opponents.data.push(item.name);
-              });
-            } else {
-              newThis.form[_prop].data = response.data[_prop];
-            }
-          }
+          // console.log("AXIOS");
+          // console.log(response);
+          _this.testData = response.data;
         })["catch"](function (error) {
           console.log(error);
         });
       } else {
-        console.log("BLADE");
-        console.log(window.project);
-
-        for (var prop in newThis.dealer) {
-          newThis.dealer[prop].data = window.project.dealer[prop];
-        }
-
-        for (var _prop2 in newThis.form) {
-          if (_prop2 === "opponents") {
-            window.project.opponents.forEach(function (item) {
-              newThis.form.opponents.data.push(item.name);
-            });
-          } else {
-            newThis.form[_prop2].data = window.project[_prop2];
-          }
-        }
-
-        window.project = undefined;
+        // console.log("BLADE");
+        // console.log(window.project);
+        this.testData = window.project;
       }
     } else {
       if (this.$route.params.address) {
-        this.form.address.data = this.$route.params.address;
+        this.address = this.$route.params.address;
       }
     }
   },
   data: function data() {
     return {
-      mode: "create",
+      testData: {},
+      isEdit: false,
       dialog: false,
-      valid: true,
-      valid_prod: true
+      address: null,
+      formData: {},
+      valid: true
     };
   },
   methods: {
     addForm: function addForm() {
-      var newThis = this;
-      var res = {
-        dealer: 1,
-        project: {
-          name: "",
-          address: ""
-        },
-        products: {
-          1: {
-            count: 5,
-            price: 100
-          },
-          25: {
-            count: 5,
-            price: 100
-          }
-        },
-        oponents: [1, 2, 3]
-      };
+      var _this2 = this;
 
-      for (var prop in this.dealer) {
-        res.dealer[prop] = this.dealer[prop].data;
-      }
+      // console.log('ADDFORM');
+      axios.post("/project", this.formData).then(function (response) {
+        // console.log(response);
+        _this2.dialog = false;
 
-      for (var _prop3 in this.form) {
-        res.project[_prop3] = this.form[_prop3].data;
-      }
+        _this2.$router.push({
+          name: "home"
+        });
+      })["catch"](function (error) {
+        console.log('ERROOOOOOOR', error.response);
+      });
+    },
+    editForm: function editForm() {
+      var _this3 = this;
 
-      axios.post("http://property.test/project", res).then(function (response) {
-        newThis.$refs.form.reset();
-        newThis.form.opponents.opponent = "";
-        newThis.form.opponents.data = [];
-        newThis.dialog = false;
+      // console.log('EDITFORM');
+      axios.put("/project/" + this.$route.params.id, this.formData).then(function (response) {
+        _this3.dialog = false;
+
+        _this3.$router.go(-1);
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2107,6 +2080,21 @@ __webpack_require__.r(__webpack_exports__);
       if (this.$refs.form.validate()) {
         this.dialog = true;
       }
+    },
+    saveDealer: function saveDealer(value) {
+      this.formData.dealer = value; // console.log("FormData | ", this.formData);
+    },
+    saveCustomer: function saveCustomer(value) {
+      this.formData.customer = value; // console.log("FormData | ", this.formData);
+    },
+    saveProject: function saveProject(value) {
+      this.formData.project = value; // console.log("FormData | ", this.formData);
+    },
+    saveOpponents: function saveOpponents(value) {
+      this.formData.opponents = value; // console.log("FormData | ", this.formData);
+    },
+    saveProducts: function saveProducts(value) {
+      this.formData.products = value; // console.log("FormData | ", this.formData);
     }
   }
 });
@@ -2147,9 +2135,40 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      selected: [],
       address: "",
       textLimit: 60,
       entries: [],
@@ -2160,31 +2179,19 @@ __webpack_require__.r(__webpack_exports__);
   },
   computed: {
     items: function items() {
-      return ["1", "123", "111", "121"]; // return this.entries.map(entry => {
-      //   const Address =
-      //     entry.address.length > this.textLimit
-      //       ? entry.address.slice(0, this.textLimit) + "..."
-      //       : entry.address;
-      //   return Object.assign({}, entry, { Address });
-      // });
+      return ["1", "123", "111", "121"];
+    },
+    addressLength: function addressLength() {
+      // return this.address.length == 0;
+      return !(this.entries.length === this.selected.length && this.entries.length != 0);
     }
   },
+  created: function created() {
+    this.inputAddress = window.debounce(this.searchAddress, 500);
+  },
   watch: {
-    search: function search(val) {
-      var _this = this;
-
-      if (this.isLoading) return;
-      this.isLoading = true;
-      fetch("/addresses?address=" + val).then(function (res) {
-        return res.json();
-      }).then(function (res) {
-        console.log(res);
-        _this.entries = res;
-      })["catch"](function (err) {
-        console.log(err);
-      })["finally"](function () {
-        return _this.isLoading = false;
-      });
+    address: function address(value) {
+      this.inputAddress();
     }
   },
   methods: {
@@ -2195,6 +2202,19 @@ __webpack_require__.r(__webpack_exports__);
           address: this.model,
           mode: "create"
         }
+      });
+    },
+    searchAddress: function searchAddress() {
+      var _this = this;
+
+      // console.log("search:", this.address);
+      axios.post("/addresses", {
+        address: this.address
+      }).then(function (response) {
+        // console.log(response);
+        _this.entries = response.data;
+      })["catch"](function (error) {
+        console.log(error);
       });
     }
   }
@@ -2232,19 +2252,19 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
-    var newThis = this;
+    var _this = this;
 
     if (window.projects == undefined) {
       axios.get("/project").then(function (response) {
-        newThis.itemsPerPage = response.data.per_page;
-        newThis.length = Math.ceil(response.data.total / response.data.per_page);
-        newThis.fruits = response.data.data;
+        _this.itemsPerPage = response.data.per_page;
+        _this.length = Math.ceil(response.data.total / response.data.per_page);
+        _this.fruits = response.data.data;
       })["catch"](function (error) {
         console.log(error);
       });
     } else {
-      newThis.itemsPerPage = window.projects.per_page;
-      newThis.length = Math.ceil(window.projects.total / window.projects.per_page);
+      this.itemsPerPage = window.projects.per_page;
+      this.length = Math.ceil(window.projects.total / window.projects.per_page);
       this.fruits = window.projects.data;
       window.projects = undefined;
     }
@@ -2262,14 +2282,14 @@ __webpack_require__.r(__webpack_exports__);
         text: "Address",
         value: "address"
       }, {
-        text: "Customer",
-        value: "customer"
-      }, {
         text: "Dealer",
         value: "dealer"
       }, {
         text: "Date",
         value: "date"
+      }, {
+        text: "Time",
+        value: "time"
       }, {
         text: "Manager",
         value: "manager"
@@ -2279,11 +2299,12 @@ __webpack_require__.r(__webpack_exports__);
   },
   watch: {
     page: function page(val) {
-      var newThis = this;
+      var _this2 = this;
+
       axios.get("/project?page=" + val).then(function (response) {
-        newThis.itemsPerPage = response.data.per_page;
-        newThis.length = Math.ceil(response.data.total / response.data.per_page);
-        newThis.fruits = response.data.data;
+        _this2.itemsPerPage = response.data.per_page;
+        _this2.length = Math.ceil(response.data.total / response.data.per_page);
+        _this2.fruits = response.data.data;
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2366,59 +2387,173 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
-    var newThis = this;
+    var _this = this;
+
     this.project_id = this.$route.params.id;
     this.auth_id = window.current_user.id;
+    var form;
 
     if (window.project == undefined) {
       axios.get("/project/" + this.project_id).then(function (response) {
-        console.log(response);
-
-        for (var prop in newThis.dealer) {
-          newThis.dealer[prop].data = response.data.dealer[prop];
-        }
-
-        for (var _prop in newThis.form) {
-          if (_prop === "opponents") {
-            response.data.opponents.forEach(function (item) {
-              console.log(item.name);
-              newThis.form.opponents.data.push(item.name);
-            });
-          } else {
-            newThis.form[_prop].data = response.data[_prop];
-          }
-        }
-
-        newThis.user_id = response.data.user_id;
+        _this.initial(response.data);
       })["catch"](function (error) {
         console.log(error);
       });
     } else {
-      console.log(window.project);
-
-      for (var prop in newThis.dealer) {
-        newThis.dealer[prop].data = window.project.dealer[prop];
-      }
-
-      for (var _prop2 in newThis.form) {
-        if (_prop2 === "opponents") {
-          window.project.opponents.forEach(function (item) {
-            console.log(item.name);
-            newThis.form.opponents.data.push(item.name);
-          });
-        } else {
-          newThis.form[_prop2].data = window.project[_prop2];
-        }
-      }
-
-      this.user_id = window.project.user_id;
-      window.project = undefined;
+      this.initial(window.project);
     }
   },
   data: function data() {
     return {
+      headers: [{
+        text: "Название продукта",
+        align: "left",
+        value: "name"
+      }, {
+        text: "Количество",
+        value: "pivot.count"
+      }, {
+        text: "Цена за единицу (₽)",
+        value: "pivot.price"
+      }, {
+        text: "Общая стоимость (₽)",
+        value: "pivot.total"
+      }],
       dialog: false,
       auth_id: "",
       user_id: "",
@@ -2436,7 +2571,13 @@ __webpack_require__.r(__webpack_exports__);
           label: "Имя",
           data: ""
         },
-        agent: {
+        address: {
+          label: "Адрес",
+          data: ""
+        }
+      },
+      dealer_staff: {
+        name: {
           label: "Представитель",
           data: ""
         },
@@ -2449,7 +2590,39 @@ __webpack_require__.r(__webpack_exports__);
           data: ""
         }
       },
-      form: {
+      customer: {
+        inn: {
+          label: "ИНН",
+          data: ""
+        },
+        kpp: {
+          label: "КПП",
+          data: ""
+        },
+        name: {
+          label: "Имя",
+          data: ""
+        },
+        address: {
+          label: "Адрес",
+          data: ""
+        }
+      },
+      customer_staff: {
+        name: {
+          label: "Представитель",
+          data: ""
+        },
+        phone: {
+          label: "Телефон",
+          data: ""
+        },
+        email: {
+          label: "Почта",
+          data: ""
+        }
+      },
+      project: {
         name: {
           label: "Название",
           data: ""
@@ -2458,49 +2631,66 @@ __webpack_require__.r(__webpack_exports__);
           label: "Адрес",
           data: ""
         },
-        inn: {
-          label: "ИНН",
+        work: {
+          label: "Работа",
           data: ""
-        },
-        customer: {
-          label: "Заказчик",
-          data: ""
-        },
-        contacts: {
-          label: "Контакты",
-          data: ""
-        },
-        opponents: {
-          label: "Конкуренты",
-          data: []
         },
         date: {
           label: "Дата",
           data: ""
         },
-        work: {
-          label: "Работа",
+        time: {
+          label: "Время",
           data: ""
         }
-      }
+      },
+      opponents: [],
+      products: []
     };
   },
   methods: {
+    initial: function initial(form) {
+      for (var prop in this.dealer) {
+        this.dealer[prop].data = form.dealer[prop];
+      }
+
+      for (var _prop in this.dealer_staff) {
+        this.dealer_staff[_prop].data = form.dealer_staff[_prop];
+      }
+
+      for (var _prop2 in this.customer) {
+        this.customer[_prop2].data = form.customer[_prop2];
+      }
+
+      for (var _prop3 in this.customer_staff) {
+        this.customer_staff[_prop3].data = form.customer_staff[_prop3];
+      }
+
+      for (var _prop4 in this.project) {
+        this.project[_prop4].data = form[_prop4];
+      }
+
+      this.opponents = form.opponents;
+      this.products = form.products;
+      this.products.forEach(function (item) {
+        item.pivot.total = item.pivot.count * item.pivot.price;
+      });
+      this.user_id = form.user_id;
+      window.project = undefined;
+    },
     remove: function remove() {
-      var newThis = this;
+      var _this2 = this;
+
       axios["delete"]("/project/" + this.project_id).then(function (response) {
-        newThis.$router.push("/project");
+        _this2.$router.push("/project");
       })["catch"](function (error) {
         console.log(error);
       });
     },
     edit: function edit() {
-      console.log(window.project);
+      // console.log(window.project);
       this.$router.push({
-        name: "edit",
-        params: {
-          mode: "edit"
-        }
+        name: "edit"
       });
     },
     back: function back() {
@@ -2549,44 +2739,99 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
     StaffComponent: _StaffComponent__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
+  props: ["isEdit", "customerData"],
   data: function data() {
     return {
-      inn: null,
-      kpp: null,
-      name: null,
-      address: null,
-      company: null,
+      search: "",
+      company: {
+        inn: ""
+      },
       isLoading: false,
-      companies: []
+      companies: [],
+      customer: ""
     };
   },
   watch: {
-    inn: function inn(val) {
-      if (this.isLoading) return;
-      if (val === null || val.length != 10) return;
-      var newThis = this;
-      this.isLoading = true;
-      this.companies = [];
-      axios.get("/customer/findByInn/" + val).then(function (response) {
-        response.data.suggestions.forEach(function (item) {
-          var company = {
-            inn: item.data.inn,
-            kpp: item.data.kpp,
-            name: item.value,
-            address: item.data.address.value
-          };
-          newThis.companies.push(company);
-          newThis.isLoading = false;
-        });
+    customerData: function customerData(val) {
+      if (this.isEdit) {
+        this.company = val;
+        this.companies.push(val);
+      }
+    },
+    company: function company(val) {
+      var _this = this;
+
+      axios.post("/customer/findCustomer", {
+        inn: val.inn,
+        kpp: val.kpp
+      }).then(function (response) {
+        if (response.data === "") {
+          _this.customer = {};
+        } else {
+          _this.customer = response.data;
+        }
+
+        if (_this.customerData !== undefined && _this.customerData.current_staff !== undefined) {
+          _this.$set(_this.customer, "current_staff", _this.customerData.current_staff);
+        }
       })["catch"](function (error) {
         console.log(error);
-        newThis.isLoading = false;
       });
+    },
+    search: function search(val) {
+      var _this2 = this;
+
+      if (this.isLoading) return;
+      if (val === null || val.length != 10) return;
+      this.isLoading = true;
+      axios.get("/data/findByInn/" + val).then(function (response) {
+        _this2.companies = response.data;
+        _this2.isLoading = false;
+      })["catch"](function (error) {
+        console.log(error);
+        _this2.isLoading = false;
+      });
+    }
+  },
+  methods: {
+    saveStaff: function saveStaff(staff) {
+      var _this3 = this;
+
+      if (!this.customer.id) {
+        axios.post("/customer", {
+          customer: this.company,
+          staff_id: staff
+        }).then(function (response) {
+          _this3.$emit("customer", {
+            customer_id: response.data.id,
+            customer_staff_id: staff
+          });
+        });
+      } else {
+        axios.post("/customer", {
+          customer: {
+            inn: this.company.inn,
+            kpp: this.company.kpp,
+            address: this.company.address,
+            name: this.company.name
+          },
+          staff_id: staff
+        }).then(function (response) {
+          _this3.$emit("customer", {
+            customer_id: response.data.id,
+            customer_staff_id: staff
+          });
+        });
+      }
     }
   }
 });
@@ -2628,45 +2873,99 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+ //7728168971
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
     StaffComponent: _StaffComponent__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
+  props: ["isEdit", "dealerData"],
   data: function data() {
     return {
-      inn: null,
-      kpp: null,
-      name: null,
-      address: null,
-      company: null,
+      search: "",
+      company: {
+        inn: ""
+      },
       isLoading: false,
-      companies: []
+      companies: [],
+      dealer: ""
     };
   },
   watch: {
-    inn: function inn(val) {
-      if (this.isLoading) return;
-      if (val === null || val.length != 10) return;
-      var newThis = this;
-      this.isLoading = true;
-      this.companies = [];
-      axios.get("/dealer/findByInn/" + val).then(function (response) {
-        console.log(response);
-        response.data.suggestions.forEach(function (item) {
-          var company = {
-            inn: item.data.inn,
-            kpp: item.data.kpp,
-            name: item.value,
-            address: item.data.address.value
-          };
-          newThis.companies.push(company);
-        });
-        newThis.isLoading = false;
+    dealerData: function dealerData(val) {
+      if (this.isEdit) {
+        this.company = val;
+        this.companies.push(val);
+      }
+    },
+    company: function company(val) {
+      var _this = this;
+
+      axios.post("/dealer/findDealer", {
+        inn: val.inn,
+        kpp: val.kpp
+      }).then(function (response) {
+        if (response.data === "") {
+          _this.dealer = {};
+        } else {
+          _this.dealer = response.data;
+        }
+
+        if (_this.dealerData !== undefined && _this.dealerData.current_staff !== undefined) {
+          _this.$set(_this.dealer, "current_staff", _this.dealerData.current_staff);
+        }
       })["catch"](function (error) {
         console.log(error);
-        newThis.isLoading = false;
       });
+    },
+    search: function search(val) {
+      var _this2 = this;
+
+      if (this.isLoading) return;
+      if (val === null || val.length != 10) return;
+      this.isLoading = true;
+      axios.get("/data/findByInn/" + val).then(function (response) {
+        _this2.companies = response.data;
+        _this2.isLoading = false;
+      })["catch"](function (error) {
+        this.isLoading = false;
+      });
+    }
+  },
+  methods: {
+    saveStaff: function saveStaff(staff) {
+      var _this3 = this;
+
+      if (!this.dealer.id) {
+        axios.post("/dealer", {
+          dealer: this.company,
+          staff_id: staff
+        }).then(function (response) {
+          _this3.$emit("dealer", {
+            dealer_id: response.data.id,
+            dealer_staff_id: staff
+          });
+        });
+      } else {
+        axios.post("/dealer", {
+          dealer: {
+            inn: this.company.inn,
+            kpp: this.company.kpp,
+            address: this.company.address,
+            name: this.company.name
+          },
+          staff_id: staff
+        }).then(function (response) {
+          _this3.$emit("dealer", {
+            dealer_id: response.data.id,
+            dealer_staff_id: staff
+          });
+        });
+      }
     }
   }
 });
@@ -2711,15 +3010,33 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: ["opponentsData"],
   data: function data() {
     return {
       opponent: null,
       opponents: [],
+      ids: [],
       model: 1
     };
   },
+  watch: {
+    opponentsData: function opponentsData(val) {
+      var _this = this;
+
+      val.forEach(function (item) {
+        _this.opponents.push(item.name);
+
+        _this.ids.push(item.id);
+      });
+    },
+    ids: function ids(val) {
+      this.$emit("opponents", val);
+    }
+  },
   methods: {
     input: function input(value) {
+      var _this2 = this;
+
       if (value === "") return;
 
       if (this.opponents.includes(value)) {
@@ -2731,15 +3048,17 @@ __webpack_require__.r(__webpack_exports__);
         name: value
       };
       axios.post("/opponent", opponent).then(function (response) {
-        console.log(response);
+        _this2.ids.push(response.data.id); // this.$set(this.ids, this.ids.length, response.data.id);
+
       })["catch"](function (error) {
         console.log(error);
       });
       this.opponents.push(value);
       this.opponent = "";
     },
-    remove: function remove(item) {
-      this.opponents.splice(this.opponents.indexOf(item), 1);
+    remove: function remove(item, i) {
+      this.opponents.splice(i, 1);
+      this.ids.splice(i, 1);
     }
   }
 });
@@ -2855,113 +3174,157 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: ["productsData"],
   data: function data() {
     return {
+      headers: [{
+        text: "Название продукта",
+        align: "left",
+        value: "name"
+      }, {
+        text: "Количество",
+        value: "pivot.count"
+      }, {
+        text: "Цена за единицу (₽)",
+        value: "pivot.price"
+      }, {
+        text: "Общая стоимость (₽)",
+        value: "pivot.total"
+      }, {
+        text: "",
+        sortable: false
+      }],
+      valid: true,
       dialog: false,
       products: [],
       entires: [],
       search: null,
-      product: null,
-      code: null,
-      name: null,
+      product: {},
       count: null,
       price: null,
       total: null,
-      isLoading: false
+      isLoading: false,
+      ids: {}
     };
   },
   watch: {
-    search: function search(val) {
-      console.log(val);
-      if (this.isLoading) return;
-      if (val === null || val.length < 7) return;
-      var isValid = true;
-
-      for (var i = 0; i < this.entires.length; i++) {
-        if (this.entires[i].name === val) {
-          isValid = false;
-        }
-      }
-
-      if (!isValid) return;
-      var newThis = this;
-      this.isLoading = true;
-      this.entires = [];
-      axios.get("/product/findById/" + val).then(function (response) {
-        console.log(response.data.result);
-        response.data.result.forEach(function (item) {
-          var product = {
-            code: item.article,
-            name: item.name
-          };
-          newThis.entires.push(product);
-          newThis.isLoading = false;
-        });
-        newThis.isLoading = false;
-      })["catch"](function (error) {
-        console.log(error);
-        newThis.isLoading = false;
+    productsData: function productsData(val) {
+      this.products = val;
+      this.products.forEach(function (item) {
+        item.pivot.total = item.pivot.count * item.pivot.price;
       });
     },
-    product: function product(val) {
-      console.log(val);
-      this.name = val != null ? val.name : "";
-      this.code = val != null ? val.code : "";
+    search: function search() {
+      this.inputArticle();
+    },
+    ids: function ids(value) {
+      this.$emit("products", value);
     }
   },
+  created: function created() {
+    this.inputArticle = window.debounce(this.searchProduct, 500);
+  },
   methods: {
-    onChangeCount: function onChangeCount(value) {
-      this.total = (parseFloat(value) * parseFloat(this.price)).toFixed(2);
-    },
-    onChangePrice: function onChangePrice(value) {
-      this.total = (parseFloat(value) * parseFloat(this.count)).toFixed(2);
-    },
-    onChangeTotal: function onChangeTotal(value) {
-      this.price = (parseFloat(value) / parseFloat(this.count)).toFixed(2);
-    },
-    addProduct: function addProduct() {
-      var isValid = true;
+    searchProduct: function searchProduct() {
+      var _this = this;
 
-      for (var i = 0; i < this.products.length; i++) {
-        if (this.code === this.products[i].code) {
-          isValid = false;
+      if (this.search === null || this.search.length < 4) return;
+
+      for (var i = 0; i < this.entires.length; i++) {
+        if (this.entires[i].name === this.search) {
           return;
         }
       }
 
-      if (!isValid) return;
-      var product = {
-        code: this.code,
-        name: this.name,
-        count: this.count,
-        price: this.price,
-        total: this.total
-      };
-      axios.post("/product", product).then(function (response) {
-        console.log(response);
+      this.isLoading = true;
+      axios.get("/data/findProductById/" + this.search).then(function (response) {
+        // console.log(response);
+        _this.entires = response.data.result;
+        _this.isLoading = false;
       })["catch"](function (error) {
         console.log(error);
+        _this.entires = [];
+        _this.isLoading = false;
       });
-      this.products.push(product);
-      this.code = null;
-      this.name = null;
-      this.count = null;
-      this.price = null;
-      this.total = null;
-      this.product = null;
-      this.dialog = false;
     },
-    removeProduct: function removeProduct(item) {
-      this.products.splice(this.products.indexOf(item), 1);
+    onChangeCount: function onChangeCount(value) {
+      if (value.match(/^\d+(\.\d+)?$/)) {
+        if (this.price != null && !isNaN(this.price)) {
+          this.total = (parseFloat(value) * parseFloat(this.price)).toFixed(2);
+        }
+      }
+    },
+    onChangePrice: function onChangePrice(value) {
+      if (value.match(/^\d+(\.\d+)?$/)) {
+        if (this.count != null && !isNaN(this.count)) {
+          this.total = (parseFloat(value) * parseFloat(this.count)).toFixed(2);
+        }
+      }
+    },
+    onChangeTotal: function onChangeTotal(value) {
+      if (value.match(/^\d+(\.\d+)?$/)) {
+        if (this.count != null && !isNaN(this.count)) {
+          this.price = (parseFloat(value) / parseFloat(this.count)).toFixed(2);
+        }
+      }
+    },
+    addProduct: function addProduct() {
+      var _this2 = this;
+
+      if (this.$refs.form.validate()) {
+        for (var i = 0; i < this.products.length; i++) {
+          if (this.code == this.products[i].code) {
+            return;
+          }
+        }
+
+        var product = {
+          code: this.product.id,
+          article: this.product.article,
+          name: this.product.name,
+          count: this.count,
+          price: this.price,
+          total: this.total
+        };
+        axios.post("/product", product).then(function (response) {
+          _this2.$set(_this2.ids, response.data.id, {
+            price: product.price,
+            count: product.count
+          });
+
+          product.id = response.data.id;
+        })["catch"](function (error) {
+          console.log(error);
+        });
+        this.products.push(product);
+        this.count = null;
+        this.price = null;
+        this.total = null;
+        this.product = {};
+        this.entires = [];
+        this.dialog = false;
+      }
+    },
+    removeProduct: function removeProduct(item, i) {
+      this.products.splice(i, 1);
+      this.$delete(this.ids, item.id);
     },
     closeDialog: function closeDialog() {
-      this.code = null;
-      this.name = null;
       this.count = null;
       this.price = null;
       this.total = null;
-      this.product = null;
+      this.product = {};
+      this.entires = [];
       this.dialog = false;
     }
   }
@@ -3033,17 +3396,66 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
+  // mounted() {
+  //   console.log('Updated');
+  //   this.sendData();
+  // },
+  props: ["address_prop", "isEdit", "projectData"],
   data: function data() {
     return {
-      name: null,
-      address: null,
-      work: null,
-      date: new Date().toISOString().substr(0, 10),
-      time: new Date().toISOString().substr(0, 10),
       dateMenu: false,
       timeMenu: false
     };
+  },
+  methods: {
+    sendData: function sendData() {
+      this.$emit("project", {
+        name: this.projectData.name,
+        address: this.projectData.address,
+        work: this.projectData.work,
+        date: this.projectData.date,
+        time: this.projectData.time
+      });
+    }
   }
 });
 
@@ -3107,23 +3519,42 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["test"],
+  props: ["entity", "mode"],
   data: function data() {
     return {
+      phoneRules: [function (v) {
+        return !!v || "Введите номер телефона";
+      }, function (v) {
+        return /^(([0-9]){10})$/.test(v) || "Неверный формат номера";
+      }],
+      emailRules: [function (v) {
+        return !!v || "Введите почту";
+      }, function (v) {
+        return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(v) || "Неверный формат почты";
+      }],
+      valid: true,
       dialog: false,
       isLoading: false,
-      agent: null,
-      entries: [],
-      agents: [{
-        name: "5",
-        phone: "5",
-        email: "5"
-      }, {
-        name: "1",
-        phone: "1",
-        email: "1"
-      }],
+      agent_id: null,
+      agents: [],
       agentForm: {
         name: null,
         phone: null,
@@ -3131,28 +3562,55 @@ __webpack_require__.r(__webpack_exports__);
       }
     };
   },
+  computed: {
+    agent: function agent() {
+      var _this = this;
+
+      return this.agents.filter(function (item) {
+        return _this.agent_id === item.id;
+      }).pop();
+    }
+  },
+  mounted: function mounted() {
+    if (this.entity.contacts === undefined) {
+      this.dialog = true;
+    } else {
+      this.agents = this.entity.contacts;
+
+      if (this.entity.current_staff !== undefined) {
+        this.agent_id = this.entity.current_staff.id;
+      }
+    }
+  },
   watch: {
-    test: function test(val) {
-      var newThis = this;
-      console.log(val);
-      axios.get("/dealer/getStaff/1").then(function (response) {
-        console.log(response);
-        newThis.agents = response.data;
-      })["catch"](function (error) {
-        console.log(error);
-      });
+    entity: function entity(val) {
+      if (this.entity.contacts === undefined) {
+        this.agent_id = null;
+        this.agents = [], this.dialog = true;
+      } else {
+        this.agents = this.entity.contacts;
+      }
+    },
+    agent_id: function agent_id(val) {
+      this.$emit("staff", val);
     }
   },
   methods: {
     addAgent: function addAgent() {
-      this.agents.push(this.agentForm);
-      this.agent = this.agentForm;
-      this.dialog = false;
-      this.agentForm = {
-        name: null,
-        phone: null,
-        email: null
-      };
+      var _this2 = this;
+
+      if (this.$refs.form.validate()) {
+        this.dialog = false;
+        axios.post("/staff", this.agentForm).then(function (request) {
+          _this2.agents.push(request.data);
+
+          _this2.agent_id = request.data.id;
+        }), this.agentForm = {
+          name: null,
+          phone: null,
+          email: null
+        };
+      }
     },
     closeDialog: function closeDialog() {
       this.dialog = false;
@@ -7698,6 +8156,25 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/HomeComponent.vue?vue&type=style&index=0&id=782dcf83&scoped=true&lang=css&":
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/HomeComponent.vue?vue&type=style&index=0&id=782dcf83&scoped=true&lang=css& ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.button[data-v-782dcf83] {\r\n  margin-top: 30px;\n}\r\n", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ProjectsComponent.vue?vue&type=style&index=0&id=20cb5d70&scoped=true&lang=css&":
 /*!***********************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ProjectsComponent.vue?vue&type=style&index=0&id=20cb5d70&scoped=true&lang=css& ***!
@@ -7729,7 +8206,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n*[data-v-59cc4a25] {\r\n  padding-bottom: 14px;\n}\n.list[data-v-59cc4a25] {\r\n  height: 30px;\n}\r\n", ""]);
+exports.push([module.i, "\np[data-v-59cc4a25] {\r\n  color: black;\r\n  margin-bottom: 0;\n}\r\n", ""]);
 
 // exports
 
@@ -7786,7 +8263,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "\np[data-v-46f349bc] {\r\n  color: black;\n}\r\n", ""]);
+exports.push([module.i, "\np[data-v-46f349bc] {\n    color: black;\n}\n", ""]);
 
 // exports
 
@@ -38629,6 +39106,36 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/HomeComponent.vue?vue&type=style&index=0&id=782dcf83&scoped=true&lang=css&":
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/HomeComponent.vue?vue&type=style&index=0&id=782dcf83&scoped=true&lang=css& ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./HomeComponent.vue?vue&type=style&index=0&id=782dcf83&scoped=true&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/HomeComponent.vue?vue&type=style&index=0&id=782dcf83&scoped=true&lang=css&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ProjectsComponent.vue?vue&type=style&index=0&id=20cb5d70&scoped=true&lang=css&":
 /*!***************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ProjectsComponent.vue?vue&type=style&index=0&id=20cb5d70&scoped=true&lang=css& ***!
@@ -39382,26 +39889,184 @@ var render = function() {
     "v-container",
     { attrs: { fluid: "" } },
     [
-      _vm.$route.name === "edit"
-        ? _c("h3", { attrs: { align: "center" } }, [
-            _vm._v("Изменение проекта")
-          ])
-        : _c("h3", { attrs: { align: "center" } }, [
-            _vm._v("Создание проекта")
-          ]),
-      _vm._v(" "),
       _c(
-        "v-row",
+        "v-form",
+        {
+          ref: "form",
+          attrs: { "lazy-validation": "" },
+          model: {
+            value: _vm.valid,
+            callback: function($$v) {
+              _vm.valid = $$v
+            },
+            expression: "valid"
+          }
+        },
         [
-          _c("v-col", { attrs: { cols: "6" } }, [_c("DealerComponent")], 1),
+          _vm.$route.name === "edit"
+            ? _c("h3", { attrs: { align: "center" } }, [
+                _vm._v("Изменение проекта")
+              ])
+            : _c("h3", { attrs: { align: "center" } }, [
+                _vm._v("Создание проекта")
+              ]),
           _vm._v(" "),
-          _c("v-col", { attrs: { cols: "6" } }, [_c("CustomerComponent")], 1),
+          _c(
+            "v-row",
+            [
+              _c(
+                "v-col",
+                { attrs: { cols: "6" } },
+                [
+                  _c("DealerComponent", {
+                    attrs: {
+                      dealerData: _vm.testData.dealer,
+                      isEdit: _vm.isEdit
+                    },
+                    on: { dealer: _vm.saveDealer }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-col",
+                { attrs: { cols: "6" } },
+                [
+                  _c("CustomerComponent", {
+                    attrs: {
+                      customerData: _vm.testData.customer,
+                      isEdit: _vm.isEdit
+                    },
+                    on: { customer: _vm.saveCustomer }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-col",
+                { attrs: { cols: "12" } },
+                [
+                  _c("ProjectComponent", {
+                    attrs: {
+                      address_prop: _vm.address,
+                      isEdit: _vm.isEdit,
+                      projectData: _vm.testData
+                    },
+                    on: { project: _vm.saveProject }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-col",
+                { attrs: { cols: "5" } },
+                [
+                  _c("OpponentComponent", {
+                    attrs: { opponentsData: _vm.testData.opponents },
+                    on: { opponents: _vm.saveOpponents }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-col",
+                { attrs: { cols: "7" } },
+                [
+                  _c("ProductComponent", {
+                    attrs: { productsData: _vm.testData.products },
+                    on: { products: _vm.saveProducts }
+                  })
+                ],
+                1
+              )
+            ],
+            1
+          ),
           _vm._v(" "),
-          _c("v-col", { attrs: { cols: "12" } }, [_c("ProjectComponent")], 1),
+          _vm.$route.name === "edit"
+            ? _c(
+                "v-btn",
+                {
+                  attrs: { block: "", color: "indigo", outlined: "" },
+                  on: { click: _vm.validate }
+                },
+                [_vm._v("Изменить форму")]
+              )
+            : _c(
+                "v-btn",
+                {
+                  attrs: { block: "", color: "indigo", outlined: "" },
+                  on: { click: _vm.validate }
+                },
+                [_vm._v("Добавить форму")]
+              ),
           _vm._v(" "),
-          _c("v-col", { attrs: { cols: "6" } }, [_c("OpponentComponent")], 1),
-          _vm._v(" "),
-          _c("v-col", { attrs: { cols: "6" } }, [_c("ProductComponent")], 1)
+          _c(
+            "v-row",
+            { attrs: { justify: "center" } },
+            [
+              _c(
+                "v-dialog",
+                {
+                  attrs: { width: "210px" },
+                  model: {
+                    value: _vm.dialog,
+                    callback: function($$v) {
+                      _vm.dialog = $$v
+                    },
+                    expression: "dialog"
+                  }
+                },
+                [
+                  _c(
+                    "v-card",
+                    [
+                      _c("v-card-title", [_vm._v("Все верно?")]),
+                      _vm._v(" "),
+                      _c(
+                        "v-card-actions",
+                        [
+                          _c(
+                            "v-btn",
+                            {
+                              attrs: { depressed: "", color: "error" },
+                              on: {
+                                click: function($event) {
+                                  _vm.dialog = false
+                                }
+                              }
+                            },
+                            [_vm._v("Отмена")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-btn",
+                            {
+                              attrs: { depressed: "", color: "success" },
+                              on: {
+                                click: function($event) {
+                                  _vm.isEdit ? _vm.editForm() : _vm.addForm()
+                                }
+                              }
+                            },
+                            [_vm._v("Добавить")]
+                          )
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
         ],
         1
       )
@@ -39416,10 +40081,10 @@ render._withStripped = true
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/HomeComponent.vue?vue&type=template&id=782dcf83&":
-/*!****************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/HomeComponent.vue?vue&type=template&id=782dcf83& ***!
-  \****************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/HomeComponent.vue?vue&type=template&id=782dcf83&scoped=true&":
+/*!****************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/HomeComponent.vue?vue&type=template&id=782dcf83&scoped=true& ***!
+  \****************************************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -39436,48 +40101,92 @@ var render = function() {
     { attrs: { fluid: "" } },
     [
       _c(
-        "v-row",
+        "v-card",
+        { staticClass: "mx-auto" },
         [
+          _c("v-card-title", [_vm._v("Поиск объекта")]),
+          _vm._v(" "),
           _c(
-            "v-col",
-            { attrs: { cols: "12", sm: "12" } },
+            "v-card-text",
             [
-              _c("v-autocomplete", {
-                attrs: {
-                  items: _vm.items,
-                  loading: _vm.isLoading,
-                  "search-input": _vm.search,
-                  color: "grey",
-                  "hide-no-data": "",
-                  "hide-selected": "",
-                  outlined: "",
-                  "item-text": "Address",
-                  "item-value": "API",
-                  label: "Адрес объекта",
-                  placeholder: "Вводите адрес для поиска",
-                  "return-object": ""
-                },
-                on: {
-                  "update:searchInput": function($event) {
-                    _vm.search = $event
-                  },
-                  "update:search-input": function($event) {
-                    _vm.search = $event
-                  }
-                },
+              _c("v-text-field", {
+                attrs: { label: "Адрес", outlined: "" },
                 model: {
-                  value: _vm.model,
+                  value: _vm.address,
                   callback: function($$v) {
-                    _vm.model = $$v
+                    _vm.address = $$v
                   },
-                  expression: "model"
+                  expression: "address"
                 }
               }),
               _vm._v(" "),
               _c(
+                "v-expansion-panels",
+                { attrs: { multiple: "", focusable: "" } },
+                _vm._l(_vm.entries, function(item, i) {
+                  return _c(
+                    "v-expansion-panel",
+                    { key: i },
+                    [
+                      _c("v-expansion-panel-header", { staticClass: "title" }, [
+                        _vm._v(_vm._s(item.address))
+                      ]),
+                      _vm._v(" "),
+                      _c(
+                        "v-expansion-panel-content",
+                        [
+                          _c("p", { staticClass: "title" }, [
+                            _vm._v("Название")
+                          ]),
+                          _vm._v(" "),
+                          _c("p", { staticClass: "body-1" }, [
+                            _vm._v(_vm._s(item.name))
+                          ]),
+                          _vm._v(" "),
+                          _c("p", { staticClass: "title" }, [_vm._v("Срок")]),
+                          _vm._v(" "),
+                          _c("p", { staticClass: "body-1" }, [
+                            _vm._v(_vm._s(item.date))
+                          ]),
+                          _vm._v(" "),
+                          _c("p", { staticClass: "title" }, [
+                            _vm._v("Дата создания")
+                          ]),
+                          _vm._v(" "),
+                          _c("p", { staticClass: "body-1" }, [
+                            _vm._v(_vm._s(item.time))
+                          ]),
+                          _vm._v(" "),
+                          _c("v-checkbox", {
+                            attrs: { label: "Проверено?", value: i },
+                            model: {
+                              value: _vm.selected,
+                              callback: function($$v) {
+                                _vm.selected = $$v
+                              },
+                              expression: "selected"
+                            }
+                          })
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                }),
+                1
+              ),
+              _vm._v(" "),
+              _c(
                 "v-btn",
                 {
-                  attrs: { block: "", color: "indigo", outlined: "" },
+                  staticClass: "button",
+                  attrs: {
+                    disabled: _vm.addressLength,
+                    block: "",
+                    color: "indigo",
+                    outlined: ""
+                  },
                   on: { click: _vm.createForm }
                 },
                 [_vm._v("Добавить форму")]
@@ -39578,53 +40287,511 @@ var render = function() {
     "div",
     [
       _c(
-        "div",
-        { staticClass: "row justify-content-center" },
+        "v-container",
         [
           _c(
             "v-card",
-            { attrs: { "max-width": "800", outlined: "" } },
+            { attrs: { outlined: "" } },
             [
+              _c("v-card-title", [_vm._v(_vm._s(_vm.project.name.data))]),
+              _vm._v(" "),
               _c(
-                "v-list-item",
-                { attrs: { "three-line": "" } },
+                "v-card-text",
                 [
                   _c(
-                    "v-list-item-content",
+                    "v-expansion-panels",
+                    { attrs: { multiple: "", focusable: "" } },
                     [
-                      _c("h4", [_vm._v("Дилер")]),
-                      _vm._v(" "),
-                      _vm._l(_vm.dealer, function(item, i) {
-                        return _c(
-                          "div",
-                          { key: "A" + i, staticClass: "list" },
-                          [
-                            _c("p", [
-                              _vm._v(
-                                _vm._s(item.label) + " : " + _vm._s(item.data)
+                      _c(
+                        "v-expansion-panel",
+                        [
+                          _c(
+                            "v-expansion-panel-header",
+                            { staticClass: "title" },
+                            [_vm._v("Проект")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-expansion-panel-content",
+                            [
+                              _c(
+                                "v-row",
+                                [
+                                  _c(
+                                    "v-col",
+                                    { attrs: { cols: "12", md: "4" } },
+                                    [
+                                      _c(
+                                        "v-card",
+                                        { attrs: { flat: "" } },
+                                        [
+                                          _c("v-card-text", [
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Название")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.project.name.data)
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Адрес")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.project.address.data)
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Дата")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.project.date.data)
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Время")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.project.time.data)
+                                              )
+                                            ])
+                                          ])
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-col",
+                                    { attrs: { cols: "12", md: "8" } },
+                                    [
+                                      _c(
+                                        "v-card",
+                                        { attrs: { flat: "" } },
+                                        [
+                                          _c("v-card-title", [
+                                            _vm._v("Проделанная работа")
+                                          ]),
+                                          _vm._v(" "),
+                                          _c(
+                                            "v-card-text",
+                                            [
+                                              _c("v-textarea", {
+                                                attrs: {
+                                                  value: _vm.project.work.data,
+                                                  "no-resize": "",
+                                                  height: "200px",
+                                                  solo: "",
+                                                  flat: "",
+                                                  readonly: ""
+                                                }
+                                              })
+                                            ],
+                                            1
+                                          )
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
                               )
-                            ])
-                          ]
-                        )
-                      }),
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      ),
                       _vm._v(" "),
-                      _c("h4", [_vm._v("Проект")]),
-                      _vm._v(" "),
-                      _vm._l(_vm.form, function(item, i) {
-                        return _c(
-                          "div",
-                          { key: "B" + i, staticClass: "list" },
-                          [
-                            _c("p", [
-                              _vm._v(
-                                _vm._s(item.label) + " : " + _vm._s(item.data)
+                      _c(
+                        "v-expansion-panel",
+                        [
+                          _c(
+                            "v-expansion-panel-header",
+                            { staticClass: "title" },
+                            [_vm._v("Дилер")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-expansion-panel-content",
+                            [
+                              _c(
+                                "v-row",
+                                [
+                                  _c(
+                                    "v-col",
+                                    { attrs: { cols: "12", md: "6" } },
+                                    [
+                                      _c(
+                                        "v-card",
+                                        { attrs: { flat: "" } },
+                                        [
+                                          _c("v-card-text", [
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("ИНН")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.dealer.inn.data)
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("КПП")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.dealer.kpp.data)
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Имя")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.dealer.name.data)
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Адрес")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.dealer.address.data)
+                                              )
+                                            ])
+                                          ])
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-col",
+                                    { attrs: { cols: "12", md: "6" } },
+                                    [
+                                      _c(
+                                        "v-card",
+                                        { attrs: { flat: "" } },
+                                        [
+                                          _c("v-card-text", [
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Представитель")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(
+                                                  _vm.dealer_staff.name.data
+                                                )
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Телефон")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(
+                                                  _vm.dealer_staff.phone.data
+                                                )
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Почта")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(
+                                                  _vm.dealer_staff.email.data
+                                                )
+                                              )
+                                            ])
+                                          ])
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
                               )
-                            ])
-                          ]
-                        )
-                      })
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-expansion-panel",
+                        [
+                          _c(
+                            "v-expansion-panel-header",
+                            { staticClass: "title" },
+                            [_vm._v("Заказчик")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-expansion-panel-content",
+                            [
+                              _c(
+                                "v-row",
+                                [
+                                  _c(
+                                    "v-col",
+                                    { attrs: { cols: "12", md: "6" } },
+                                    [
+                                      _c(
+                                        "v-card",
+                                        { attrs: { flat: "" } },
+                                        [
+                                          _c("v-card-text", [
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("ИНН")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.customer.inn.data)
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("КПП")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.customer.kpp.data)
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Имя")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(_vm.customer.name.data)
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Адрес")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(
+                                                  _vm.customer.address.data
+                                                )
+                                              )
+                                            ])
+                                          ])
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-col",
+                                    { attrs: { cols: "12", md: "6" } },
+                                    [
+                                      _c(
+                                        "v-card",
+                                        { attrs: { flat: "" } },
+                                        [
+                                          _c("v-card-text", [
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Представитель")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(
+                                                  _vm.customer_staff.name.data
+                                                )
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Телефон")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(
+                                                  _vm.customer_staff.phone.data
+                                                )
+                                              )
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "title" }, [
+                                              _vm._v("Почта")
+                                            ]),
+                                            _vm._v(" "),
+                                            _c("p", { staticClass: "body-1" }, [
+                                              _vm._v(
+                                                _vm._s(
+                                                  _vm.customer_staff.email.data
+                                                )
+                                              )
+                                            ])
+                                          ])
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              )
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-expansion-panel",
+                        [
+                          _c(
+                            "v-expansion-panel-header",
+                            { staticClass: "title" },
+                            [_vm._v("Конкуренты")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-expansion-panel-content",
+                            [
+                              _c(
+                                "v-list",
+                                _vm._l(_vm.opponents, function(item, i) {
+                                  return _c(
+                                    "v-list-item",
+                                    { key: "C" + i },
+                                    [
+                                      _c(
+                                        "v-list-item-content",
+                                        [
+                                          _c("v-list-item-title", [
+                                            _vm._v(_vm._s(item.name))
+                                          ])
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  )
+                                }),
+                                1
+                              )
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-expansion-panel",
+                        [
+                          _c(
+                            "v-expansion-panel-header",
+                            { staticClass: "title" },
+                            [_vm._v("Детали")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-expansion-panel-content",
+                            [
+                              _vm.products.length
+                                ? _c("v-data-table", {
+                                    staticClass: "elevation-1",
+                                    attrs: {
+                                      headers: _vm.headers,
+                                      items: _vm.products,
+                                      "item-key": "name"
+                                    },
+                                    scopedSlots: _vm._u(
+                                      [
+                                        {
+                                          key: "item",
+                                          fn: function(ref) {
+                                            var item = ref.item
+                                            return [
+                                              _c("tr", [
+                                                _c("td", [
+                                                  _vm._v(_vm._s(item.name))
+                                                ]),
+                                                _vm._v(" "),
+                                                _c("td", [
+                                                  _vm._v(
+                                                    _vm._s(item.pivot.count)
+                                                  )
+                                                ]),
+                                                _vm._v(" "),
+                                                _c("td", [
+                                                  _vm._v(
+                                                    _vm._s(item.pivot.price)
+                                                  )
+                                                ]),
+                                                _vm._v(" "),
+                                                _c("td", [
+                                                  _vm._v(
+                                                    _vm._s(item.pivot.total)
+                                                  )
+                                                ])
+                                              ])
+                                            ]
+                                          }
+                                        }
+                                      ],
+                                      null,
+                                      false,
+                                      1568652663
+                                    )
+                                  })
+                                : _vm._e()
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      )
                     ],
-                    2
+                    1
                   )
                 ],
                 1
@@ -39632,6 +40799,7 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "v-card-actions",
+                { staticClass: "row justify-content-center" },
                 [
                   _c(
                     "v-btn",
@@ -39772,22 +40940,45 @@ var render = function() {
           _c("v-autocomplete", {
             attrs: {
               items: _vm.companies,
-              "search-input": _vm.inn,
+              "search-input": _vm.search,
               color: "grey",
               label: "ИНН",
               outlined: "",
+              "hide-details": "",
+              "no-filter": "",
+              "return-object": "",
               "item-text": "name",
-              "item-value": "name",
-              "return-object": ""
+              loading: _vm.isLoading,
+              disabled: _vm.isEdit
             },
             on: {
               "update:searchInput": function($event) {
-                _vm.inn = $event
+                _vm.search = $event
               },
               "update:search-input": function($event) {
-                _vm.inn = $event
+                _vm.search = $event
               }
             },
+            scopedSlots: _vm._u([
+              {
+                key: "item",
+                fn: function(ref) {
+                  var item = ref.item
+                  return [
+                    _vm._v(_vm._s(item.name) + ", КПП:" + _vm._s(item.kpp))
+                  ]
+                }
+              },
+              {
+                key: "selection",
+                fn: function(ref) {
+                  var item = ref.item
+                  return [
+                    _vm._v(_vm._s(item.inn) + ", КПП:" + _vm._s(item.kpp))
+                  ]
+                }
+              }
+            ]),
             model: {
               value: _vm.company,
               callback: function($$v) {
@@ -39798,14 +40989,6 @@ var render = function() {
           }),
           _vm._v(" "),
           _c("p", { staticClass: "subtitle" }, [
-            _vm._v("ИНН: " + _vm._s(_vm.company ? _vm.company.inn : ""))
-          ]),
-          _vm._v(" "),
-          _c("p", { staticClass: "subtitle" }, [
-            _vm._v("КПП: " + _vm._s(_vm.company ? _vm.company.kpp : ""))
-          ]),
-          _vm._v(" "),
-          _c("p", { staticClass: "subtitle" }, [
             _vm._v("Название: " + _vm._s(_vm.company ? _vm.company.name : ""))
           ]),
           _vm._v(" "),
@@ -39813,7 +40996,12 @@ var render = function() {
             _vm._v("Адрес: " + _vm._s(_vm.company ? _vm.company.address : ""))
           ]),
           _vm._v(" "),
-          _c("StaffComponent")
+          _vm.customer
+            ? _c("StaffComponent", {
+                attrs: { entity: _vm.customer, mode: "customer" },
+                on: { staff: _vm.saveStaff }
+              })
+            : _vm._e()
         ],
         1
       )
@@ -39855,22 +41043,45 @@ var render = function() {
           _c("v-autocomplete", {
             attrs: {
               items: _vm.companies,
-              "search-input": _vm.inn,
+              "search-input": _vm.search,
               color: "grey",
               label: "ИНН",
               outlined: "",
+              "hide-details": "",
+              "no-filter": "",
+              "return-object": "",
               "item-text": "name",
-              "item-value": "name",
-              "return-object": ""
+              loading: _vm.isLoading,
+              disabled: _vm.isEdit
             },
             on: {
               "update:searchInput": function($event) {
-                _vm.inn = $event
+                _vm.search = $event
               },
               "update:search-input": function($event) {
-                _vm.inn = $event
+                _vm.search = $event
               }
             },
+            scopedSlots: _vm._u([
+              {
+                key: "item",
+                fn: function(ref) {
+                  var item = ref.item
+                  return [
+                    _vm._v(_vm._s(item.name) + ", КПП:" + _vm._s(item.kpp))
+                  ]
+                }
+              },
+              {
+                key: "selection",
+                fn: function(ref) {
+                  var item = ref.item
+                  return [
+                    _vm._v(_vm._s(item.inn) + ", КПП:" + _vm._s(item.kpp))
+                  ]
+                }
+              }
+            ]),
             model: {
               value: _vm.company,
               callback: function($$v) {
@@ -39881,14 +41092,6 @@ var render = function() {
           }),
           _vm._v(" "),
           _c("p", { staticClass: "subtitle" }, [
-            _vm._v("ИНН: " + _vm._s(_vm.company ? _vm.company.inn : ""))
-          ]),
-          _vm._v(" "),
-          _c("p", { staticClass: "subtitle" }, [
-            _vm._v("КПП: " + _vm._s(_vm.company ? _vm.company.kpp : ""))
-          ]),
-          _vm._v(" "),
-          _c("p", { staticClass: "subtitle" }, [
             _vm._v("Название: " + _vm._s(_vm.company ? _vm.company.name : ""))
           ]),
           _vm._v(" "),
@@ -39896,9 +41099,12 @@ var render = function() {
             _vm._v("Адрес: " + _vm._s(_vm.company ? _vm.company.address : ""))
           ]),
           _vm._v(" "),
-          _c("StaffComponent", {
-            attrs: { test: _vm.company ? _vm.company.kpp : "" }
-          })
+          _vm.dealer
+            ? _c("StaffComponent", {
+                attrs: { entity: _vm.dealer, mode: "dealer" },
+                on: { staff: _vm.saveStaff }
+              })
+            : _vm._e()
         ],
         1
       )
@@ -40001,7 +41207,7 @@ var render = function() {
                                 {
                                   on: {
                                     click: function($event) {
-                                      return _vm.remove(item)
+                                      return _vm.remove(item, i)
                                     }
                                   }
                                 },
@@ -40116,153 +41322,212 @@ var render = function() {
                             "v-card-text",
                             [
                               _c(
-                                "v-row",
+                                "v-form",
+                                {
+                                  ref: "form",
+                                  attrs: { "lazy-validation": "" },
+                                  model: {
+                                    value: _vm.valid,
+                                    callback: function($$v) {
+                                      _vm.valid = $$v
+                                    },
+                                    expression: "valid"
+                                  }
+                                },
                                 [
                                   _c(
-                                    "v-col",
-                                    { attrs: { cols: "12", md: "12" } },
+                                    "v-row",
                                     [
-                                      _c("v-autocomplete", {
-                                        attrs: {
-                                          items: _vm.entires,
-                                          "search-input": _vm.search,
-                                          color: "grey",
-                                          label: "Артикул",
-                                          outlined: "",
-                                          "item-text": "name",
-                                          "item-value": "name",
-                                          "return-object": ""
-                                        },
-                                        on: {
-                                          "update:searchInput": function(
-                                            $event
-                                          ) {
-                                            _vm.search = $event
-                                          },
-                                          "update:search-input": function(
-                                            $event
-                                          ) {
-                                            _vm.search = $event
-                                          }
-                                        },
-                                        model: {
-                                          value: _vm.product,
-                                          callback: function($$v) {
-                                            _vm.product = $$v
-                                          },
-                                          expression: "product"
-                                        }
-                                      })
-                                    ],
-                                    1
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "v-col",
-                                    { attrs: { cols: "12", md: "4" } },
-                                    [
-                                      _c("v-text-field", {
-                                        attrs: {
-                                          label: "Артикул",
-                                          solo: "",
-                                          readonly: ""
-                                        },
-                                        model: {
-                                          value: _vm.code,
-                                          callback: function($$v) {
-                                            _vm.code = $$v
-                                          },
-                                          expression: "code"
-                                        }
-                                      })
-                                    ],
-                                    1
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "v-col",
-                                    { attrs: { cols: "12", md: "8" } },
-                                    [
-                                      _c("v-text-field", {
-                                        attrs: {
-                                          label: "Название",
-                                          solo: "",
-                                          readonly: ""
-                                        },
-                                        model: {
-                                          value: _vm.name,
-                                          callback: function($$v) {
-                                            _vm.name = $$v
-                                          },
-                                          expression: "name"
-                                        }
-                                      })
-                                    ],
-                                    1
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "v-col",
-                                    { attrs: { cols: "12", md: "4" } },
-                                    [
-                                      _c("v-text-field", {
-                                        attrs: {
-                                          label: "Количество",
-                                          outlined: ""
-                                        },
-                                        on: { change: _vm.onChangeCount },
-                                        model: {
-                                          value: _vm.count,
-                                          callback: function($$v) {
-                                            _vm.count = $$v
-                                          },
-                                          expression: "count"
-                                        }
-                                      })
-                                    ],
-                                    1
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "v-col",
-                                    { attrs: { cols: "12", md: "4" } },
-                                    [
-                                      _c("v-text-field", {
-                                        attrs: {
-                                          label: "Цена за единицу",
-                                          outlined: ""
-                                        },
-                                        on: { change: _vm.onChangePrice },
-                                        model: {
-                                          value: _vm.price,
-                                          callback: function($$v) {
-                                            _vm.price = $$v
-                                          },
-                                          expression: "price"
-                                        }
-                                      })
-                                    ],
-                                    1
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "v-col",
-                                    { attrs: { cols: "12", md: "4" } },
-                                    [
-                                      _c("v-text-field", {
-                                        attrs: {
-                                          label: "Итоговая сумма",
-                                          outlined: ""
-                                        },
-                                        on: { change: _vm.onChangeTotal },
-                                        model: {
-                                          value: _vm.total,
-                                          callback: function($$v) {
-                                            _vm.total = $$v
-                                          },
-                                          expression: "total"
-                                        }
-                                      })
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12", md: "4" } },
+                                        [
+                                          _c("v-autocomplete", {
+                                            attrs: {
+                                              items: _vm.entires,
+                                              "search-input": _vm.search,
+                                              color: "grey",
+                                              label: "Артикул",
+                                              outlined: "",
+                                              "hide-details": "",
+                                              "no-filter": "",
+                                              "item-text": "name",
+                                              "return-object": "",
+                                              loading: _vm.isLoading
+                                            },
+                                            on: {
+                                              "update:searchInput": function(
+                                                $event
+                                              ) {
+                                                _vm.search = $event
+                                              },
+                                              "update:search-input": function(
+                                                $event
+                                              ) {
+                                                _vm.search = $event
+                                              }
+                                            },
+                                            scopedSlots: _vm._u([
+                                              {
+                                                key: "item",
+                                                fn: function(ref) {
+                                                  var item = ref.item
+                                                  return [
+                                                    _vm._v(_vm._s(item.name))
+                                                  ]
+                                                }
+                                              },
+                                              {
+                                                key: "selection",
+                                                fn: function(ref) {
+                                                  var item = ref.item
+                                                  return [
+                                                    _vm._v(_vm._s(item.article))
+                                                  ]
+                                                }
+                                              }
+                                            ]),
+                                            model: {
+                                              value: _vm.product,
+                                              callback: function($$v) {
+                                                _vm.product = $$v
+                                              },
+                                              expression: "product"
+                                            }
+                                          })
+                                        ],
+                                        1
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12", md: "8" } },
+                                        [
+                                          _c("v-text-field", {
+                                            attrs: {
+                                              value:
+                                                _vm.product != undefined
+                                                  ? _vm.product.name
+                                                  : "",
+                                              label: "Название",
+                                              solo: "",
+                                              flat: "",
+                                              readonly: "",
+                                              rules: [
+                                                function(v) {
+                                                  return (
+                                                    !!v || "Выберите продукт"
+                                                  )
+                                                }
+                                              ]
+                                            }
+                                          })
+                                        ],
+                                        1
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12", md: "4" } },
+                                        [
+                                          _c("v-text-field", {
+                                            attrs: {
+                                              label: "Количество",
+                                              outlined: "",
+                                              rules: [
+                                                function(v) {
+                                                  return (
+                                                    !!v || "Введите количество"
+                                                  )
+                                                },
+                                                function(v) {
+                                                  return (
+                                                    /^\d+(\.\d+)?$/.test(v) ||
+                                                    "Неверный формат данных"
+                                                  )
+                                                }
+                                              ]
+                                            },
+                                            on: { change: _vm.onChangeCount },
+                                            model: {
+                                              value: _vm.count,
+                                              callback: function($$v) {
+                                                _vm.count = $$v
+                                              },
+                                              expression: "count"
+                                            }
+                                          })
+                                        ],
+                                        1
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12", md: "4" } },
+                                        [
+                                          _c("v-text-field", {
+                                            attrs: {
+                                              label: "Цена за единицу",
+                                              outlined: "",
+                                              rules: [
+                                                function(v) {
+                                                  return !!v || "Введите цену"
+                                                },
+                                                function(v) {
+                                                  return (
+                                                    /^\d+(\.\d+)?$/.test(v) ||
+                                                    "Неверный формат данных"
+                                                  )
+                                                }
+                                              ]
+                                            },
+                                            on: { change: _vm.onChangePrice },
+                                            model: {
+                                              value: _vm.price,
+                                              callback: function($$v) {
+                                                _vm.price = $$v
+                                              },
+                                              expression: "price"
+                                            }
+                                          })
+                                        ],
+                                        1
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12", md: "4" } },
+                                        [
+                                          _c("v-text-field", {
+                                            attrs: {
+                                              label: "Итоговая сумма",
+                                              outlined: "",
+                                              rules: [
+                                                function(v) {
+                                                  return (
+                                                    !!v || "Введите общую сумму"
+                                                  )
+                                                },
+                                                function(v) {
+                                                  return (
+                                                    /^\d+(\.\d+)?$/.test(v) ||
+                                                    "Неверный формат данных"
+                                                  )
+                                                }
+                                              ]
+                                            },
+                                            on: { change: _vm.onChangeTotal },
+                                            model: {
+                                              value: _vm.total,
+                                              callback: function($$v) {
+                                                _vm.total = $$v
+                                              },
+                                              expression: "total"
+                                            }
+                                          })
+                                        ],
+                                        1
+                                      )
                                     ],
                                     1
                                   )
@@ -40309,88 +41574,57 @@ var render = function() {
               ),
               _vm._v(" "),
               _vm.products.length
-                ? _c("v-simple-table", {
-                    staticClass: "table",
+                ? _c("v-data-table", {
+                    staticClass: "elevation-1",
+                    attrs: {
+                      headers: _vm.headers,
+                      items: _vm.products,
+                      "item-key": "name"
+                    },
                     scopedSlots: _vm._u(
                       [
                         {
-                          key: "default",
-                          fn: function() {
+                          key: "item",
+                          fn: function(ref) {
+                            var item = ref.item
                             return [
-                              _c("thead", [
-                                _c("tr", [
-                                  _c("th", { staticClass: "text-left" }, [
-                                    _vm._v("Артикул")
-                                  ]),
-                                  _vm._v(" "),
-                                  _c("th", { staticClass: "text-left" }, [
-                                    _vm._v("Наименование")
-                                  ]),
-                                  _vm._v(" "),
-                                  _c("th", { staticClass: "text-left" }, [
-                                    _vm._v("Количество")
-                                  ]),
-                                  _vm._v(" "),
-                                  _c("th", { staticClass: "text-left" }, [
-                                    _vm._v("Цена")
-                                  ]),
-                                  _vm._v(" "),
-                                  _c("th", { staticClass: "text-left" }, [
-                                    _vm._v("Итог")
-                                  ])
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c(
-                                "tbody",
-                                _vm._l(_vm.products, function(item, i) {
-                                  return _c(
-                                    "tr",
-                                    { key: i, attrs: { valign: "middle" } },
-                                    [
-                                      _c("td", [_vm._v(_vm._s(item.code))]),
-                                      _vm._v(" "),
-                                      _c("td", [_vm._v(_vm._s(item.name))]),
-                                      _vm._v(" "),
-                                      _c("td", [_vm._v(_vm._s(item.count))]),
-                                      _vm._v(" "),
-                                      _c("td", [_vm._v(_vm._s(item.price))]),
-                                      _vm._v(" "),
-                                      _c("td", [_vm._v(_vm._s(item.total))]),
-                                      _vm._v(" "),
-                                      _c(
-                                        "td",
-                                        [
-                                          _c(
-                                            "v-icon",
-                                            {
-                                              on: {
-                                                click: function($event) {
-                                                  return _vm.removeProduct(
-                                                    item,
-                                                    i
-                                                  )
-                                                }
-                                              }
-                                            },
-                                            [_vm._v("mdi-minus-circle-outline")]
-                                          )
-                                        ],
-                                        1
-                                      )
-                                    ]
-                                  )
-                                }),
-                                0
-                              )
+                              _c("tr", [
+                                _c("td", [_vm._v(_vm._s(item.name))]),
+                                _vm._v(" "),
+                                _c("td", [_vm._v(_vm._s(item.pivot.count))]),
+                                _vm._v(" "),
+                                _c("td", [_vm._v(_vm._s(item.pivot.price))]),
+                                _vm._v(" "),
+                                _c("td", [_vm._v(_vm._s(item.pivot.total))]),
+                                _vm._v(" "),
+                                _c(
+                                  "td",
+                                  [
+                                    _c(
+                                      "v-icon",
+                                      {
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.removeProduct(
+                                              item,
+                                              _vm.i
+                                            )
+                                          }
+                                        }
+                                      },
+                                      [_vm._v("mdi-minus-circle-outline")]
+                                    )
+                                  ],
+                                  1
+                                )
+                              ])
                             ]
-                          },
-                          proxy: true
+                          }
                         }
                       ],
                       null,
                       false,
-                      3765538223
+                      2822805185
                     )
                   })
                 : _vm._e()
@@ -40426,209 +41660,265 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "v-card",
-    { staticClass: "mx-auto" },
-    [
-      _c("v-card-title", [_vm._v("Проект")]),
-      _vm._v(" "),
-      _c(
-        "v-card-text",
+  return _vm.projectData
+    ? _c(
+        "v-card",
+        { staticClass: "mx-auto" },
         [
-          _c("v-text-field", {
-            attrs: { label: "Название", outlined: "" },
-            model: {
-              value: _vm.name,
-              callback: function($$v) {
-                _vm.name = $$v
-              },
-              expression: "name"
-            }
-          }),
-          _vm._v(" "),
-          _c("v-text-field", {
-            attrs: { label: "Адрес", outlined: "" },
-            model: {
-              value: _vm.address,
-              callback: function($$v) {
-                _vm.address = $$v
-              },
-              expression: "address"
-            }
-          }),
-          _vm._v(" "),
-          _c("v-textarea", {
-            attrs: {
-              height: "200",
-              "no-resize": "",
-              outlined: "",
-              label: "Проделанная работа"
-            },
-            model: {
-              value: _vm.work,
-              callback: function($$v) {
-                _vm.work = $$v
-              },
-              expression: "work"
-            }
-          }),
+          _c("v-card-title", [_vm._v("Проект")]),
           _vm._v(" "),
           _c(
-            "v-row",
+            "v-card-text",
             [
-              _c(
-                "v-col",
-                { attrs: { md: "6" } },
-                [
-                  _c(
-                    "v-menu",
-                    {
-                      attrs: {
-                        "close-on-content-click": false,
-                        "nudge-right": 20,
-                        transition: "scale-transition",
-                        "offset-y": "",
-                        "min-width": "290px"
-                      },
-                      scopedSlots: _vm._u([
-                        {
-                          key: "activator",
-                          fn: function(ref) {
-                            var on = ref.on
-                            return [
-                              _c(
-                                "v-text-field",
-                                _vm._g(
-                                  {
-                                    attrs: {
-                                      label: "Срок реализации",
-                                      readonly: "",
-                                      outlined: ""
-                                    },
-                                    model: {
-                                      value: _vm.date,
-                                      callback: function($$v) {
-                                        _vm.date = $$v
-                                      },
-                                      expression: "date"
-                                    }
-                                  },
-                                  on
-                                )
-                              )
-                            ]
-                          }
-                        }
-                      ]),
-                      model: {
-                        value: _vm.dateMenu,
-                        callback: function($$v) {
-                          _vm.dateMenu = $$v
-                        },
-                        expression: "dateMenu"
-                      }
-                    },
-                    [
-                      _vm._v(" "),
-                      _c("v-date-picker", {
-                        attrs: {
-                          "no-title": "",
-                          scrollable: "",
-                          locale: "Rus"
-                        },
-                        on: {
-                          input: function($event) {
-                            _vm.dateMenu = false
-                          }
-                        },
-                        model: {
-                          value: _vm.date,
-                          callback: function($$v) {
-                            _vm.date = $$v
-                          },
-                          expression: "date"
-                        }
-                      })
-                    ],
-                    1
-                  )
-                ],
-                1
-              ),
+              _c("v-text-field", {
+                attrs: {
+                  label: "Название",
+                  outlined: "",
+                  readonly: _vm.isEdit,
+                  rules: [
+                    function(v) {
+                      return !!v || "Name is required"
+                    }
+                  ]
+                },
+                on: { change: _vm.sendData },
+                model: {
+                  value: _vm.projectData.name,
+                  callback: function($$v) {
+                    _vm.$set(_vm.projectData, "name", $$v)
+                  },
+                  expression: "projectData.name"
+                }
+              }),
+              _vm._v(" "),
+              _c("v-text-field", {
+                attrs: {
+                  label: "Адрес",
+                  outlined: "",
+                  rules: [
+                    function(v) {
+                      return !!v || "Address is required"
+                    }
+                  ],
+                  readonly: _vm.isEdit
+                },
+                on: { change: _vm.sendData },
+                model: {
+                  value: _vm.projectData.address,
+                  callback: function($$v) {
+                    _vm.$set(_vm.projectData, "address", $$v)
+                  },
+                  expression: "projectData.address"
+                }
+              }),
+              _vm._v(" "),
+              _c("v-textarea", {
+                attrs: {
+                  height: "200",
+                  "no-resize": "",
+                  outlined: "",
+                  label: "Проделанная работа"
+                },
+                on: { change: _vm.sendData },
+                model: {
+                  value: _vm.projectData.work,
+                  callback: function($$v) {
+                    _vm.$set(_vm.projectData, "work", $$v)
+                  },
+                  expression: "projectData.work"
+                }
+              }),
               _vm._v(" "),
               _c(
-                "v-col",
-                { attrs: { md: "6" } },
+                "v-row",
                 [
                   _c(
-                    "v-menu",
-                    {
-                      attrs: {
-                        "close-on-content-click": false,
-                        "nudge-right": 20,
-                        transition: "scale-transition",
-                        "offset-y": "",
-                        "min-width": "290px"
-                      },
-                      scopedSlots: _vm._u([
-                        {
-                          key: "activator",
-                          fn: function(ref) {
-                            var on = ref.on
-                            return [
-                              _c(
-                                "v-text-field",
-                                _vm._g(
-                                  {
-                                    attrs: {
-                                      label: "Дата заключения",
-                                      readonly: "",
-                                      outlined: ""
-                                    },
-                                    model: {
-                                      value: _vm.time,
-                                      callback: function($$v) {
-                                        _vm.time = $$v
-                                      },
-                                      expression: "time"
-                                    }
-                                  },
-                                  on
-                                )
-                              )
-                            ]
-                          }
-                        }
-                      ]),
-                      model: {
-                        value: _vm.timeMenu,
-                        callback: function($$v) {
-                          _vm.timeMenu = $$v
-                        },
-                        expression: "timeMenu"
-                      }
-                    },
+                    "v-col",
+                    { attrs: { md: "6" } },
                     [
-                      _vm._v(" "),
-                      _c("v-date-picker", {
-                        attrs: {
-                          "no-title": "",
-                          scrollable: "",
-                          locale: "Rus"
-                        },
-                        on: {
-                          input: function($event) {
-                            _vm.timeMenu = false
+                      _c(
+                        "v-menu",
+                        {
+                          attrs: {
+                            "close-on-content-click": false,
+                            "nudge-right": 20,
+                            transition: "scale-transition",
+                            "offset-y": "",
+                            "min-width": "290px"
+                          },
+                          scopedSlots: _vm._u(
+                            [
+                              {
+                                key: "activator",
+                                fn: function(ref) {
+                                  var on = ref.on
+                                  return [
+                                    _c(
+                                      "v-text-field",
+                                      _vm._g(
+                                        {
+                                          attrs: {
+                                            label: "Срок реализации",
+                                            readonly: "",
+                                            outlined: "",
+                                            rules: [
+                                              function(v) {
+                                                return !!v || "Date is required"
+                                              }
+                                            ]
+                                          },
+                                          model: {
+                                            value: _vm.projectData.date,
+                                            callback: function($$v) {
+                                              _vm.$set(
+                                                _vm.projectData,
+                                                "date",
+                                                $$v
+                                              )
+                                            },
+                                            expression: "projectData.date"
+                                          }
+                                        },
+                                        on
+                                      )
+                                    )
+                                  ]
+                                }
+                              }
+                            ],
+                            null,
+                            false,
+                            694755483
+                          ),
+                          model: {
+                            value: _vm.dateMenu,
+                            callback: function($$v) {
+                              _vm.dateMenu = $$v
+                            },
+                            expression: "dateMenu"
                           }
                         },
-                        model: {
-                          value: _vm.time,
-                          callback: function($$v) {
-                            _vm.time = $$v
+                        [
+                          _vm._v(" "),
+                          _c("v-date-picker", {
+                            attrs: {
+                              "no-title": "",
+                              scrollable: "",
+                              locale: "Rus"
+                            },
+                            on: {
+                              input: function($event) {
+                                _vm.dateMenu = false
+                              },
+                              change: _vm.sendData
+                            },
+                            model: {
+                              value: _vm.projectData.date,
+                              callback: function($$v) {
+                                _vm.$set(_vm.projectData, "date", $$v)
+                              },
+                              expression: "projectData.date"
+                            }
+                          })
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { md: "6" } },
+                    [
+                      _c(
+                        "v-menu",
+                        {
+                          attrs: {
+                            "close-on-content-click": false,
+                            "nudge-right": 20,
+                            transition: "scale-transition",
+                            "offset-y": "",
+                            "min-width": "290px",
+                            disabled: _vm.isEdit
                           },
-                          expression: "time"
-                        }
-                      })
+                          scopedSlots: _vm._u(
+                            [
+                              {
+                                key: "activator",
+                                fn: function(ref) {
+                                  var on = ref.on
+                                  return [
+                                    _c(
+                                      "v-text-field",
+                                      _vm._g(
+                                        {
+                                          attrs: {
+                                            label: "Дата заключения",
+                                            readonly: "",
+                                            outlined: "",
+                                            rules: [
+                                              function(v) {
+                                                return !!v || "Date is required"
+                                              }
+                                            ]
+                                          },
+                                          model: {
+                                            value: _vm.projectData.time,
+                                            callback: function($$v) {
+                                              _vm.$set(
+                                                _vm.projectData,
+                                                "time",
+                                                $$v
+                                              )
+                                            },
+                                            expression: "projectData.time"
+                                          }
+                                        },
+                                        on
+                                      )
+                                    )
+                                  ]
+                                }
+                              }
+                            ],
+                            null,
+                            false,
+                            2094555134
+                          ),
+                          model: {
+                            value: _vm.timeMenu,
+                            callback: function($$v) {
+                              _vm.timeMenu = $$v
+                            },
+                            expression: "timeMenu"
+                          }
+                        },
+                        [
+                          _vm._v(" "),
+                          _c("v-date-picker", {
+                            attrs: {
+                              "no-title": "",
+                              scrollable: "",
+                              locale: "Rus"
+                            },
+                            on: {
+                              input: function($event) {
+                                _vm.timeMenu = false
+                              },
+                              change: _vm.sendData
+                            },
+                            model: {
+                              value: _vm.projectData.time,
+                              callback: function($$v) {
+                                _vm.$set(_vm.projectData, "time", $$v)
+                              },
+                              expression: "projectData.time"
+                            }
+                          })
+                        ],
+                        1
+                      )
                     ],
                     1
                   )
@@ -40641,9 +41931,7 @@ var render = function() {
         ],
         1
       )
-    ],
-    1
-  )
+    : _vm._e()
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -40670,36 +41958,39 @@ var render = function() {
   return _c(
     "div",
     [
-      _c("v-autocomplete", {
-        attrs: {
-          items: _vm.agents,
-          color: "grey",
-          label: "Представитель",
-          outlined: "",
-          "item-text": "name",
-          "item-value": "name",
-          "return-object": ""
-        },
-        model: {
-          value: _vm.agent,
-          callback: function($$v) {
-            _vm.agent = $$v
-          },
-          expression: "agent"
-        }
-      }),
-      _vm._v(" "),
-      _c("p", { staticClass: "subtitle" }, [
-        _vm._v("Имя: " + _vm._s(_vm.agent ? _vm.agent.name : ""))
-      ]),
-      _vm._v(" "),
-      _c("p", { staticClass: "subtitle" }, [
-        _vm._v("Телефон: " + _vm._s(_vm.agent ? _vm.agent.phone : ""))
-      ]),
-      _vm._v(" "),
-      _c("p", { staticClass: "subtitle" }, [
-        _vm._v("Почта: " + _vm._s(_vm.agent ? _vm.agent.email : ""))
-      ]),
+      _vm.entity.contacts || _vm.agent_id
+        ? [
+            _c("v-autocomplete", {
+              attrs: {
+                items: _vm.agents,
+                color: "grey",
+                label: "Представитель",
+                outlined: "",
+                "item-text": "name",
+                "item-value": "id"
+              },
+              model: {
+                value: _vm.agent_id,
+                callback: function($$v) {
+                  _vm.agent_id = $$v
+                },
+                expression: "agent_id"
+              }
+            }),
+            _vm._v(" "),
+            _c("p", { staticClass: "subtitle" }, [
+              _vm._v("Имя: " + _vm._s(_vm.agent ? _vm.agent.name : ""))
+            ]),
+            _vm._v(" "),
+            _c("p", { staticClass: "subtitle" }, [
+              _vm._v("Телефон: " + _vm._s(_vm.agent ? _vm.agent.phone : ""))
+            ]),
+            _vm._v(" "),
+            _c("p", { staticClass: "subtitle" }, [
+              _vm._v("Почта: " + _vm._s(_vm.agent ? _vm.agent.email : ""))
+            ])
+          ]
+        : _vm._e(),
       _vm._v(" "),
       _c(
         "v-row",
@@ -40752,58 +42043,91 @@ var render = function() {
                     "v-card-text",
                     [
                       _c(
-                        "v-row",
+                        "v-form",
+                        {
+                          ref: "form",
+                          attrs: { "lazy-validation": "" },
+                          model: {
+                            value: _vm.valid,
+                            callback: function($$v) {
+                              _vm.valid = $$v
+                            },
+                            expression: "valid"
+                          }
+                        },
                         [
                           _c(
-                            "v-col",
-                            { attrs: { cols: "12" } },
+                            "v-row",
                             [
-                              _c("v-text-field", {
-                                attrs: { label: "Имя", outlined: "" },
-                                model: {
-                                  value: _vm.agentForm.name,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.agentForm, "name", $$v)
-                                  },
-                                  expression: "agentForm.name"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "v-col",
-                            { attrs: { cols: "12", md: "6" } },
-                            [
-                              _c("v-text-field", {
-                                attrs: { label: "Телефон", outlined: "" },
-                                model: {
-                                  value: _vm.agentForm.phone,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.agentForm, "phone", $$v)
-                                  },
-                                  expression: "agentForm.phone"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "v-col",
-                            { attrs: { cols: "12", md: "6" } },
-                            [
-                              _c("v-text-field", {
-                                attrs: { label: "Почта", outlined: "" },
-                                model: {
-                                  value: _vm.agentForm.email,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.agentForm, "email", $$v)
-                                  },
-                                  expression: "agentForm.email"
-                                }
-                              })
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12" } },
+                                [
+                                  _c("v-text-field", {
+                                    attrs: {
+                                      label: "Имя",
+                                      outlined: "",
+                                      rules: [
+                                        function(v) {
+                                          return !!v || "Введите имя"
+                                        }
+                                      ]
+                                    },
+                                    model: {
+                                      value: _vm.agentForm.name,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.agentForm, "name", $$v)
+                                      },
+                                      expression: "agentForm.name"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", md: "6" } },
+                                [
+                                  _c("v-text-field", {
+                                    attrs: {
+                                      label: "Телефон",
+                                      outlined: "",
+                                      rules: _vm.phoneRules
+                                    },
+                                    model: {
+                                      value: _vm.agentForm.phone,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.agentForm, "phone", $$v)
+                                      },
+                                      expression: "agentForm.phone"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", md: "6" } },
+                                [
+                                  _c("v-text-field", {
+                                    attrs: {
+                                      label: "Почта",
+                                      outlined: "",
+                                      rules: _vm.emailRules
+                                    },
+                                    model: {
+                                      value: _vm.agentForm.email,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.agentForm, "email", $$v)
+                                      },
+                                      expression: "agentForm.email"
+                                    }
+                                  })
+                                ],
+                                1
+                              )
                             ],
                             1
                           )
@@ -40849,7 +42173,7 @@ var render = function() {
         1
       )
     ],
-    1
+    2
   )
 }
 var staticRenderFns = []
@@ -97045,6 +98369,15 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
 window.Vue.use(vuetify__WEBPACK_IMPORTED_MODULE_0___default.a);
+
+window.debounce = function (callback, time) {
+  var timer;
+  return function () {
+    clearTimeout(timer);
+    timer = setTimeout(callback, time);
+  };
+};
+
 window.vueApp = new Vue({
   vuetify: new vuetify__WEBPACK_IMPORTED_MODULE_0___default.a(),
   router: _routes__WEBPACK_IMPORTED_MODULE_1__["default"],
@@ -97176,9 +98509,11 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _HomeComponent_vue_vue_type_template_id_782dcf83___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./HomeComponent.vue?vue&type=template&id=782dcf83& */ "./resources/js/components/HomeComponent.vue?vue&type=template&id=782dcf83&");
+/* harmony import */ var _HomeComponent_vue_vue_type_template_id_782dcf83_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./HomeComponent.vue?vue&type=template&id=782dcf83&scoped=true& */ "./resources/js/components/HomeComponent.vue?vue&type=template&id=782dcf83&scoped=true&");
 /* harmony import */ var _HomeComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./HomeComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/HomeComponent.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _HomeComponent_vue_vue_type_style_index_0_id_782dcf83_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./HomeComponent.vue?vue&type=style&index=0&id=782dcf83&scoped=true&lang=css& */ "./resources/js/components/HomeComponent.vue?vue&type=style&index=0&id=782dcf83&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
 
 
 
@@ -97186,13 +98521,13 @@ __webpack_require__.r(__webpack_exports__);
 
 /* normalize component */
 
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
   _HomeComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _HomeComponent_vue_vue_type_template_id_782dcf83___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _HomeComponent_vue_vue_type_template_id_782dcf83___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  _HomeComponent_vue_vue_type_template_id_782dcf83_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _HomeComponent_vue_vue_type_template_id_782dcf83_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
   false,
   null,
-  null,
+  "782dcf83",
   null
   
 )
@@ -97218,19 +98553,35 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/components/HomeComponent.vue?vue&type=template&id=782dcf83&":
-/*!**********************************************************************************!*\
-  !*** ./resources/js/components/HomeComponent.vue?vue&type=template&id=782dcf83& ***!
-  \**********************************************************************************/
+/***/ "./resources/js/components/HomeComponent.vue?vue&type=style&index=0&id=782dcf83&scoped=true&lang=css&":
+/*!************************************************************************************************************!*\
+  !*** ./resources/js/components/HomeComponent.vue?vue&type=style&index=0&id=782dcf83&scoped=true&lang=css& ***!
+  \************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_HomeComponent_vue_vue_type_style_index_0_id_782dcf83_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./HomeComponent.vue?vue&type=style&index=0&id=782dcf83&scoped=true&lang=css& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/HomeComponent.vue?vue&type=style&index=0&id=782dcf83&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_HomeComponent_vue_vue_type_style_index_0_id_782dcf83_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_HomeComponent_vue_vue_type_style_index_0_id_782dcf83_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_HomeComponent_vue_vue_type_style_index_0_id_782dcf83_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_HomeComponent_vue_vue_type_style_index_0_id_782dcf83_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_HomeComponent_vue_vue_type_style_index_0_id_782dcf83_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/HomeComponent.vue?vue&type=template&id=782dcf83&scoped=true&":
+/*!**********************************************************************************************!*\
+  !*** ./resources/js/components/HomeComponent.vue?vue&type=template&id=782dcf83&scoped=true& ***!
+  \**********************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_HomeComponent_vue_vue_type_template_id_782dcf83___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./HomeComponent.vue?vue&type=template&id=782dcf83& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/HomeComponent.vue?vue&type=template&id=782dcf83&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_HomeComponent_vue_vue_type_template_id_782dcf83___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_HomeComponent_vue_vue_type_template_id_782dcf83_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./HomeComponent.vue?vue&type=template&id=782dcf83&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/HomeComponent.vue?vue&type=template&id=782dcf83&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_HomeComponent_vue_vue_type_template_id_782dcf83_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_HomeComponent_vue_vue_type_template_id_782dcf83___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_HomeComponent_vue_vue_type_template_id_782dcf83_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
