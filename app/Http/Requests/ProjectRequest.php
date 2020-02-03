@@ -41,12 +41,12 @@ class ProjectRequest extends FormRequest
     public function messages()
     {
         return [
-            'project.name.required' => 'name is required!',
-            'project.address.required' => 'address is required!',
-            'dealer.dealer_id' => 'dealer_id required',
-            'dealer.dealer_staff_id' => 'dealer_staff_id required',
-            'customer.customer_id' => 'customer_id required',
-            'customer.customer_staff_id' => 'customer_staff_id required',
+            'project.name.required' => 'Название проекта не указано!',
+            'project.address.required' => 'Адрес не указан!',
+            'dealer.dealer_id' => 'Дилер не указан!',
+            'dealer.dealer_staff_id' => 'Представитель дилера не указан!',
+            'customer.customer_id' => 'Заказчик не указан!',
+            'customer.customer_staff_id' => 'Представитель заказчика не указан!',
         ];
     }
 }

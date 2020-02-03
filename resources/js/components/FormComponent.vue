@@ -41,7 +41,7 @@
       <v-btn v-else block color="indigo" outlined @click="validate">Добавить форму</v-btn>
 
       <v-row justify="center">
-        <v-dialog v-model="dialog" width="210px">
+        <v-dialog v-model="dialog" width="250px">
           <v-card>
             <v-card-title>Все верно?</v-card-title>
             <v-card-actions>
@@ -52,6 +52,24 @@
         </v-dialog>
       </v-row>
     </v-form>
+
+    <div class="text-center">
+      <v-dialog v-model="alert" width="500">
+        <v-card>
+          <v-card-title class="headline red lighten-2" primary-title>Ошибка</v-card-title>
+          <v-card-text>
+            <ul>
+              <li v-for="(item, i) in errors" :key="i">{{item[0]}}</li>
+            </ul>
+          </v-card-text>
+          <v-divider></v-divider>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" text @click="alert = false">I accept</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </div>
   </v-container>
 </template>
 
@@ -101,6 +119,8 @@ export default {
   },
 
   data: () => ({
+    alert: false,
+    errors: [],
     testData: {},
     isEdit: false,
     dialog: false,
@@ -122,7 +142,10 @@ export default {
           });
         })
         .catch(error => {
-          console.log('ERROOOOOOOR',error.response);
+          console.log("ERROOOOOOOR", error.response);
+          this.errors = error.response.data.errors;
+          this.dialog = false;
+          this.alert = true;
         });
     },
 
@@ -141,7 +164,7 @@ export default {
 
     validate() {
       if (this.$refs.form.validate()) {
-        this.dialog = true
+        this.dialog = true;
       }
     },
 

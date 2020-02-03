@@ -93,17 +93,18 @@
 
 <script>
 export default {
-  // mounted() {
-  //   console.log('Updated');
-  //   this.sendData();
-  // },
-
   props: ["address_prop", "isEdit", "projectData"],
 
   data: () => ({
     dateMenu: false,
     timeMenu: false
   }),
+
+  watch: {
+    address_prop(value) {
+      this.$set(this.projectData, 'address', this.address_prop)
+    }
+  },
 
   methods: {
     sendData() {

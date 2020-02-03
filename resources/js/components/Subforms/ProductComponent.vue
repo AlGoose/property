@@ -82,7 +82,7 @@
             </v-card>
           </v-dialog>
         </v-row>
-       
+
         <v-data-table
           v-if="products.length"
           :headers="headers"
@@ -90,14 +90,14 @@
           item-key="name"
           class="elevation-1"
         >
-          <template v-slot:item="{ item }">
+          <template v-slot:item="{ item, index }">
             <tr>
               <td>{{ item.name }}</td>
               <td>{{ item.pivot.count }}</td>
               <td>{{ item.pivot.price }}</td>
               <td>{{ item.pivot.total }}</td>
               <td>
-                <v-icon @click="removeProduct(item,i)">mdi-minus-circle-outline</v-icon>
+                <v-icon @click="removeProduct(item, index)">mdi-minus-circle-outline</v-icon>
               </td>
             </tr>
           </template>
@@ -144,6 +144,7 @@ export default {
       this.products = val;
       this.products.forEach(item => {
         item.pivot.total = item.pivot.count * item.pivot.price;
+        // item.total = item.count * item.price;
       });
     },
 
@@ -220,18 +221,15 @@ export default {
         let product = {
           code: this.product.id,
           article: this.product.article,
-          name: this.product.name,
-          count: this.count,
-          price: this.price,
-          total: this.total
+          name: this.product.name
         };
 
         axios
           .post("/product", product)
           .then(response => {
             this.$set(this.ids, response.data.id, {
-              price: product.price,
-              count: product.count
+              price: this.price,
+              count: this.count
             });
             product.id = response.data.id;
           })
@@ -239,6 +237,11 @@ export default {
             console.log(error);
           });
 
+        product.pivot = {
+          price: this.price,
+          count: this.count,
+          total: this.total
+        };
         this.products.push(product);
         this.count = null;
         this.price = null;
@@ -249,8 +252,8 @@ export default {
       }
     },
 
-    removeProduct(item, i) {
-      this.products.splice(i, 1);
+    removeProduct(item, index) {
+      this.products.splice(index, 1);
       this.$delete(this.ids, item.id);
     },
 

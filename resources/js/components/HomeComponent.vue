@@ -71,7 +71,7 @@ export default {
     },
     addressLength() {
       // return this.address.length == 0;
-      return !(this.entries.length === this.selected.length && this.entries.length != 0);
+      return !(this.entries.length === this.selected.length);
     }
   },
 
@@ -89,7 +89,7 @@ export default {
     createForm() {
       this.$router.push({
         name: "form",
-        params: { address: this.model, mode: "create" }
+        params: { address: this.address }
       });
     },
 
