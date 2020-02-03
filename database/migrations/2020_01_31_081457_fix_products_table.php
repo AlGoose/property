@@ -28,6 +28,7 @@ class FixProductsTable extends Migration
     {
         Schema::table('products', function (Blueprint $table) {
             $table->dropColumn('article');
+            $table->dropSoftDeletes();
         });
     }
 }
