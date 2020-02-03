@@ -94,11 +94,11 @@ export default {
     },
 
     searchAddress() {
-      console.log("search:", this.address);
+      // console.log("search:", this.address);
       axios
         .post("/addresses", { address: this.address })
         .then(response => {
-          console.log(response);
+          // console.log(response);
           this.entries = response.data;
         })
         .catch(error => {

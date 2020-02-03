@@ -141,7 +141,6 @@ export default {
 
   watch: {
     productsData(val) {
-      console.log("CAT", val);
       this.products = val;
       this.products.forEach(item => {
         item.pivot.total = item.pivot.count * item.pivot.price;
@@ -176,7 +175,7 @@ export default {
       axios
         .get("/data/findProductById/" + this.search)
         .then(response => {
-          console.log(response);
+          // console.log(response);
           this.entires = response.data.result;
           this.isLoading = false;
         })

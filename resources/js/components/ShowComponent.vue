@@ -356,7 +356,7 @@ export default {
     },
 
     edit() {
-      console.log(window.project);
+      // console.log(window.project);
       this.$router.push({
         name: "edit"
       });

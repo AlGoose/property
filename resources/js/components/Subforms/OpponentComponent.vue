@@ -38,7 +38,6 @@ export default {
 
   watch: {
     opponentsData(val) {
-      console.log('FISH', val);
       val.forEach(item => {
         this.opponents.push(item.name);
         this.ids.push(item.id);

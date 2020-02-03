@@ -45,7 +45,6 @@ export default {
 
   watch: {
     dealerData(val) {
-      console.log("MONKEY", this.dealerData);
       if (this.isEdit) {
         this.company = val;
         this.companies.push(val);
@@ -72,8 +71,8 @@ export default {
             );
           }
         })
-        .catch(e => {
-          console.log(e);
+        .catch(error => {
+          console.log(error);
         });
     },
 

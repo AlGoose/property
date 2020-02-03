@@ -74,17 +74,14 @@ export default {
   directives: { mask },
 
   mounted() {
-    console.log("mounted");
-
-    let newThis = this;
     if (this.$route.name === "edit") {
       this.isEdit = true;
       if (window.project == undefined) {
         axios
           .get("/project/" + this.$route.params.id + "/edit")
           .then(response => {
-            console.log("AXIOS");
-            console.log(response);
+            // console.log("AXIOS");
+            // console.log(response);
 
             this.testData = response.data;
           })
@@ -92,8 +89,8 @@ export default {
             console.log(error);
           });
       } else {
-        console.log("BLADE");
-        console.log(window.project);
+        // console.log("BLADE");
+        // console.log(window.project);
         this.testData = window.project;
       }
     } else {
@@ -114,22 +111,23 @@ export default {
 
   methods: {
     addForm() {
-      console.log('ADDFORM');
+      // console.log('ADDFORM');
       axios
         .post("/project", this.formData)
         .then(response => {
+          // console.log(response);
           this.dialog = false;
           this.$router.push({
             name: "home"
           });
         })
         .catch(error => {
-          console.log(error);
+          console.log('ERROOOOOOOR',error.response);
         });
     },
 
     editForm() {
-      console.log('EDITFORM');
+      // console.log('EDITFORM');
       axios
         .put("/project/" + this.$route.params.id, this.formData)
         .then(response => {
@@ -143,34 +141,33 @@ export default {
 
     validate() {
       if (this.$refs.form.validate()) {
-        console.log('NORM');
         this.dialog = true
       }
     },
 
     saveDealer(value) {
       this.formData.dealer = value;
-      console.log("FormData | ", this.formData);
+      // console.log("FormData | ", this.formData);
     },
 
     saveCustomer(value) {
       this.formData.customer = value;
-      console.log("FormData | ", this.formData);
+      // console.log("FormData | ", this.formData);
     },
 
     saveProject(value) {
       this.formData.project = value;
-      console.log("FormData | ", this.formData);
+      // console.log("FormData | ", this.formData);
     },
 
     saveOpponents(value) {
       this.formData.opponents = value;
-      console.log("FormData | ", this.formData);
+      // console.log("FormData | ", this.formData);
     },
 
     saveProducts(value) {
       this.formData.products = value;
-      console.log("FormData | ", this.formData);
+      // console.log("FormData | ", this.formData);
     }
   }
 };

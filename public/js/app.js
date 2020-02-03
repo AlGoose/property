@@ -2016,23 +2016,20 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     var _this = this;
 
-    console.log("mounted");
-    var newThis = this;
-
     if (this.$route.name === "edit") {
       this.isEdit = true;
 
       if (window.project == undefined) {
         axios.get("/project/" + this.$route.params.id + "/edit").then(function (response) {
-          console.log("AXIOS");
-          console.log(response);
+          // console.log("AXIOS");
+          // console.log(response);
           _this.testData = response.data;
         })["catch"](function (error) {
           console.log(error);
         });
       } else {
-        console.log("BLADE");
-        console.log(window.project);
+        // console.log("BLADE");
+        // console.log(window.project);
         this.testData = window.project;
       }
     } else {
@@ -2055,21 +2052,22 @@ __webpack_require__.r(__webpack_exports__);
     addForm: function addForm() {
       var _this2 = this;
 
-      console.log('ADDFORM');
+      // console.log('ADDFORM');
       axios.post("/project", this.formData).then(function (response) {
+        // console.log(response);
         _this2.dialog = false;
 
         _this2.$router.push({
           name: "home"
         });
       })["catch"](function (error) {
-        console.log(error);
+        console.log('ERROOOOOOOR', error.response);
       });
     },
     editForm: function editForm() {
       var _this3 = this;
 
-      console.log('EDITFORM');
+      // console.log('EDITFORM');
       axios.put("/project/" + this.$route.params.id, this.formData).then(function (response) {
         _this3.dialog = false;
 
@@ -2080,29 +2078,23 @@ __webpack_require__.r(__webpack_exports__);
     },
     validate: function validate() {
       if (this.$refs.form.validate()) {
-        console.log('NORM');
         this.dialog = true;
       }
     },
     saveDealer: function saveDealer(value) {
-      this.formData.dealer = value;
-      console.log("FormData | ", this.formData);
+      this.formData.dealer = value; // console.log("FormData | ", this.formData);
     },
     saveCustomer: function saveCustomer(value) {
-      this.formData.customer = value;
-      console.log("FormData | ", this.formData);
+      this.formData.customer = value; // console.log("FormData | ", this.formData);
     },
     saveProject: function saveProject(value) {
-      this.formData.project = value;
-      console.log("FormData | ", this.formData);
+      this.formData.project = value; // console.log("FormData | ", this.formData);
     },
     saveOpponents: function saveOpponents(value) {
-      this.formData.opponents = value;
-      console.log("FormData | ", this.formData);
+      this.formData.opponents = value; // console.log("FormData | ", this.formData);
     },
     saveProducts: function saveProducts(value) {
-      this.formData.products = value;
-      console.log("FormData | ", this.formData);
+      this.formData.products = value; // console.log("FormData | ", this.formData);
     }
   }
 });
@@ -2215,11 +2207,11 @@ __webpack_require__.r(__webpack_exports__);
     searchAddress: function searchAddress() {
       var _this = this;
 
-      console.log("search:", this.address);
+      // console.log("search:", this.address);
       axios.post("/addresses", {
         address: this.address
       }).then(function (response) {
-        console.log(response);
+        // console.log(response);
         _this.entries = response.data;
       })["catch"](function (error) {
         console.log(error);
@@ -2696,7 +2688,7 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     edit: function edit() {
-      console.log(window.project);
+      // console.log(window.project);
       this.$router.push({
         name: "edit"
       });
@@ -2770,8 +2762,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   watch: {
     customerData: function customerData(val) {
-      console.log("DOG", this.customerData);
-
       if (this.isEdit) {
         this.company = val;
         this.companies.push(val);
@@ -2793,8 +2783,8 @@ __webpack_require__.r(__webpack_exports__);
         if (_this.customerData !== undefined && _this.customerData.current_staff !== undefined) {
           _this.$set(_this.customer, "current_staff", _this.customerData.current_staff);
         }
-      })["catch"](function (e) {
-        console.log(e);
+      })["catch"](function (error) {
+        console.log(error);
       });
     },
     search: function search(val) {
@@ -2802,14 +2792,13 @@ __webpack_require__.r(__webpack_exports__);
 
       if (this.isLoading) return;
       if (val === null || val.length != 10) return;
-      var newThis = this;
       this.isLoading = true;
       axios.get("/data/findByInn/" + val).then(function (response) {
         _this2.companies = response.data;
-        newThis.isLoading = false;
+        _this2.isLoading = false;
       })["catch"](function (error) {
         console.log(error);
-        newThis.isLoading = false;
+        _this2.isLoading = false;
       });
     }
   },
@@ -2908,8 +2897,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   watch: {
     dealerData: function dealerData(val) {
-      console.log("MONKEY", this.dealerData);
-
       if (this.isEdit) {
         this.company = val;
         this.companies.push(val);
@@ -2931,8 +2918,8 @@ __webpack_require__.r(__webpack_exports__);
         if (_this.dealerData !== undefined && _this.dealerData.current_staff !== undefined) {
           _this.$set(_this.dealer, "current_staff", _this.dealerData.current_staff);
         }
-      })["catch"](function (e) {
-        console.log(e);
+      })["catch"](function (error) {
+        console.log(error);
       });
     },
     search: function search(val) {
@@ -3036,7 +3023,6 @@ __webpack_require__.r(__webpack_exports__);
     opponentsData: function opponentsData(val) {
       var _this = this;
 
-      console.log('FISH', val);
       val.forEach(function (item) {
         _this.opponents.push(item.name);
 
@@ -3233,7 +3219,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   watch: {
     productsData: function productsData(val) {
-      console.log("CAT", val);
       this.products = val;
       this.products.forEach(function (item) {
         item.pivot.total = item.pivot.count * item.pivot.price;
@@ -3263,7 +3248,7 @@ __webpack_require__.r(__webpack_exports__);
 
       this.isLoading = true;
       axios.get("/data/findProductById/" + this.search).then(function (response) {
-        console.log(response);
+        // console.log(response);
         _this.entires = response.data.result;
         _this.isLoading = false;
       })["catch"](function (error) {

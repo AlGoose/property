@@ -46,7 +46,6 @@ export default {
 
   watch: {
     customerData(val) {
-      console.log("DOG", this.customerData);
       if (this.isEdit) {
         this.company = val;
         this.companies.push(val);
@@ -73,8 +72,8 @@ export default {
             );
           }
         })
-        .catch(e => {
-          console.log(e);
+        .catch(error => {
+          console.log(error);
         });
     },
 
@@ -82,18 +81,17 @@ export default {
       if (this.isLoading) return;
       if (val === null || val.length != 10) return;
 
-      let newThis = this;
       this.isLoading = true;
 
       axios
         .get("/data/findByInn/" + val)
         .then(response => {
           this.companies = response.data;
-          newThis.isLoading = false;
+          this.isLoading = false;
         })
-        .catch(function(error) {
+        .catch((error) => {
           console.log(error);
-          newThis.isLoading = false;
+          this.isLoading = false;
         });
     }
   },
