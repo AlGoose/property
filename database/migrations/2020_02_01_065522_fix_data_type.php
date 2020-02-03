@@ -18,10 +18,10 @@ class FixDataType extends Migration
             $table->float('price')->change();
         });
 
-        // Schema::table('projects', function (Blueprint $table) { //FIXME: Почему-то не применяется
-        //     $table->date('date')->change();
-        //     $table->date('time')->change();
-        // });
+         Schema::table('projects', function (Blueprint $table) { //FIXME: Почему-то не применяется
+             $table->date('date')->charset('')->change();
+             $table->date('time')->charset('')->change();
+         });
     }
 
     /**
@@ -36,9 +36,9 @@ class FixDataType extends Migration
             $table->integer('price')->change();
         });
 
-        // Schema::table('projects', function (Blueprint $table) {
-        //     $table->string('date')->change();
-        //     $table->string('time')->change();
-        // });
+         Schema::table('projects', function (Blueprint $table) {
+             $table->string('date')->change();
+             $table->string('time')->change();
+         });
     }
 }

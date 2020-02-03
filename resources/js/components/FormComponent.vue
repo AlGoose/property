@@ -1,11 +1,15 @@
 <template>
   <v-container fluid>
+     <v-form
+             ref="form"
+             v-model="valid"
+             lazy-validation>
     <h3 align="center" v-if="$route.name === 'edit'">Изменение проекта</h3>
     <h3 align="center" v-else>Создание проекта</h3>
 
     <v-row>
       <v-col cols="6">
-        <DealerComponent :dealerData="testData.dealer" :isEdit="isEdit" @dealer="saveDealer"></DealerComponent>
+        <DealerComponent :dealerData="testData.dealer" :isEdit="isEdit"  @dealer="saveDealer"></DealerComponent>
       </v-col>
       <v-col cols="6">
         <CustomerComponent :customerData="testData.customer" :isEdit="isEdit" @customer="saveCustomer"></CustomerComponent>
@@ -14,13 +18,7 @@
         <ProjectComponent
           :address_prop="address"
           :isEdit="isEdit"
-          :projectData="{
-            name: testData.name,
-            address: testData.address,
-            work: testData.work,
-            date: testData.date,
-            time: testData.time,
-          }"
+          :projectData="testData"
           @project="saveProject"
         ></ProjectComponent>
       </v-col>
@@ -32,7 +30,7 @@
       </v-col>
     </v-row>
     <!-- <v-form ref="form" v-model="valid" lazy-validation> -->
-    <v-btn v-if="$route.name === 'edit'" block color="indigo" outlined>Изменить форму</v-btn>
+    <v-btn v-if="$route.name === 'edit'" block color="indigo" @click="dialog = true" outlined>Изменить форму</v-btn>
     <v-btn v-else block color="indigo" outlined @click="dialog = true">Добавить форму</v-btn>
     <!-- </v-form> -->
 
@@ -47,6 +45,7 @@
         </v-card>
       </v-dialog>
     </v-row>
+     </v-form>
   </v-container>
 </template>
 
@@ -69,6 +68,8 @@ export default {
   directives: { mask },
 
   mounted() {
+      console.log('mounted')
+
     let newThis = this;
     if (this.$route.name === "edit") {
       this.isEdit = true;
@@ -78,6 +79,7 @@ export default {
           .then(response => {
             console.log("AXIOS");
             console.log(response);
+
             this.testData = response.data;
           })
           .catch(error => {
@@ -87,6 +89,7 @@ export default {
         console.log("BLADE");
         console.log(window.project);
         this.testData = window.project;
+
       }
     } else {
       if (this.$route.params.address) {
@@ -100,11 +103,19 @@ export default {
     isEdit: false,
     dialog: false,
     address: null,
-    formData: {}
+    formData: {},
+      valid: true,
   }),
+    watch:{
+        testData(val){
+          console.log('change testData')
+      }
+    },
 
   methods: {
     addForm() {
+        this.validate();
+        if(!this.valid) return;
       axios
         .post("/project", this.formData)
         .then(response => {
@@ -117,7 +128,11 @@ export default {
           console.log(error);
         });
     },
-
+      validate () {
+          if (this.$refs.form.validate()) {
+              this.snackbar = true
+          }
+      },
     saveDealer(value) {
       this.formData.dealer = value;
       console.log("FormData | ", this.formData);

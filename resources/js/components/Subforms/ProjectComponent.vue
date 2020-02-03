@@ -1,13 +1,21 @@
 <template>
-  <v-card class="mx-auto">
+  <v-card class="mx-auto" v-if="projectData">
     <v-card-title>Проект</v-card-title>
     <v-card-text>
       <v-text-field v-model="name" label="Название" outlined @change="sendData" :readonly="isEdit"></v-text-field>
-      <v-text-field v-model="address" label="Адрес" outlined @change="sendData" :readonly="isEdit"></v-text-field>
+      <v-text-field
+              v-model="address"
+              label="Адрес"
+              outlined
+              :rules="[v => (v && v.length >= 10) || 'Name must be less than 10 characters']"
+
+              @change="sendData"
+              :readonly="isEdit"></v-text-field>
       <v-textarea
-        v-model="work"
+        v-model="projectData.work"
         height="200"
         no-resize
+        :rules="[v => (v && v.length <= 10) || 'Name must be less than 10 characters']"
         outlined
         label="Проделанная работа"
         @change="sendData"
@@ -79,22 +87,25 @@ export default {
     date: new Date().toISOString().substr(0, 10),
     time: new Date().toISOString().substr(0, 10),
     dateMenu: false,
+      instans:{},
     timeMenu: false
   }),
+mounted(){
+    this.instans = this.$props
+},
 
   watch: {
     address_prop(value) {
       this.address = value;
     },
 
-    projectData(value) {
-      console.log("LION", this.projectData);
-      this.name = this.projectData.name;
-      this.address = this.projectData.address;
-      this.work = this.projectData.work;
-      this.date = this.projectData.date;
-      this.time = this.projectData.time;
-    }
+    /*projectData(value, oldValue) {
+
+        if(oldValue.name!==undefined) return;
+        console.log('Reload');
+        console.log(value,oldValue);*/
+
+  //  }
   },
 
   methods: {
