@@ -2266,6 +2266,25 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2304,6 +2323,7 @@ __webpack_require__.r(__webpack_exports__);
       textLimit: 60,
       entries: [],
       isLoading: false,
+      isDisabled: false,
       model: null,
       search: null
     };
@@ -2320,7 +2340,7 @@ __webpack_require__.r(__webpack_exports__);
       return !(this.entries.length === this.selected.length);
     },
     fullAddress: function fullAddress() {
-      var fullAddress = '';
+      var fullAddress = "";
 
       if (this.regionData.selected != null && this.regionData.selected != undefined) {
         fullAddress += this.regionData.selected.name + " " + this.regionData.selected.typeShort + ", ";
@@ -2339,19 +2359,13 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       if (this.buildingData.selected != null && this.buildingData.selected != undefined) {
-        fullAddress += this.buildingData.selected.name;
+        fullAddress += this.buildingData.selected.name + " ";
       }
 
       return fullAddress;
     }
   },
-  // created() {
-  //   this.inputAddress = window.debounce(this.searchAddress, 500);
-  // },
   watch: {
-    // address(value) {
-    //   this.inputAddress();
-    // }
     regionSearch: function regionSearch() {
       this.inputRegion();
     },
@@ -2370,10 +2384,11 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     createForm: function createForm() {
+      var address = this.fullAddress + this.address;
       this.$router.push({
         name: "form",
         params: {
-          address: this.address
+          address: address
         }
       });
     },
@@ -8418,7 +8433,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.button[data-v-782dcf83] {\r\n  margin-top: 30px;\n}\r\n", ""]);
+exports.push([module.i, "\np[data-v-782dcf83] {\r\n  color: black;\n}\r\n", ""]);
 
 // exports
 
@@ -40445,10 +40460,12 @@ var render = function() {
                           label: "Область / Край",
                           outlined: "",
                           "hide-details": "",
+                          "hide-no-data": "",
                           "no-filter": "",
                           "return-object": "",
                           "item-text": "name",
-                          loading: _vm.isLoading
+                          loading: _vm.isLoading,
+                          disabled: _vm.isDisabled
                         },
                         on: {
                           "update:searchInput": function($event) {
@@ -40510,9 +40527,11 @@ var render = function() {
                           label: "Регион / Район",
                           outlined: "",
                           "hide-details": "",
+                          "hide-no-data": "",
                           "no-filter": "",
                           "return-object": "",
                           "item-text": "name",
+                          disabled: _vm.isDisabled,
                           loading: _vm.isLoading
                         },
                         on: {
@@ -40575,9 +40594,11 @@ var render = function() {
                           label: "Город / Населенный пункт",
                           outlined: "",
                           "hide-details": "",
+                          "hide-no-data": "",
                           "no-filter": "",
                           "return-object": "",
                           "item-text": "name",
+                          disabled: _vm.isDisabled,
                           loading: _vm.isLoading
                         },
                         on: {
@@ -40638,11 +40659,15 @@ var render = function() {
                           "search-input": _vm.streetSearch,
                           color: "grey",
                           label: "Улица",
+                          hint:
+                            "Для поиска улицы сначала нужно выбрать Город / Населенный пункт",
                           outlined: "",
-                          "hide-details": "",
+                          "hide-no-data": "",
+                          "hide-details": "auto",
                           "no-filter": "",
                           "return-object": "",
                           "item-text": "name",
+                          disabled: _vm.isDisabled,
                           loading: _vm.isLoading
                         },
                         on: {
@@ -40703,11 +40728,14 @@ var render = function() {
                           "search-input": _vm.buildingSearch,
                           color: "grey",
                           label: "Дом",
+                          hint: "Для поиска дома сначала нужно выбрать улицу",
                           outlined: "",
-                          "hide-details": "",
+                          "hide-no-data": "",
+                          "hide-details": "auto",
                           "no-filter": "",
                           "return-object": "",
                           "item-text": "name",
+                          disabled: _vm.isDisabled,
                           loading: _vm.isLoading
                         },
                         on: {
@@ -40744,23 +40772,66 @@ var render = function() {
                       })
                     ],
                     1
-                  )
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { cols: "12", sm: "4" } },
+                    [
+                      _c("v-switch", {
+                        attrs: { label: "Ввести адрес вручную" },
+                        model: {
+                          value: _vm.isDisabled,
+                          callback: function($$v) {
+                            _vm.isDisabled = $$v
+                          },
+                          expression: "isDisabled"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _vm.isDisabled
+                    ? _c(
+                        "v-col",
+                        { attrs: { cols: "12", sm: "12" } },
+                        [
+                          _c("p", { staticClass: "title" }, [
+                            _vm._v("Введите адрес вручную")
+                          ]),
+                          _vm._v(" "),
+                          _c("v-text-field", {
+                            attrs: { "single-line": "", solo: "" },
+                            scopedSlots: _vm._u(
+                              [
+                                {
+                                  key: "prepend-inner",
+                                  fn: function() {
+                                    return [_vm._v(_vm._s(_vm.fullAddress))]
+                                  },
+                                  proxy: true
+                                }
+                              ],
+                              null,
+                              false,
+                              590637598
+                            ),
+                            model: {
+                              value: _vm.address,
+                              callback: function($$v) {
+                                _vm.address = $$v
+                              },
+                              expression: "address"
+                            }
+                          })
+                        ],
+                        1
+                      )
+                    : _vm._e()
                 ],
                 1
               ),
-              _vm._v(" "),
-              _c("p", [_vm._v(_vm._s(_vm.fullAddress))]),
-              _vm._v(" "),
-              _c("v-text-field", {
-                attrs: { label: "Адрес", outlined: "" },
-                model: {
-                  value: _vm.address,
-                  callback: function($$v) {
-                    _vm.address = $$v
-                  },
-                  expression: "address"
-                }
-              }),
               _vm._v(" "),
               _c(
                 "v-expansion-panels",
@@ -40822,7 +40893,6 @@ var render = function() {
               _c(
                 "v-btn",
                 {
-                  staticClass: "button",
                   attrs: {
                     disabled: _vm.addressLength,
                     block: "",
@@ -42343,7 +42413,7 @@ var render = function() {
                       return !!v || "Address is required"
                     }
                   ],
-                  readonly: _vm.isEdit
+                  readonly: ""
                 },
                 on: { change: _vm.sendData },
                 model: {

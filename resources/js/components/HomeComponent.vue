@@ -13,10 +13,12 @@
               label="Область / Край"
               outlined
               hide-details
+              hide-no-data
               no-filter
               return-object
               item-text="name"
               :loading="isLoading"
+              :disabled="isDisabled"
             >
               <template v-slot:item="{ item }">{{item.name}} {{item.typeShort}}</template>
               <template v-slot:selection="{ item }">{{item.name}} {{item.typeShort}}</template>
@@ -32,9 +34,11 @@
               label="Регион / Район"
               outlined
               hide-details
+              hide-no-data
               no-filter
               return-object
               item-text="name"
+              :disabled="isDisabled"
               :loading="isLoading"
             >
               <template v-slot:item="{ item }">{{item.name}} {{item.typeShort}}</template>
@@ -51,9 +55,11 @@
               label="Город / Населенный пункт"
               outlined
               hide-details
+              hide-no-data
               no-filter
               return-object
               item-text="name"
+              :disabled="isDisabled"
               :loading="isLoading"
             >
               <template v-slot:item="{ item }">{{item.typeShort}}.{{item.name}}</template>
@@ -68,11 +74,14 @@
               :search-input.sync="streetSearch"
               color="grey"
               label="Улица"
+              hint="Для поиска улицы сначала нужно выбрать Город / Населенный пункт"
               outlined
-              hide-details
+              hide-no-data
+              hide-details="auto"
               no-filter
               return-object
               item-text="name"
+              :disabled="isDisabled"
               :loading="isLoading"
             >
               <template v-slot:item="{ item }">{{item.typeShort}}.{{item.name}}</template>
@@ -87,21 +96,32 @@
               :search-input.sync="buildingSearch"
               color="grey"
               label="Дом"
+              hint="Для поиска дома сначала нужно выбрать улицу"
               outlined
-              hide-details
+              hide-no-data
+              hide-details="auto"
               no-filter
               return-object
               item-text="name"
+              :disabled="isDisabled"
               :loading="isLoading"
             >
               <template v-slot:item="{ item }">{{item.name}}</template>
               <template v-slot:selection="{ item }">{{item.name}}</template>
             </v-autocomplete>
           </v-col>
-        </v-row>
 
-        <p>{{fullAddress}}</p>
-        <v-text-field v-model="address" label="Адрес" outlined></v-text-field>
+          <v-col cols="12" sm="4">
+            <v-switch label="Ввести адрес вручную" v-model="isDisabled"></v-switch>
+          </v-col>
+
+          <v-col cols="12" sm="12" v-if="isDisabled">
+            <p class="title">Введите адрес вручную</p>
+            <v-text-field v-model="address" single-line solo>
+              <template v-slot:prepend-inner>{{fullAddress}}</template>
+            </v-text-field>
+          </v-col>
+        </v-row>
 
         <v-expansion-panels multiple focusable>
           <v-expansion-panel v-for="(item, i) in entries" :key="i">
@@ -119,7 +139,6 @@
         </v-expansion-panels>
 
         <v-btn
-          class="button"
           :disabled="addressLength"
           block
           color="indigo"
@@ -169,6 +188,7 @@ export default {
     textLimit: 60,
     entries: [],
     isLoading: false,
+    isDisabled: false,
     model: null,
     search: null
   }),
@@ -187,40 +207,64 @@ export default {
     },
 
     fullAddress() {
-      let fullAddress = '';
+      let fullAddress = "";
 
-      if (this.regionData.selected != null && this.regionData.selected != undefined) {
-        fullAddress += (this.regionData.selected.name + " " + this.regionData.selected.typeShort + ", ");
+      if (
+        this.regionData.selected != null &&
+        this.regionData.selected != undefined
+      ) {
+        fullAddress +=
+          this.regionData.selected.name +
+          " " +
+          this.regionData.selected.typeShort +
+          ", ";
       }
 
-      if (this.districtData.selected != null && this.districtData.selected != undefined) {
-        fullAddress += (this.districtData.selected.name + " " + this.districtData.selected.typeShort + ", ");
+      if (
+        this.districtData.selected != null &&
+        this.districtData.selected != undefined
+      ) {
+        fullAddress +=
+          this.districtData.selected.name +
+          " " +
+          this.districtData.selected.typeShort +
+          ", ";
       }
 
-      if (this.cityData.selected != null && this.cityData.selected != undefined) {
-        fullAddress += (this.cityData.selected.typeShort + " " + this.cityData.selected.name + ", ");
+      if (
+        this.cityData.selected != null &&
+        this.cityData.selected != undefined
+      ) {
+        fullAddress +=
+          this.cityData.selected.typeShort +
+          " " +
+          this.cityData.selected.name +
+          ", ";
       }
 
-      if (this.streetData.selected != null && this.streetData.selected != undefined) {
-        fullAddress += (this.streetData.selected.typeShort + " " + this.streetData.selected.name + ", ");
+      if (
+        this.streetData.selected != null &&
+        this.streetData.selected != undefined
+      ) {
+        fullAddress +=
+          this.streetData.selected.typeShort +
+          " " +
+          this.streetData.selected.name +
+          ", ";
       }
 
-      if (this.buildingData.selected != null && this.buildingData.selected != undefined) {
-        fullAddress += this.buildingData.selected.name;
+      if (
+        this.buildingData.selected != null &&
+        this.buildingData.selected != undefined
+      ) {
+        fullAddress += this.buildingData.selected.name + " ";
       }
 
       return fullAddress;
     }
   },
 
-  // created() {
-  //   this.inputAddress = window.debounce(this.searchAddress, 500);
-  // },
-
   watch: {
-    // address(value) {
-    //   this.inputAddress();
-    // }
     regionSearch() {
       this.inputRegion();
     },
@@ -244,9 +288,10 @@ export default {
 
   methods: {
     createForm() {
+      let address = this.fullAddress + this.address;
       this.$router.push({
         name: "form",
-        params: { address: this.address }
+        params: { address: address }
       });
     },
 
@@ -367,7 +412,7 @@ export default {
 </script>
 
 <style scoped>
-.button {
-  margin-top: 30px;
+p {
+  color: black;
 }
 </style>

@@ -16,7 +16,7 @@
         outlined
         :rules="[v => !!v || 'Address is required']"
         @change="sendData"
-        :readonly="isEdit"
+        readonly
       ></v-text-field>
       <v-textarea
         v-model="projectData.work"
