@@ -1,29 +1,22 @@
 <?php
 namespace App\Clients;
 
-use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Client;
 
-class InnClient extends GuzzleClient
+class KladrClient extends Client
 {
     private static $instance;
-
     private function __construct(array $config = [])
     {
-        $headers = [
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json',
-            'Authorization' => 'Token 9a4f6cd37ac0af31b81068987f7a5e5fedb673da'
-        ];
         $config['timeout'] = 2.0;
-        $config['base_uri'] = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/';
-        $config['headers'] = $headers;
+        $config['base_uri'] = 'https://kladr-api.ru/api.php';
 
         parent::__construct($config);
     }
 
     public static function getInstance()
     {
-        if (!self::$instance instanceof InnClient) {
+        if (!self::$instance instanceof KladrClient) {
             self::$instance = new self();
         }
 

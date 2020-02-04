@@ -1996,6 +1996,24 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2040,6 +2058,8 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
+      alert: false,
+      errors: [],
       testData: {},
       isEdit: false,
       dialog: false,
@@ -2061,7 +2081,10 @@ __webpack_require__.r(__webpack_exports__);
           name: "home"
         });
       })["catch"](function (error) {
-        console.log('ERROOOOOOOR', error.response);
+        console.log("ERROOOOOOOR", error.response);
+        _this2.errors = error.response.data.errors;
+        _this2.dialog = false;
+        _this2.alert = true;
       });
     },
     editForm: function editForm() {
@@ -2165,9 +2188,117 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      regionData: {
+        regions: [],
+        selected: null,
+        regionId: null
+      },
+      districtData: {
+        districts: [],
+        selected: null,
+        districtId: null
+      },
+      cityData: {
+        cities: [],
+        selected: null,
+        cityId: null
+      },
+      streetData: {
+        streets: [],
+        selected: null,
+        streetId: null
+      },
+      buildingData: {
+        buildings: [],
+        selected: null,
+        buildingId: null
+      },
+      regionSearch: null,
+      districtSearch: null,
+      citySearch: null,
+      streetSearch: null,
+      buildingSearch: null,
       selected: [],
       address: "",
       textLimit: 60,
@@ -2177,21 +2308,64 @@ __webpack_require__.r(__webpack_exports__);
       search: null
     };
   },
+  created: function created() {
+    this.inputRegion = window.debounce(this.searchRegion, 500);
+    this.inputDistrict = window.debounce(this.searchDistrict, 500);
+    this.inputCity = window.debounce(this.searchCity, 500);
+    this.inputStreet = window.debounce(this.searchStreet, 500);
+    this.inputBuilding = window.debounce(this.searchBuilding, 500);
+  },
   computed: {
-    items: function items() {
-      return ["1", "123", "111", "121"];
-    },
     addressLength: function addressLength() {
-      // return this.address.length == 0;
-      return !(this.entries.length === this.selected.length && this.entries.length != 0);
+      return !(this.entries.length === this.selected.length);
+    },
+    fullAddress: function fullAddress() {
+      var fullAddress = '';
+
+      if (this.regionData.selected != null && this.regionData.selected != undefined) {
+        fullAddress += this.regionData.selected.name + " " + this.regionData.selected.typeShort + ", ";
+      }
+
+      if (this.districtData.selected != null && this.districtData.selected != undefined) {
+        fullAddress += this.districtData.selected.name + " " + this.districtData.selected.typeShort + ", ";
+      }
+
+      if (this.cityData.selected != null && this.cityData.selected != undefined) {
+        fullAddress += this.cityData.selected.typeShort + " " + this.cityData.selected.name + ", ";
+      }
+
+      if (this.streetData.selected != null && this.streetData.selected != undefined) {
+        fullAddress += this.streetData.selected.typeShort + " " + this.streetData.selected.name + ", ";
+      }
+
+      if (this.buildingData.selected != null && this.buildingData.selected != undefined) {
+        fullAddress += this.buildingData.selected.name;
+      }
+
+      return fullAddress;
     }
   },
-  created: function created() {
-    this.inputAddress = window.debounce(this.searchAddress, 500);
-  },
+  // created() {
+  //   this.inputAddress = window.debounce(this.searchAddress, 500);
+  // },
   watch: {
-    address: function address(value) {
-      this.inputAddress();
+    // address(value) {
+    //   this.inputAddress();
+    // }
+    regionSearch: function regionSearch() {
+      this.inputRegion();
+    },
+    districtSearch: function districtSearch() {
+      this.inputDistrict();
+    },
+    citySearch: function citySearch() {
+      this.inputCity();
+    },
+    streetSearch: function streetSearch() {
+      this.inputStreet();
+    },
+    buildingSearch: function buildingSearch() {
+      this.inputBuilding();
     }
   },
   methods: {
@@ -2199,20 +2373,93 @@ __webpack_require__.r(__webpack_exports__);
       this.$router.push({
         name: "form",
         params: {
-          address: this.model,
-          mode: "create"
+          address: this.address
         }
       });
     },
-    searchAddress: function searchAddress() {
+    // searchAddress() {
+    //   axios
+    //     .post("/addresses", { address: this.address })
+    //     .then(response => {
+    //       this.entries = response.data;
+    //     })
+    //     .catch(error => {
+    //       console.log(error);
+    //     });
+    // }
+    searchRegion: function searchRegion() {
       var _this = this;
 
-      // console.log("search:", this.address);
-      axios.post("/addresses", {
-        address: this.address
+      console.log("REGION");
+      if (this.regionSearch === null) return;
+      axios.post("/kladr", {
+        contentType: "region",
+        query: this.regionSearch
       }).then(function (response) {
-        // console.log(response);
-        _this.entries = response.data;
+        console.log(response.data.result);
+        _this.regionData.regions = response.data.result;
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    searchDistrict: function searchDistrict() {
+      var _this2 = this;
+
+      console.log("DISTRICT");
+      if (this.districtSearch === null) return;
+      axios.post("/kladr", {
+        contentType: "district",
+        query: this.districtSearch
+      }).then(function (response) {
+        console.log(response.data.result);
+        _this2.districtData.districts = response.data.result;
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    searchCity: function searchCity() {
+      var _this3 = this;
+
+      console.log("CITY");
+      if (this.citySearch === null) return;
+      axios.post("/kladr", {
+        contentType: "city",
+        query: this.citySearch
+      }).then(function (response) {
+        console.log(response.data.result);
+        _this3.cityData.cities = response.data.result;
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    searchStreet: function searchStreet() {
+      var _this4 = this;
+
+      console.log("STREET");
+      if (this.streetSearch === null || this.cityData.selected === null || this.cityData.selected === undefined) return;
+      axios.post("/kladr/street", {
+        contentType: "street",
+        cityId: this.cityData.selected.id,
+        query: this.streetSearch
+      }).then(function (response) {
+        console.log(response.data.result);
+        _this4.streetData.streets = response.data.result;
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    searchBuilding: function searchBuilding() {
+      var _this5 = this;
+
+      console.log("BUILDING");
+      if (this.buildingSearch === null || this.streetData.selected === null || this.streetData.selected === undefined) return;
+      axios.post("/kladr/building", {
+        contentType: "building",
+        streetId: this.streetData.selected.id,
+        query: this.buildingSearch
+      }).then(function (response) {
+        console.log(response.data.result);
+        _this5.buildingData.buildings = response.data.result;
       })["catch"](function (error) {
         console.log(error);
       });
@@ -3221,7 +3468,7 @@ __webpack_require__.r(__webpack_exports__);
     productsData: function productsData(val) {
       this.products = val;
       this.products.forEach(function (item) {
-        item.pivot.total = item.pivot.count * item.pivot.price;
+        item.pivot.total = item.pivot.count * item.pivot.price; // item.total = item.count * item.price;
       });
     },
     search: function search() {
@@ -3291,21 +3538,23 @@ __webpack_require__.r(__webpack_exports__);
         var product = {
           code: this.product.id,
           article: this.product.article,
-          name: this.product.name,
-          count: this.count,
-          price: this.price,
-          total: this.total
+          name: this.product.name
         };
         axios.post("/product", product).then(function (response) {
           _this2.$set(_this2.ids, response.data.id, {
-            price: product.price,
-            count: product.count
+            price: _this2.price,
+            count: _this2.count
           });
 
           product.id = response.data.id;
         })["catch"](function (error) {
           console.log(error);
         });
+        product.pivot = {
+          price: this.price,
+          count: this.count,
+          total: this.total
+        };
         this.products.push(product);
         this.count = null;
         this.price = null;
@@ -3315,8 +3564,8 @@ __webpack_require__.r(__webpack_exports__);
         this.dialog = false;
       }
     },
-    removeProduct: function removeProduct(item, i) {
-      this.products.splice(i, 1);
+    removeProduct: function removeProduct(item, index) {
+      this.products.splice(index, 1);
       this.$delete(this.ids, item.id);
     },
     closeDialog: function closeDialog() {
@@ -3435,16 +3684,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  // mounted() {
-  //   console.log('Updated');
-  //   this.sendData();
-  // },
   props: ["address_prop", "isEdit", "projectData"],
   data: function data() {
     return {
       dateMenu: false,
       timeMenu: false
     };
+  },
+  watch: {
+    address_prop: function address_prop(value) {
+      this.$set(this.projectData, 'address', this.address_prop);
+    }
   },
   methods: {
     sendData: function sendData() {
@@ -40012,7 +40262,7 @@ var render = function() {
               _c(
                 "v-dialog",
                 {
-                  attrs: { width: "210px" },
+                  attrs: { width: "250px" },
                   model: {
                     value: _vm.dialog,
                     callback: function($$v) {
@@ -40069,6 +40319,77 @@ var render = function() {
           )
         ],
         1
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "text-center" },
+        [
+          _c(
+            "v-dialog",
+            {
+              attrs: { width: "500" },
+              model: {
+                value: _vm.alert,
+                callback: function($$v) {
+                  _vm.alert = $$v
+                },
+                expression: "alert"
+              }
+            },
+            [
+              _c(
+                "v-card",
+                [
+                  _c(
+                    "v-card-title",
+                    {
+                      staticClass: "headline red lighten-2",
+                      attrs: { "primary-title": "" }
+                    },
+                    [_vm._v("Ошибка")]
+                  ),
+                  _vm._v(" "),
+                  _c("v-card-text", [
+                    _c(
+                      "ul",
+                      _vm._l(_vm.errors, function(item, i) {
+                        return _c("li", { key: i }, [_vm._v(_vm._s(item[0]))])
+                      }),
+                      0
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("v-divider"),
+                  _vm._v(" "),
+                  _c(
+                    "v-card-actions",
+                    [
+                      _c("v-spacer"),
+                      _vm._v(" "),
+                      _c(
+                        "v-btn",
+                        {
+                          attrs: { color: "primary", text: "" },
+                          on: {
+                            click: function($event) {
+                              _vm.alert = false
+                            }
+                          }
+                        },
+                        [_vm._v("I accept")]
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
       )
     ],
     1
@@ -40109,6 +40430,327 @@ var render = function() {
           _c(
             "v-card-text",
             [
+              _c(
+                "v-row",
+                [
+                  _c(
+                    "v-col",
+                    { attrs: { cols: "12", sm: "6" } },
+                    [
+                      _c("v-autocomplete", {
+                        attrs: {
+                          items: _vm.regionData.regions,
+                          "search-input": _vm.regionSearch,
+                          color: "grey",
+                          label: "Область / Край",
+                          outlined: "",
+                          "hide-details": "",
+                          "no-filter": "",
+                          "return-object": "",
+                          "item-text": "name",
+                          loading: _vm.isLoading
+                        },
+                        on: {
+                          "update:searchInput": function($event) {
+                            _vm.regionSearch = $event
+                          },
+                          "update:search-input": function($event) {
+                            _vm.regionSearch = $event
+                          }
+                        },
+                        scopedSlots: _vm._u([
+                          {
+                            key: "item",
+                            fn: function(ref) {
+                              var item = ref.item
+                              return [
+                                _vm._v(
+                                  _vm._s(item.name) +
+                                    " " +
+                                    _vm._s(item.typeShort)
+                                )
+                              ]
+                            }
+                          },
+                          {
+                            key: "selection",
+                            fn: function(ref) {
+                              var item = ref.item
+                              return [
+                                _vm._v(
+                                  _vm._s(item.name) +
+                                    " " +
+                                    _vm._s(item.typeShort)
+                                )
+                              ]
+                            }
+                          }
+                        ]),
+                        model: {
+                          value: _vm.regionData.selected,
+                          callback: function($$v) {
+                            _vm.$set(_vm.regionData, "selected", $$v)
+                          },
+                          expression: "regionData.selected"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { cols: "12", sm: "6" } },
+                    [
+                      _c("v-autocomplete", {
+                        attrs: {
+                          items: _vm.districtData.districts,
+                          "search-input": _vm.districtSearch,
+                          color: "grey",
+                          label: "Регион / Район",
+                          outlined: "",
+                          "hide-details": "",
+                          "no-filter": "",
+                          "return-object": "",
+                          "item-text": "name",
+                          loading: _vm.isLoading
+                        },
+                        on: {
+                          "update:searchInput": function($event) {
+                            _vm.districtSearch = $event
+                          },
+                          "update:search-input": function($event) {
+                            _vm.districtSearch = $event
+                          }
+                        },
+                        scopedSlots: _vm._u([
+                          {
+                            key: "item",
+                            fn: function(ref) {
+                              var item = ref.item
+                              return [
+                                _vm._v(
+                                  _vm._s(item.name) +
+                                    " " +
+                                    _vm._s(item.typeShort)
+                                )
+                              ]
+                            }
+                          },
+                          {
+                            key: "selection",
+                            fn: function(ref) {
+                              var item = ref.item
+                              return [
+                                _vm._v(
+                                  _vm._s(item.name) +
+                                    " " +
+                                    _vm._s(item.typeShort)
+                                )
+                              ]
+                            }
+                          }
+                        ]),
+                        model: {
+                          value: _vm.districtData.selected,
+                          callback: function($$v) {
+                            _vm.$set(_vm.districtData, "selected", $$v)
+                          },
+                          expression: "districtData.selected"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { cols: "12", sm: "6" } },
+                    [
+                      _c("v-autocomplete", {
+                        attrs: {
+                          items: _vm.cityData.cities,
+                          "search-input": _vm.citySearch,
+                          color: "grey",
+                          label: "Город / Населенный пункт",
+                          outlined: "",
+                          "hide-details": "",
+                          "no-filter": "",
+                          "return-object": "",
+                          "item-text": "name",
+                          loading: _vm.isLoading
+                        },
+                        on: {
+                          "update:searchInput": function($event) {
+                            _vm.citySearch = $event
+                          },
+                          "update:search-input": function($event) {
+                            _vm.citySearch = $event
+                          }
+                        },
+                        scopedSlots: _vm._u([
+                          {
+                            key: "item",
+                            fn: function(ref) {
+                              var item = ref.item
+                              return [
+                                _vm._v(
+                                  _vm._s(item.typeShort) +
+                                    "." +
+                                    _vm._s(item.name)
+                                )
+                              ]
+                            }
+                          },
+                          {
+                            key: "selection",
+                            fn: function(ref) {
+                              var item = ref.item
+                              return [
+                                _vm._v(
+                                  _vm._s(item.typeShort) +
+                                    "." +
+                                    _vm._s(item.name)
+                                )
+                              ]
+                            }
+                          }
+                        ]),
+                        model: {
+                          value: _vm.cityData.selected,
+                          callback: function($$v) {
+                            _vm.$set(_vm.cityData, "selected", $$v)
+                          },
+                          expression: "cityData.selected"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { cols: "12", sm: "6" } },
+                    [
+                      _c("v-autocomplete", {
+                        attrs: {
+                          items: _vm.streetData.streets,
+                          "search-input": _vm.streetSearch,
+                          color: "grey",
+                          label: "Улица",
+                          outlined: "",
+                          "hide-details": "",
+                          "no-filter": "",
+                          "return-object": "",
+                          "item-text": "name",
+                          loading: _vm.isLoading
+                        },
+                        on: {
+                          "update:searchInput": function($event) {
+                            _vm.streetSearch = $event
+                          },
+                          "update:search-input": function($event) {
+                            _vm.streetSearch = $event
+                          }
+                        },
+                        scopedSlots: _vm._u([
+                          {
+                            key: "item",
+                            fn: function(ref) {
+                              var item = ref.item
+                              return [
+                                _vm._v(
+                                  _vm._s(item.typeShort) +
+                                    "." +
+                                    _vm._s(item.name)
+                                )
+                              ]
+                            }
+                          },
+                          {
+                            key: "selection",
+                            fn: function(ref) {
+                              var item = ref.item
+                              return [
+                                _vm._v(
+                                  _vm._s(item.typeShort) +
+                                    "." +
+                                    _vm._s(item.name)
+                                )
+                              ]
+                            }
+                          }
+                        ]),
+                        model: {
+                          value: _vm.streetData.selected,
+                          callback: function($$v) {
+                            _vm.$set(_vm.streetData, "selected", $$v)
+                          },
+                          expression: "streetData.selected"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { cols: "12", sm: "4" } },
+                    [
+                      _c("v-autocomplete", {
+                        attrs: {
+                          items: _vm.buildingData.buildings,
+                          "search-input": _vm.buildingSearch,
+                          color: "grey",
+                          label: "Дом",
+                          outlined: "",
+                          "hide-details": "",
+                          "no-filter": "",
+                          "return-object": "",
+                          "item-text": "name",
+                          loading: _vm.isLoading
+                        },
+                        on: {
+                          "update:searchInput": function($event) {
+                            _vm.buildingSearch = $event
+                          },
+                          "update:search-input": function($event) {
+                            _vm.buildingSearch = $event
+                          }
+                        },
+                        scopedSlots: _vm._u([
+                          {
+                            key: "item",
+                            fn: function(ref) {
+                              var item = ref.item
+                              return [_vm._v(_vm._s(item.name))]
+                            }
+                          },
+                          {
+                            key: "selection",
+                            fn: function(ref) {
+                              var item = ref.item
+                              return [_vm._v(_vm._s(item.name))]
+                            }
+                          }
+                        ]),
+                        model: {
+                          value: _vm.buildingData.selected,
+                          callback: function($$v) {
+                            _vm.$set(_vm.buildingData, "selected", $$v)
+                          },
+                          expression: "buildingData.selected"
+                        }
+                      })
+                    ],
+                    1
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c("p", [_vm._v(_vm._s(_vm.fullAddress))]),
+              _vm._v(" "),
               _c("v-text-field", {
                 attrs: { label: "Адрес", outlined: "" },
                 model: {
@@ -41587,6 +42229,7 @@ var render = function() {
                           key: "item",
                           fn: function(ref) {
                             var item = ref.item
+                            var index = ref.index
                             return [
                               _c("tr", [
                                 _c("td", [_vm._v(_vm._s(item.name))]),
@@ -41607,7 +42250,7 @@ var render = function() {
                                           click: function($event) {
                                             return _vm.removeProduct(
                                               item,
-                                              _vm.i
+                                              index
                                             )
                                           }
                                         }
@@ -41624,7 +42267,7 @@ var render = function() {
                       ],
                       null,
                       false,
-                      2822805185
+                      118014372
                     )
                   })
                 : _vm._e()
