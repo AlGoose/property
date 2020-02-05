@@ -28,6 +28,7 @@ class Project extends Model
         'date',
         'time',
         'work',
+        'kladrId'
     ];
 
     public function user()
@@ -45,7 +46,7 @@ class Project extends Model
         return $this->belongsTo(Customer::class);
     }
 
-    public function dealer_staff() //FIXME: В Staff норм ссылки?
+    public function dealer_staff()
     {
         return $this->belongsTo(Staff::class);
     }

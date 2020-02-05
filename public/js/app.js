@@ -2011,9 +2011,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 
 
 
@@ -2073,6 +2070,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       // console.log('ADDFORM');
+      this.formData.project.kladrId = this.$route.params.kladrId;
       axios.post("/project", this.formData).then(function (response) {
         // console.log(response);
         _this2.dialog = false;
@@ -2285,47 +2283,75 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      headers: [{
+        text: "Название продукта",
+        align: "left",
+        value: "name"
+      }, {
+        text: "Количество",
+        value: "pivot.count"
+      }, {
+        text: "Цена за единицу (₽)",
+        value: "pivot.price"
+      }, {
+        text: "Общая стоимость (₽)",
+        value: "pivot.total"
+      }],
       regionData: {
         regions: [],
-        selected: null,
-        regionId: null
+        selected: null
       },
       districtData: {
         districts: [],
-        selected: null,
-        districtId: null
+        selected: null
       },
       cityData: {
         cities: [],
-        selected: null,
-        cityId: null
+        selected: null
       },
       streetData: {
         streets: [],
-        selected: null,
-        streetId: null
+        selected: null
       },
       buildingData: {
         buildings: [],
-        selected: null,
-        buildingId: null
+        selected: null
       },
       regionSearch: null,
       districtSearch: null,
       citySearch: null,
       streetSearch: null,
       buildingSearch: null,
-      selected: [],
       address: "",
-      textLimit: 60,
+      selected: [],
       entries: [],
       isLoading: false,
       isDisabled: false,
-      model: null,
-      search: null
+      kladrId: null
     };
   },
   created: function created() {
@@ -2337,7 +2363,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   computed: {
     addressLength: function addressLength() {
-      return !(this.entries.length === this.selected.length);
+      return !(this.entries.length === this.selected.length && (this.fullAddress.length > 0 || this.address.length > 0));
     },
     fullAddress: function fullAddress() {
       var fullAddress = "";
@@ -2380,101 +2406,133 @@ __webpack_require__.r(__webpack_exports__);
     },
     buildingSearch: function buildingSearch() {
       this.inputBuilding();
+    },
+    kladrId: function kladrId(value) {
+      // console.log("The Most Exact Arrangement", value);
+      this.searchProjects();
     }
   },
   methods: {
+    setArrangement: function setArrangement(item) {
+      if (item != undefined && item != null) {
+        this.kladrId = item.id;
+      }
+    },
+    searchProjects: function searchProjects() {
+      var _this = this;
+
+      axios.post("/addresses", {
+        kladrId: this.kladrId
+      }).then(function (response) {
+        _this.entries = response.data;
+
+        _this.entries.forEach(function (item) {
+          item.products.forEach(function (product) {
+            product.pivot.total = product.pivot.count * product.pivot.price;
+          });
+        });
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
     createForm: function createForm() {
       var address = this.fullAddress + this.address;
       this.$router.push({
         name: "form",
         params: {
-          address: address
+          address: address,
+          kladrId: this.kladrId
         }
       });
     },
-    // searchAddress() {
-    //   axios
-    //     .post("/addresses", { address: this.address })
-    //     .then(response => {
-    //       this.entries = response.data;
-    //     })
-    //     .catch(error => {
-    //       console.log(error);
-    //     });
-    // }
     searchRegion: function searchRegion() {
-      var _this = this;
+      var _this2 = this;
 
-      console.log("REGION");
+      // console.log("REGION");
       if (this.regionSearch === null) return;
       axios.post("/kladr", {
-        contentType: "region",
-        query: this.regionSearch
+        query: {
+          // withParent: "1",
+          contentType: "region",
+          query: this.regionSearch
+        }
       }).then(function (response) {
-        console.log(response.data.result);
-        _this.regionData.regions = response.data.result;
+        // console.log(response.data.result);
+        _this2.regionData.regions = response.data.result;
       })["catch"](function (error) {
         console.log(error);
       });
     },
     searchDistrict: function searchDistrict() {
-      var _this2 = this;
+      var _this3 = this;
 
-      console.log("DISTRICT");
+      // console.log("DISTRICT");
       if (this.districtSearch === null) return;
       axios.post("/kladr", {
-        contentType: "district",
-        query: this.districtSearch
+        query: {
+          // withParent: "1",
+          contentType: "district",
+          query: this.districtSearch
+        }
       }).then(function (response) {
-        console.log(response.data.result);
-        _this2.districtData.districts = response.data.result;
+        // console.log(response.data.result);
+        _this3.districtData.districts = response.data.result;
       })["catch"](function (error) {
         console.log(error);
       });
     },
     searchCity: function searchCity() {
-      var _this3 = this;
+      var _this4 = this;
 
-      console.log("CITY");
+      // console.log("CITY");
       if (this.citySearch === null) return;
       axios.post("/kladr", {
-        contentType: "city",
-        query: this.citySearch
+        query: {
+          // withParent: "1",
+          contentType: "city",
+          query: this.citySearch
+        }
       }).then(function (response) {
-        console.log(response.data.result);
-        _this3.cityData.cities = response.data.result;
+        // console.log(response.data.result);
+        _this4.cityData.cities = response.data.result;
       })["catch"](function (error) {
         console.log(error);
       });
     },
     searchStreet: function searchStreet() {
-      var _this4 = this;
+      var _this5 = this;
 
-      console.log("STREET");
+      // console.log("STREET");
       if (this.streetSearch === null || this.cityData.selected === null || this.cityData.selected === undefined) return;
-      axios.post("/kladr/street", {
-        contentType: "street",
-        cityId: this.cityData.selected.id,
-        query: this.streetSearch
+      axios.post("/kladr", {
+        query: {
+          // withParent: "1",
+          contentType: "street",
+          cityId: this.cityData.selected.id,
+          query: this.streetSearch
+        }
       }).then(function (response) {
-        console.log(response.data.result);
-        _this4.streetData.streets = response.data.result;
+        // console.log(response.data.result);
+        _this5.streetData.streets = response.data.result;
       })["catch"](function (error) {
         console.log(error);
       });
     },
     searchBuilding: function searchBuilding() {
-      var _this5 = this;
+      var _this6 = this;
 
-      console.log("BUILDING");
+      // console.log("BUILDING");
       if (this.buildingSearch === null || this.streetData.selected === null || this.streetData.selected === undefined) return;
-      axios.post("/kladr/building", {
-        contentType: "building",
-        streetId: this.streetData.selected.id,
-        query: this.buildingSearch
+      axios.post("/kladr", {
+        query: {
+          // withParent: "1",
+          contentType: "building",
+          streetId: this.streetData.selected.id,
+          query: this.buildingSearch
+        }
       }).then(function (response) {
-        console.log(response.data.result);
-        _this5.buildingData.buildings = response.data.result;
+        // console.log(response.data.result);
+        _this6.buildingData.buildings = response.data.result;
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2950,7 +3008,6 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     edit: function edit() {
-      // console.log(window.project);
       this.$router.push({
         name: "edit"
       });
@@ -3310,8 +3367,7 @@ __webpack_require__.r(__webpack_exports__);
         name: value
       };
       axios.post("/opponent", opponent).then(function (response) {
-        _this2.ids.push(response.data.id); // this.$set(this.ids, this.ids.length, response.data.id);
-
+        _this2.ids.push(response.data.id);
       })["catch"](function (error) {
         console.log(error);
       });
@@ -3481,9 +3537,16 @@ __webpack_require__.r(__webpack_exports__);
   },
   watch: {
     productsData: function productsData(val) {
+      var _this = this;
+
       this.products = val;
       this.products.forEach(function (item) {
-        item.pivot.total = item.pivot.count * item.pivot.price; // item.total = item.count * item.price;
+        item.pivot.total = item.pivot.count * item.pivot.price;
+
+        _this.$set(_this.ids, item.id, {
+          price: item.pivot.price,
+          count: item.pivot.count
+        });
       });
     },
     search: function search() {
@@ -3498,7 +3561,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     searchProduct: function searchProduct() {
-      var _this = this;
+      var _this2 = this;
 
       if (this.search === null || this.search.length < 4) return;
 
@@ -3511,12 +3574,12 @@ __webpack_require__.r(__webpack_exports__);
       this.isLoading = true;
       axios.get("/data/findProductById/" + this.search).then(function (response) {
         // console.log(response);
-        _this.entires = response.data.result;
-        _this.isLoading = false;
+        _this2.entires = response.data.result;
+        _this2.isLoading = false;
       })["catch"](function (error) {
         console.log(error);
-        _this.entires = [];
-        _this.isLoading = false;
+        _this2.entires = [];
+        _this2.isLoading = false;
       });
     },
     onChangeCount: function onChangeCount(value) {
@@ -3541,7 +3604,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     addProduct: function addProduct() {
-      var _this2 = this;
+      var _this3 = this;
 
       if (this.$refs.form.validate()) {
         for (var i = 0; i < this.products.length; i++) {
@@ -3556,27 +3619,29 @@ __webpack_require__.r(__webpack_exports__);
           name: this.product.name
         };
         axios.post("/product", product).then(function (response) {
-          _this2.$set(_this2.ids, response.data.id, {
-            price: _this2.price,
-            count: _this2.count
+          _this3.$set(_this3.ids, response.data.id, {
+            price: _this3.price,
+            count: _this3.count
           });
 
           product.id = response.data.id;
+          product.pivot = {
+            price: _this3.price,
+            count: _this3.count,
+            total: _this3.total
+          };
+
+          _this3.products.push(product);
+
+          _this3.count = null;
+          _this3.price = null;
+          _this3.total = null;
+          _this3.product = {};
+          _this3.entires = [];
+          _this3.dialog = false;
         })["catch"](function (error) {
           console.log(error);
         });
-        product.pivot = {
-          price: this.price,
-          count: this.count,
-          total: this.total
-        };
-        this.products.push(product);
-        this.count = null;
-        this.price = null;
-        this.total = null;
-        this.product = {};
-        this.entires = [];
-        this.dialog = false;
       }
     },
     removeProduct: function removeProduct(item, index) {
@@ -8433,7 +8498,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\np[data-v-782dcf83] {\r\n  color: black;\n}\r\n", ""]);
+exports.push([module.i, "\np[data-v-782dcf83] {\r\n  color: black;\n}\n.panels[data-v-782dcf83] {\r\n  margin-bottom: 30px;\n}\r\n", ""]);
 
 // exports
 
@@ -40168,13 +40233,11 @@ var render = function() {
           }
         },
         [
-          _vm.$route.name === "edit"
-            ? _c("h3", { attrs: { align: "center" } }, [
-                _vm._v("Изменение проекта")
-              ])
-            : _c("h3", { attrs: { align: "center" } }, [
-                _vm._v("Создание проекта")
-              ]),
+          _c("h3", { attrs: { align: "center" } }, [
+            _vm._v(
+              _vm._s(_vm.isEdit ? "Изменение проекта" : "Создание проекта")
+            )
+          ]),
           _vm._v(" "),
           _c(
             "v-row",
@@ -40252,23 +40315,14 @@ var render = function() {
             1
           ),
           _vm._v(" "),
-          _vm.$route.name === "edit"
-            ? _c(
-                "v-btn",
-                {
-                  attrs: { block: "", color: "indigo", outlined: "" },
-                  on: { click: _vm.validate }
-                },
-                [_vm._v("Изменить форму")]
-              )
-            : _c(
-                "v-btn",
-                {
-                  attrs: { block: "", color: "indigo", outlined: "" },
-                  on: { click: _vm.validate }
-                },
-                [_vm._v("Добавить форму")]
-              ),
+          _c(
+            "v-btn",
+            {
+              attrs: { block: "", color: "indigo", outlined: "" },
+              on: { click: _vm.validate }
+            },
+            [_vm._v(_vm._s(_vm.isEdit ? "Изменить форму" : "Добавить форму"))]
+          ),
           _vm._v(" "),
           _c(
             "v-row",
@@ -40294,6 +40348,7 @@ var render = function() {
                       _vm._v(" "),
                       _c(
                         "v-card-actions",
+                        { staticClass: "justify-center" },
                         [
                           _c(
                             "v-btn",
@@ -40318,7 +40373,11 @@ var render = function() {
                                 }
                               }
                             },
-                            [_vm._v("Добавить")]
+                            [
+                              _vm._v(
+                                _vm._s(_vm.isEdit ? "Изменить" : "Добавить")
+                              )
+                            ]
                           )
                         ],
                         1
@@ -40473,7 +40532,8 @@ var render = function() {
                           },
                           "update:search-input": function($event) {
                             _vm.regionSearch = $event
-                          }
+                          },
+                          change: _vm.setArrangement
                         },
                         scopedSlots: _vm._u([
                           {
@@ -40540,7 +40600,8 @@ var render = function() {
                           },
                           "update:search-input": function($event) {
                             _vm.districtSearch = $event
-                          }
+                          },
+                          change: _vm.setArrangement
                         },
                         scopedSlots: _vm._u([
                           {
@@ -40607,7 +40668,8 @@ var render = function() {
                           },
                           "update:search-input": function($event) {
                             _vm.citySearch = $event
-                          }
+                          },
+                          change: _vm.setArrangement
                         },
                         scopedSlots: _vm._u([
                           {
@@ -40676,7 +40738,8 @@ var render = function() {
                           },
                           "update:search-input": function($event) {
                             _vm.streetSearch = $event
-                          }
+                          },
+                          change: _vm.setArrangement
                         },
                         scopedSlots: _vm._u([
                           {
@@ -40744,7 +40807,8 @@ var render = function() {
                           },
                           "update:search-input": function($event) {
                             _vm.buildingSearch = $event
-                          }
+                          },
+                          change: _vm.setArrangement
                         },
                         scopedSlots: _vm._u([
                           {
@@ -40833,62 +40897,119 @@ var render = function() {
                 1
               ),
               _vm._v(" "),
-              _c(
-                "v-expansion-panels",
-                { attrs: { multiple: "", focusable: "" } },
-                _vm._l(_vm.entries, function(item, i) {
-                  return _c(
-                    "v-expansion-panel",
-                    { key: i },
-                    [
-                      _c("v-expansion-panel-header", { staticClass: "title" }, [
-                        _vm._v(_vm._s(item.address))
-                      ]),
-                      _vm._v(" "),
-                      _c(
-                        "v-expansion-panel-content",
+              _vm.entries.length
+                ? _c(
+                    "v-expansion-panels",
+                    {
+                      staticClass: "panels",
+                      attrs: { multiple: "", focusable: "" }
+                    },
+                    _vm._l(_vm.entries, function(item, i) {
+                      return _c(
+                        "v-expansion-panel",
+                        { key: i },
                         [
-                          _c("p", { staticClass: "title" }, [
-                            _vm._v("Название")
-                          ]),
+                          _c(
+                            "v-expansion-panel-header",
+                            { staticClass: "title" },
+                            [_vm._v(_vm._s(item.name))]
+                          ),
                           _vm._v(" "),
-                          _c("p", { staticClass: "body-1" }, [
-                            _vm._v(_vm._s(item.name))
-                          ]),
-                          _vm._v(" "),
-                          _c("p", { staticClass: "title" }, [_vm._v("Срок")]),
-                          _vm._v(" "),
-                          _c("p", { staticClass: "body-1" }, [
-                            _vm._v(_vm._s(item.date))
-                          ]),
-                          _vm._v(" "),
-                          _c("p", { staticClass: "title" }, [
-                            _vm._v("Дата создания")
-                          ]),
-                          _vm._v(" "),
-                          _c("p", { staticClass: "body-1" }, [
-                            _vm._v(_vm._s(item.time))
-                          ]),
-                          _vm._v(" "),
-                          _c("v-checkbox", {
-                            attrs: { label: "Проверено?", value: i },
-                            model: {
-                              value: _vm.selected,
-                              callback: function($$v) {
-                                _vm.selected = $$v
-                              },
-                              expression: "selected"
-                            }
-                          })
+                          _c(
+                            "v-expansion-panel-content",
+                            [
+                              _c("p", { staticClass: "title" }, [
+                                _vm._v("Название")
+                              ]),
+                              _vm._v(" "),
+                              _c("p", { staticClass: "body-1" }, [
+                                _vm._v(_vm._s(item.name))
+                              ]),
+                              _vm._v(" "),
+                              _c("p", { staticClass: "title" }, [
+                                _vm._v("Срок")
+                              ]),
+                              _vm._v(" "),
+                              _c("p", { staticClass: "body-1" }, [
+                                _vm._v(_vm._s(item.date))
+                              ]),
+                              _vm._v(" "),
+                              _c("p", { staticClass: "title" }, [
+                                _vm._v("Дата создания")
+                              ]),
+                              _vm._v(" "),
+                              _c("p", { staticClass: "body-1" }, [
+                                _vm._v(_vm._s(item.time))
+                              ]),
+                              _vm._v(" "),
+                              item.products.length
+                                ? _c("v-data-table", {
+                                    staticClass: "elevation-1",
+                                    attrs: {
+                                      headers: _vm.headers,
+                                      items: item.products,
+                                      "item-key": "name"
+                                    },
+                                    scopedSlots: _vm._u(
+                                      [
+                                        {
+                                          key: "item",
+                                          fn: function(ref) {
+                                            var item = ref.item
+                                            return [
+                                              _c("tr", [
+                                                _c("td", [
+                                                  _vm._v(_vm._s(item.name))
+                                                ]),
+                                                _vm._v(" "),
+                                                _c("td", [
+                                                  _vm._v(
+                                                    _vm._s(item.pivot.count)
+                                                  )
+                                                ]),
+                                                _vm._v(" "),
+                                                _c("td", [
+                                                  _vm._v(
+                                                    _vm._s(item.pivot.price)
+                                                  )
+                                                ]),
+                                                _vm._v(" "),
+                                                _c("td", [
+                                                  _vm._v(
+                                                    _vm._s(item.pivot.total)
+                                                  )
+                                                ])
+                                              ])
+                                            ]
+                                          }
+                                        }
+                                      ],
+                                      null,
+                                      true
+                                    )
+                                  })
+                                : _vm._e(),
+                              _vm._v(" "),
+                              _c("v-checkbox", {
+                                attrs: { label: "Проверено?", value: i },
+                                model: {
+                                  value: _vm.selected,
+                                  callback: function($$v) {
+                                    _vm.selected = $$v
+                                  },
+                                  expression: "selected"
+                                }
+                              })
+                            ],
+                            1
+                          )
                         ],
                         1
                       )
-                    ],
+                    }),
                     1
                   )
-                }),
-                1
-              ),
+                : _vm._e(),
               _vm._v(" "),
               _c(
                 "v-btn",

@@ -19,6 +19,7 @@
               item-text="name"
               :loading="isLoading"
               :disabled="isDisabled"
+              @change="setArrangement"
             >
               <template v-slot:item="{ item }">{{item.name}} {{item.typeShort}}</template>
               <template v-slot:selection="{ item }">{{item.name}} {{item.typeShort}}</template>
@@ -40,6 +41,7 @@
               item-text="name"
               :disabled="isDisabled"
               :loading="isLoading"
+              @change="setArrangement"
             >
               <template v-slot:item="{ item }">{{item.name}} {{item.typeShort}}</template>
               <template v-slot:selection="{ item }">{{item.name}} {{item.typeShort}}</template>
@@ -61,6 +63,7 @@
               item-text="name"
               :disabled="isDisabled"
               :loading="isLoading"
+              @change="setArrangement"
             >
               <template v-slot:item="{ item }">{{item.typeShort}}.{{item.name}}</template>
               <template v-slot:selection="{ item }">{{item.typeShort}}.{{item.name}}</template>
@@ -83,6 +86,7 @@
               item-text="name"
               :disabled="isDisabled"
               :loading="isLoading"
+              @change="setArrangement"
             >
               <template v-slot:item="{ item }">{{item.typeShort}}.{{item.name}}</template>
               <template v-slot:selection="{ item }">{{item.typeShort}}.{{item.name}}</template>
@@ -105,6 +109,7 @@
               item-text="name"
               :disabled="isDisabled"
               :loading="isLoading"
+              @change="setArrangement"
             >
               <template v-slot:item="{ item }">{{item.name}}</template>
               <template v-slot:selection="{ item }">{{item.name}}</template>
@@ -123,9 +128,9 @@
           </v-col>
         </v-row>
 
-        <v-expansion-panels multiple focusable>
+        <v-expansion-panels v-if="entries.length" multiple focusable class="panels">
           <v-expansion-panel v-for="(item, i) in entries" :key="i">
-            <v-expansion-panel-header class="title">{{item.address}}</v-expansion-panel-header>
+            <v-expansion-panel-header class="title">{{item.name}}</v-expansion-panel-header>
             <v-expansion-panel-content>
               <p class="title">Название</p>
               <p class="body-1">{{item.name}}</p>
@@ -133,6 +138,22 @@
               <p class="body-1">{{item.date}}</p>
               <p class="title">Дата создания</p>
               <p class="body-1">{{item.time}}</p>
+              <v-data-table
+                v-if="item.products.length"
+                :headers="headers"
+                :items="item.products"
+                item-key="name"
+                class="elevation-1"
+              >
+                <template v-slot:item="{ item }">
+                  <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.pivot.count }}</td>
+                    <td>{{ item.pivot.price }}</td>
+                    <td>{{ item.pivot.total }}</td>
+                  </tr>
+                </template>
+              </v-data-table>
               <v-checkbox v-model="selected" label="Проверено?" :value="i"></v-checkbox>
             </v-expansion-panel-content>
           </v-expansion-panel>
@@ -153,44 +174,47 @@
 <script>
 export default {
   data: () => ({
+    headers: [
+      {
+        text: "Название продукта",
+        align: "left",
+        value: "name"
+      },
+      { text: "Количество", value: "pivot.count" },
+      { text: "Цена за единицу (₽)", value: "pivot.price" },
+      { text: "Общая стоимость (₽)", value: "pivot.total" }
+    ],
     regionData: {
       regions: [],
-      selected: null,
-      regionId: null
+      selected: null
     },
     districtData: {
       districts: [],
-      selected: null,
-      districtId: null
+      selected: null
     },
     cityData: {
       cities: [],
-      selected: null,
-      cityId: null
+      selected: null
     },
     streetData: {
       streets: [],
-      selected: null,
-      streetId: null
+      selected: null
     },
     buildingData: {
       buildings: [],
-      selected: null,
-      buildingId: null
+      selected: null
     },
     regionSearch: null,
     districtSearch: null,
     citySearch: null,
     streetSearch: null,
     buildingSearch: null,
-    selected: [],
     address: "",
-    textLimit: 60,
+    selected: [],
     entries: [],
     isLoading: false,
     isDisabled: false,
-    model: null,
-    search: null
+    kladrId: null
   }),
 
   created() {
@@ -203,7 +227,7 @@ export default {
 
   computed: {
     addressLength() {
-      return !(this.entries.length === this.selected.length);
+      return !(this.entries.length === this.selected.length && (this.fullAddress.length > 0 || this.address.length > 0));
     },
 
     fullAddress() {
@@ -283,40 +307,59 @@ export default {
 
     buildingSearch() {
       this.inputBuilding();
+    },
+
+    kladrId(value) {
+      // console.log("The Most Exact Arrangement", value);
+      this.searchProjects();
     }
   },
 
   methods: {
+    setArrangement(item) {
+      if (item != undefined && item != null) {
+        this.kladrId = item.id;
+      }
+    },
+
+    searchProjects() {
+      axios
+        .post("/addresses", { kladrId: this.kladrId })
+        .then(response => {
+          this.entries = response.data;
+          this.entries.forEach(item => {
+            item.products.forEach(product => {
+              product.pivot.total = product.pivot.count * product.pivot.price;
+            });
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
     createForm() {
       let address = this.fullAddress + this.address;
       this.$router.push({
         name: "form",
-        params: { address: address }
+        params: { address: address, kladrId: this.kladrId }
       });
     },
 
-    // searchAddress() {
-    //   axios
-    //     .post("/addresses", { address: this.address })
-    //     .then(response => {
-    //       this.entries = response.data;
-    //     })
-    //     .catch(error => {
-    //       console.log(error);
-    //     });
-    // }
-
     searchRegion() {
-      console.log("REGION");
+      // console.log("REGION");
       if (this.regionSearch === null) return;
 
       axios
         .post("/kladr", {
-          contentType: "region",
-          query: this.regionSearch
+          query: {
+            // withParent: "1",
+            contentType: "region",
+            query: this.regionSearch
+          }
         })
         .then(response => {
-          console.log(response.data.result);
+          // console.log(response.data.result);
           this.regionData.regions = response.data.result;
         })
         .catch(error => {
@@ -325,16 +368,19 @@ export default {
     },
 
     searchDistrict() {
-      console.log("DISTRICT");
+      // console.log("DISTRICT");
       if (this.districtSearch === null) return;
 
       axios
         .post("/kladr", {
-          contentType: "district",
-          query: this.districtSearch
+          query: {
+            // withParent: "1",
+            contentType: "district",
+            query: this.districtSearch
+          }
         })
         .then(response => {
-          console.log(response.data.result);
+          // console.log(response.data.result);
           this.districtData.districts = response.data.result;
         })
         .catch(error => {
@@ -343,16 +389,19 @@ export default {
     },
 
     searchCity() {
-      console.log("CITY");
+      // console.log("CITY");
       if (this.citySearch === null) return;
 
       axios
         .post("/kladr", {
-          contentType: "city",
-          query: this.citySearch
+          query: {
+            // withParent: "1",
+            contentType: "city",
+            query: this.citySearch
+          }
         })
         .then(response => {
-          console.log(response.data.result);
+          // console.log(response.data.result);
           this.cityData.cities = response.data.result;
         })
         .catch(error => {
@@ -361,7 +410,7 @@ export default {
     },
 
     searchStreet() {
-      console.log("STREET");
+      // console.log("STREET");
       if (
         this.streetSearch === null ||
         this.cityData.selected === null ||
@@ -370,13 +419,16 @@ export default {
         return;
 
       axios
-        .post("/kladr/street", {
-          contentType: "street",
-          cityId: this.cityData.selected.id,
-          query: this.streetSearch
+        .post("/kladr", {
+          query: {
+            // withParent: "1",
+            contentType: "street",
+            cityId: this.cityData.selected.id,
+            query: this.streetSearch
+          }
         })
         .then(response => {
-          console.log(response.data.result);
+          // console.log(response.data.result);
           this.streetData.streets = response.data.result;
         })
         .catch(error => {
@@ -385,7 +437,7 @@ export default {
     },
 
     searchBuilding() {
-      console.log("BUILDING");
+      // console.log("BUILDING");
       if (
         this.buildingSearch === null ||
         this.streetData.selected === null ||
@@ -394,13 +446,16 @@ export default {
         return;
 
       axios
-        .post("/kladr/building", {
-          contentType: "building",
-          streetId: this.streetData.selected.id,
-          query: this.buildingSearch
+        .post("/kladr", {
+          query: {
+            // withParent: "1",
+            contentType: "building",
+            streetId: this.streetData.selected.id,
+            query: this.buildingSearch
+          }
         })
         .then(response => {
-          console.log(response.data.result);
+          // console.log(response.data.result);
           this.buildingData.buildings = response.data.result;
         })
         .catch(error => {
@@ -414,5 +469,9 @@ export default {
 <style scoped>
 p {
   color: black;
+}
+
+.panels {
+  margin-bottom: 30px;
 }
 </style>

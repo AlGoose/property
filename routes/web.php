@@ -14,8 +14,6 @@ Auth::routes();
 
 Route::post('/addresses', 'AddressController@addresses');
 Route::post('/kladr', 'AddressController@search');
-Route::post('/kladr/street', 'AddressController@searchStreet');
-Route::post('/kladr/building', 'AddressController@searchBuilding');
 
 Route::post('/dealer/findDealer/', 'DealerController@findDealer');
 Route::post('/customer/findCustomer/', 'CustomerController@findCustomer');
