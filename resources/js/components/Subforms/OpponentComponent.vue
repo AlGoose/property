@@ -66,7 +66,6 @@ export default {
         .post("/opponent", opponent)
         .then(response => {
           this.ids.push(response.data.id);
-          // this.$set(this.ids, this.ids.length, response.data.id);
         })
         .catch(error => {
           console.log(error);

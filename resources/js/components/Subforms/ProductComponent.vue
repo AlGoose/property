@@ -144,7 +144,10 @@ export default {
       this.products = val;
       this.products.forEach(item => {
         item.pivot.total = item.pivot.count * item.pivot.price;
-        // item.total = item.count * item.price;
+        this.$set(this.ids, item.id, {
+          price: item.pivot.price,
+          count: item.pivot.count
+        });
       });
     },
 
@@ -232,23 +235,22 @@ export default {
               count: this.count
             });
             product.id = response.data.id;
+            product.pivot = {
+              price: this.price,
+              count: this.count,
+              total: this.total
+            };
+            this.products.push(product);
+            this.count = null;
+            this.price = null;
+            this.total = null;
+            this.product = {};
+            this.entires = [];
+            this.dialog = false;
           })
           .catch(function(error) {
             console.log(error);
           });
-
-        product.pivot = {
-          price: this.price,
-          count: this.count,
-          total: this.total
-        };
-        this.products.push(product);
-        this.count = null;
-        this.price = null;
-        this.total = null;
-        this.product = {};
-        this.entires = [];
-        this.dialog = false;
       }
     },
 

@@ -1,8 +1,5 @@
 <?php
-
-
 namespace App\Clients;
-
 
 use GuzzleHttp\Client;
 

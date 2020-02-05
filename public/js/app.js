@@ -1996,6 +1996,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2040,6 +2055,8 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
+      alert: false,
+      errors: [],
       testData: {},
       isEdit: false,
       dialog: false,
@@ -2053,6 +2070,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       // console.log('ADDFORM');
+      this.formData.project.kladrId = this.$route.params.kladrId;
       axios.post("/project", this.formData).then(function (response) {
         // console.log(response);
         _this2.dialog = false;
@@ -2061,7 +2079,10 @@ __webpack_require__.r(__webpack_exports__);
           name: "home"
         });
       })["catch"](function (error) {
-        console.log('ERROOOOOOOR', error.response);
+        console.log("ERROOOOOOOR", error.response);
+        _this2.errors = error.response.data.errors;
+        _this2.dialog = false;
+        _this2.alert = true;
       });
     },
     editForm: function editForm() {
@@ -2165,54 +2186,362 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      selected: [],
+      headers: [{
+        text: "Название продукта",
+        align: "left",
+        value: "name"
+      }, {
+        text: "Количество",
+        value: "pivot.count"
+      }, {
+        text: "Цена за единицу (₽)",
+        value: "pivot.price"
+      }, {
+        text: "Общая стоимость (₽)",
+        value: "pivot.total"
+      }],
+      regionData: {
+        regions: [],
+        selected: null
+      },
+      districtData: {
+        districts: [],
+        selected: null
+      },
+      cityData: {
+        cities: [],
+        selected: null
+      },
+      streetData: {
+        streets: [],
+        selected: null
+      },
+      buildingData: {
+        buildings: [],
+        selected: null
+      },
+      regionSearch: null,
+      districtSearch: null,
+      citySearch: null,
+      streetSearch: null,
+      buildingSearch: null,
       address: "",
-      textLimit: 60,
+      selected: [],
       entries: [],
       isLoading: false,
-      model: null,
-      search: null
+      isDisabled: false,
+      kladrId: null
     };
   },
+  created: function created() {
+    this.inputRegion = window.debounce(this.searchRegion, 500);
+    this.inputDistrict = window.debounce(this.searchDistrict, 500);
+    this.inputCity = window.debounce(this.searchCity, 500);
+    this.inputStreet = window.debounce(this.searchStreet, 500);
+    this.inputBuilding = window.debounce(this.searchBuilding, 500);
+  },
   computed: {
-    items: function items() {
-      return ["1", "123", "111", "121"];
-    },
     addressLength: function addressLength() {
-      // return this.address.length == 0;
-      return !(this.entries.length === this.selected.length && this.entries.length != 0);
+      return !(this.entries.length === this.selected.length && (this.fullAddress.length > 0 || this.address.length > 0));
+    },
+    fullAddress: function fullAddress() {
+      var fullAddress = "";
+
+      if (this.regionData.selected != null && this.regionData.selected != undefined) {
+        fullAddress += this.regionData.selected.name + " " + this.regionData.selected.typeShort + ", ";
+      }
+
+      if (this.districtData.selected != null && this.districtData.selected != undefined) {
+        fullAddress += this.districtData.selected.name + " " + this.districtData.selected.typeShort + ", ";
+      }
+
+      if (this.cityData.selected != null && this.cityData.selected != undefined) {
+        fullAddress += this.cityData.selected.typeShort + " " + this.cityData.selected.name + ", ";
+      }
+
+      if (this.streetData.selected != null && this.streetData.selected != undefined) {
+        fullAddress += this.streetData.selected.typeShort + " " + this.streetData.selected.name + ", ";
+      }
+
+      if (this.buildingData.selected != null && this.buildingData.selected != undefined) {
+        fullAddress += this.buildingData.selected.name + " ";
+      }
+
+      return fullAddress;
     }
   },
-  created: function created() {
-    this.inputAddress = window.debounce(this.searchAddress, 500);
-  },
   watch: {
-    address: function address(value) {
-      this.inputAddress();
+    regionSearch: function regionSearch() {
+      this.inputRegion();
+    },
+    districtSearch: function districtSearch() {
+      this.inputDistrict();
+    },
+    citySearch: function citySearch() {
+      this.inputCity();
+    },
+    streetSearch: function streetSearch() {
+      this.inputStreet();
+    },
+    buildingSearch: function buildingSearch() {
+      this.inputBuilding();
+    },
+    kladrId: function kladrId(value) {
+      // console.log("The Most Exact Arrangement", value);
+      this.searchProjects();
     }
   },
   methods: {
+    setArrangement: function setArrangement(item) {
+      if (item != undefined && item != null) {
+        this.kladrId = item.id;
+      }
+    },
+    searchProjects: function searchProjects() {
+      var _this = this;
+
+      axios.post("/addresses", {
+        kladrId: this.kladrId
+      }).then(function (response) {
+        _this.entries = response.data;
+
+        _this.entries.forEach(function (item) {
+          item.products.forEach(function (product) {
+            product.pivot.total = product.pivot.count * product.pivot.price;
+          });
+        });
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
     createForm: function createForm() {
+      var address = this.fullAddress + this.address;
       this.$router.push({
         name: "form",
         params: {
-          address: this.model,
-          mode: "create"
+          address: address,
+          kladrId: this.kladrId
         }
       });
     },
-    searchAddress: function searchAddress() {
-      var _this = this;
+    searchRegion: function searchRegion() {
+      var _this2 = this;
 
-      // console.log("search:", this.address);
-      axios.post("/addresses", {
-        address: this.address
+      // console.log("REGION");
+      if (this.regionSearch === null) return;
+      axios.post("/kladr", {
+        query: {
+          // withParent: "1",
+          contentType: "region",
+          query: this.regionSearch
+        }
       }).then(function (response) {
-        // console.log(response);
-        _this.entries = response.data;
+        _this2.regionData.regions = response.data.result;
+
+        _this2.regionData.regions.splice(0, 1);
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    searchDistrict: function searchDistrict() {
+      var _this3 = this;
+
+      // console.log("DISTRICT");
+      if (this.districtSearch === null) return;
+      axios.post("/kladr", {
+        query: {
+          // withParent: "1",
+          contentType: "district",
+          query: this.districtSearch
+        }
+      }).then(function (response) {
+        // console.log(response.data.result);
+        _this3.districtData.districts = response.data.result;
+
+        _this3.districtData.districts.splice(0, 1);
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    searchCity: function searchCity() {
+      var _this4 = this;
+
+      // console.log("CITY");
+      if (this.citySearch === null) return;
+      axios.post("/kladr", {
+        query: {
+          // withParent: "1",
+          contentType: "city",
+          query: this.citySearch
+        }
+      }).then(function (response) {
+        // console.log(response.data.result);
+        _this4.cityData.cities = response.data.result;
+
+        _this4.cityData.cities.splice(0, 1);
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    searchStreet: function searchStreet() {
+      var _this5 = this;
+
+      // console.log("STREET");
+      if (this.streetSearch === null || this.cityData.selected === null || this.cityData.selected === undefined) return;
+      axios.post("/kladr", {
+        query: {
+          // withParent: "1",
+          contentType: "street",
+          cityId: this.cityData.selected.id,
+          query: this.streetSearch
+        }
+      }).then(function (response) {
+        // console.log(response.data.result);
+        _this5.streetData.streets = response.data.result;
+
+        _this5.streetData.streets.splice(0, 1);
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    searchBuilding: function searchBuilding() {
+      var _this6 = this;
+
+      // console.log("BUILDING");
+      if (this.buildingSearch === null || this.streetData.selected === null || this.streetData.selected === undefined) return;
+      axios.post("/kladr", {
+        query: {
+          // withParent: "1",
+          contentType: "building",
+          streetId: this.streetData.selected.id,
+          query: this.buildingSearch
+        }
+      }).then(function (response) {
+        // console.log(response.data.result);
+        _this6.buildingData.buildings = response.data.result;
+
+        _this6.buildingData.buildings.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2688,7 +3017,6 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     edit: function edit() {
-      // console.log(window.project);
       this.$router.push({
         name: "edit"
       });
@@ -3048,8 +3376,7 @@ __webpack_require__.r(__webpack_exports__);
         name: value
       };
       axios.post("/opponent", opponent).then(function (response) {
-        _this2.ids.push(response.data.id); // this.$set(this.ids, this.ids.length, response.data.id);
-
+        _this2.ids.push(response.data.id);
       })["catch"](function (error) {
         console.log(error);
       });
@@ -3219,9 +3546,16 @@ __webpack_require__.r(__webpack_exports__);
   },
   watch: {
     productsData: function productsData(val) {
+      var _this = this;
+
       this.products = val;
       this.products.forEach(function (item) {
         item.pivot.total = item.pivot.count * item.pivot.price;
+
+        _this.$set(_this.ids, item.id, {
+          price: item.pivot.price,
+          count: item.pivot.count
+        });
       });
     },
     search: function search() {
@@ -3236,7 +3570,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     searchProduct: function searchProduct() {
-      var _this = this;
+      var _this2 = this;
 
       if (this.search === null || this.search.length < 4) return;
 
@@ -3249,12 +3583,12 @@ __webpack_require__.r(__webpack_exports__);
       this.isLoading = true;
       axios.get("/data/findProductById/" + this.search).then(function (response) {
         // console.log(response);
-        _this.entires = response.data.result;
-        _this.isLoading = false;
+        _this2.entires = response.data.result;
+        _this2.isLoading = false;
       })["catch"](function (error) {
         console.log(error);
-        _this.entires = [];
-        _this.isLoading = false;
+        _this2.entires = [];
+        _this2.isLoading = false;
       });
     },
     onChangeCount: function onChangeCount(value) {
@@ -3279,7 +3613,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     addProduct: function addProduct() {
-      var _this2 = this;
+      var _this3 = this;
 
       if (this.$refs.form.validate()) {
         for (var i = 0; i < this.products.length; i++) {
@@ -3291,32 +3625,36 @@ __webpack_require__.r(__webpack_exports__);
         var product = {
           code: this.product.id,
           article: this.product.article,
-          name: this.product.name,
-          count: this.count,
-          price: this.price,
-          total: this.total
+          name: this.product.name
         };
         axios.post("/product", product).then(function (response) {
-          _this2.$set(_this2.ids, response.data.id, {
-            price: product.price,
-            count: product.count
+          _this3.$set(_this3.ids, response.data.id, {
+            price: _this3.price,
+            count: _this3.count
           });
 
           product.id = response.data.id;
+          product.pivot = {
+            price: _this3.price,
+            count: _this3.count,
+            total: _this3.total
+          };
+
+          _this3.products.push(product);
+
+          _this3.count = null;
+          _this3.price = null;
+          _this3.total = null;
+          _this3.product = {};
+          _this3.entires = [];
+          _this3.dialog = false;
         })["catch"](function (error) {
           console.log(error);
         });
-        this.products.push(product);
-        this.count = null;
-        this.price = null;
-        this.total = null;
-        this.product = {};
-        this.entires = [];
-        this.dialog = false;
       }
     },
-    removeProduct: function removeProduct(item, i) {
-      this.products.splice(i, 1);
+    removeProduct: function removeProduct(item, index) {
+      this.products.splice(index, 1);
       this.$delete(this.ids, item.id);
     },
     closeDialog: function closeDialog() {
@@ -3435,16 +3773,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  // mounted() {
-  //   console.log('Updated');
-  //   this.sendData();
-  // },
   props: ["address_prop", "isEdit", "projectData"],
   data: function data() {
     return {
       dateMenu: false,
       timeMenu: false
     };
+  },
+  watch: {
+    address_prop: function address_prop(value) {
+      this.$set(this.projectData, 'address', this.address_prop);
+    }
   },
   methods: {
     sendData: function sendData() {
@@ -8168,7 +8507,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.button[data-v-782dcf83] {\r\n  margin-top: 30px;\n}\r\n", ""]);
+exports.push([module.i, "\np[data-v-782dcf83] {\r\n  color: black;\n}\n.panels[data-v-782dcf83] {\r\n  margin-bottom: 30px;\n}\r\n", ""]);
 
 // exports
 
@@ -39903,13 +40242,11 @@ var render = function() {
           }
         },
         [
-          _vm.$route.name === "edit"
-            ? _c("h3", { attrs: { align: "center" } }, [
-                _vm._v("Изменение проекта")
-              ])
-            : _c("h3", { attrs: { align: "center" } }, [
-                _vm._v("Создание проекта")
-              ]),
+          _c("h3", { attrs: { align: "center" } }, [
+            _vm._v(
+              _vm._s(_vm.isEdit ? "Изменение проекта" : "Создание проекта")
+            )
+          ]),
           _vm._v(" "),
           _c(
             "v-row",
@@ -39987,23 +40324,14 @@ var render = function() {
             1
           ),
           _vm._v(" "),
-          _vm.$route.name === "edit"
-            ? _c(
-                "v-btn",
-                {
-                  attrs: { block: "", color: "indigo", outlined: "" },
-                  on: { click: _vm.validate }
-                },
-                [_vm._v("Изменить форму")]
-              )
-            : _c(
-                "v-btn",
-                {
-                  attrs: { block: "", color: "indigo", outlined: "" },
-                  on: { click: _vm.validate }
-                },
-                [_vm._v("Добавить форму")]
-              ),
+          _c(
+            "v-btn",
+            {
+              attrs: { block: "", color: "indigo", outlined: "" },
+              on: { click: _vm.validate }
+            },
+            [_vm._v(_vm._s(_vm.isEdit ? "Изменить форму" : "Добавить форму"))]
+          ),
           _vm._v(" "),
           _c(
             "v-row",
@@ -40012,7 +40340,7 @@ var render = function() {
               _c(
                 "v-dialog",
                 {
-                  attrs: { width: "210px" },
+                  attrs: { width: "250px" },
                   model: {
                     value: _vm.dialog,
                     callback: function($$v) {
@@ -40029,6 +40357,7 @@ var render = function() {
                       _vm._v(" "),
                       _c(
                         "v-card-actions",
+                        { staticClass: "justify-center" },
                         [
                           _c(
                             "v-btn",
@@ -40053,10 +40382,85 @@ var render = function() {
                                 }
                               }
                             },
-                            [_vm._v("Добавить")]
+                            [
+                              _vm._v(
+                                _vm._s(_vm.isEdit ? "Изменить" : "Добавить")
+                              )
+                            ]
                           )
                         ],
                         1
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "text-center" },
+        [
+          _c(
+            "v-dialog",
+            {
+              attrs: { width: "500" },
+              model: {
+                value: _vm.alert,
+                callback: function($$v) {
+                  _vm.alert = $$v
+                },
+                expression: "alert"
+              }
+            },
+            [
+              _c(
+                "v-card",
+                [
+                  _c(
+                    "v-card-title",
+                    {
+                      staticClass: "headline red lighten-2",
+                      attrs: { "primary-title": "" }
+                    },
+                    [_vm._v("Ошибка")]
+                  ),
+                  _vm._v(" "),
+                  _c("v-card-text", [
+                    _c(
+                      "ul",
+                      _vm._l(_vm.errors, function(item, i) {
+                        return _c("li", { key: i }, [_vm._v(_vm._s(item[0]))])
+                      }),
+                      0
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("v-divider"),
+                  _vm._v(" "),
+                  _c(
+                    "v-card-actions",
+                    [
+                      _c("v-spacer"),
+                      _vm._v(" "),
+                      _c(
+                        "v-btn",
+                        {
+                          attrs: { color: "primary", text: "" },
+                          on: {
+                            click: function($event) {
+                              _vm.alert = false
+                            }
+                          }
+                        },
+                        [_vm._v("I accept")]
                       )
                     ],
                     1
@@ -40109,78 +40513,516 @@ var render = function() {
           _c(
             "v-card-text",
             [
-              _c("v-text-field", {
-                attrs: { label: "Адрес", outlined: "" },
-                model: {
-                  value: _vm.address,
-                  callback: function($$v) {
-                    _vm.address = $$v
-                  },
-                  expression: "address"
-                }
-              }),
-              _vm._v(" "),
               _c(
-                "v-expansion-panels",
-                { attrs: { multiple: "", focusable: "" } },
-                _vm._l(_vm.entries, function(item, i) {
-                  return _c(
-                    "v-expansion-panel",
-                    { key: i },
+                "v-row",
+                [
+                  _c(
+                    "v-col",
+                    { attrs: { cols: "12", sm: "6" } },
                     [
-                      _c("v-expansion-panel-header", { staticClass: "title" }, [
-                        _vm._v(_vm._s(item.address))
-                      ]),
-                      _vm._v(" "),
-                      _c(
-                        "v-expansion-panel-content",
+                      _c("v-autocomplete", {
+                        attrs: {
+                          items: _vm.regionData.regions,
+                          "search-input": _vm.regionSearch,
+                          color: "grey",
+                          label: "Область / Край",
+                          outlined: "",
+                          "hide-details": "",
+                          "hide-no-data": "",
+                          "no-filter": "",
+                          "return-object": "",
+                          "item-text": "name",
+                          loading: _vm.isLoading,
+                          disabled: _vm.isDisabled
+                        },
+                        on: {
+                          "update:searchInput": function($event) {
+                            _vm.regionSearch = $event
+                          },
+                          "update:search-input": function($event) {
+                            _vm.regionSearch = $event
+                          },
+                          change: _vm.setArrangement
+                        },
+                        scopedSlots: _vm._u([
+                          {
+                            key: "item",
+                            fn: function(ref) {
+                              var item = ref.item
+                              return [
+                                _vm._v(
+                                  _vm._s(item.name) +
+                                    " " +
+                                    _vm._s(item.typeShort)
+                                )
+                              ]
+                            }
+                          },
+                          {
+                            key: "selection",
+                            fn: function(ref) {
+                              var item = ref.item
+                              return [
+                                _vm._v(
+                                  _vm._s(item.name) +
+                                    " " +
+                                    _vm._s(item.typeShort)
+                                )
+                              ]
+                            }
+                          }
+                        ]),
+                        model: {
+                          value: _vm.regionData.selected,
+                          callback: function($$v) {
+                            _vm.$set(_vm.regionData, "selected", $$v)
+                          },
+                          expression: "regionData.selected"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { cols: "12", sm: "6" } },
+                    [
+                      _c("v-autocomplete", {
+                        attrs: {
+                          items: _vm.districtData.districts,
+                          "search-input": _vm.districtSearch,
+                          color: "grey",
+                          label: "Регион / Район",
+                          outlined: "",
+                          "hide-details": "",
+                          "hide-no-data": "",
+                          "no-filter": "",
+                          "return-object": "",
+                          "item-text": "name",
+                          disabled: _vm.isDisabled,
+                          loading: _vm.isLoading
+                        },
+                        on: {
+                          "update:searchInput": function($event) {
+                            _vm.districtSearch = $event
+                          },
+                          "update:search-input": function($event) {
+                            _vm.districtSearch = $event
+                          },
+                          change: _vm.setArrangement
+                        },
+                        scopedSlots: _vm._u([
+                          {
+                            key: "item",
+                            fn: function(ref) {
+                              var item = ref.item
+                              return [
+                                _vm._v(
+                                  _vm._s(item.name) +
+                                    " " +
+                                    _vm._s(item.typeShort)
+                                )
+                              ]
+                            }
+                          },
+                          {
+                            key: "selection",
+                            fn: function(ref) {
+                              var item = ref.item
+                              return [
+                                _vm._v(
+                                  _vm._s(item.name) +
+                                    " " +
+                                    _vm._s(item.typeShort)
+                                )
+                              ]
+                            }
+                          }
+                        ]),
+                        model: {
+                          value: _vm.districtData.selected,
+                          callback: function($$v) {
+                            _vm.$set(_vm.districtData, "selected", $$v)
+                          },
+                          expression: "districtData.selected"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { cols: "12", sm: "6" } },
+                    [
+                      _c("v-autocomplete", {
+                        attrs: {
+                          items: _vm.cityData.cities,
+                          "search-input": _vm.citySearch,
+                          color: "grey",
+                          label: "Город / Населенный пункт",
+                          outlined: "",
+                          "hide-details": "",
+                          "hide-no-data": "",
+                          "no-filter": "",
+                          "return-object": "",
+                          "item-text": "name",
+                          disabled: _vm.isDisabled,
+                          loading: _vm.isLoading
+                        },
+                        on: {
+                          "update:searchInput": function($event) {
+                            _vm.citySearch = $event
+                          },
+                          "update:search-input": function($event) {
+                            _vm.citySearch = $event
+                          },
+                          change: _vm.setArrangement
+                        },
+                        scopedSlots: _vm._u([
+                          {
+                            key: "item",
+                            fn: function(ref) {
+                              var item = ref.item
+                              return [
+                                _vm._v(
+                                  _vm._s(item.typeShort) +
+                                    "." +
+                                    _vm._s(item.name)
+                                )
+                              ]
+                            }
+                          },
+                          {
+                            key: "selection",
+                            fn: function(ref) {
+                              var item = ref.item
+                              return [
+                                _vm._v(
+                                  _vm._s(item.typeShort) +
+                                    "." +
+                                    _vm._s(item.name)
+                                )
+                              ]
+                            }
+                          }
+                        ]),
+                        model: {
+                          value: _vm.cityData.selected,
+                          callback: function($$v) {
+                            _vm.$set(_vm.cityData, "selected", $$v)
+                          },
+                          expression: "cityData.selected"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { cols: "12", sm: "6" } },
+                    [
+                      _c("v-autocomplete", {
+                        attrs: {
+                          items: _vm.streetData.streets,
+                          "search-input": _vm.streetSearch,
+                          color: "grey",
+                          label: "Улица",
+                          hint:
+                            "Для поиска улицы сначала нужно выбрать Город / Населенный пункт",
+                          outlined: "",
+                          "hide-no-data": "",
+                          "hide-details": "auto",
+                          "no-filter": "",
+                          "return-object": "",
+                          "item-text": "name",
+                          disabled: _vm.isDisabled,
+                          loading: _vm.isLoading
+                        },
+                        on: {
+                          "update:searchInput": function($event) {
+                            _vm.streetSearch = $event
+                          },
+                          "update:search-input": function($event) {
+                            _vm.streetSearch = $event
+                          },
+                          change: _vm.setArrangement
+                        },
+                        scopedSlots: _vm._u([
+                          {
+                            key: "item",
+                            fn: function(ref) {
+                              var item = ref.item
+                              return [
+                                _vm._v(
+                                  _vm._s(item.typeShort) +
+                                    "." +
+                                    _vm._s(item.name)
+                                )
+                              ]
+                            }
+                          },
+                          {
+                            key: "selection",
+                            fn: function(ref) {
+                              var item = ref.item
+                              return [
+                                _vm._v(
+                                  _vm._s(item.typeShort) +
+                                    "." +
+                                    _vm._s(item.name)
+                                )
+                              ]
+                            }
+                          }
+                        ]),
+                        model: {
+                          value: _vm.streetData.selected,
+                          callback: function($$v) {
+                            _vm.$set(_vm.streetData, "selected", $$v)
+                          },
+                          expression: "streetData.selected"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { cols: "12", sm: "4" } },
+                    [
+                      _c("v-autocomplete", {
+                        attrs: {
+                          items: _vm.buildingData.buildings,
+                          "search-input": _vm.buildingSearch,
+                          color: "grey",
+                          label: "Дом",
+                          hint: "Для поиска дома сначала нужно выбрать улицу",
+                          outlined: "",
+                          "hide-no-data": "",
+                          "hide-details": "auto",
+                          "no-filter": "",
+                          "return-object": "",
+                          "item-text": "name",
+                          disabled: _vm.isDisabled,
+                          loading: _vm.isLoading
+                        },
+                        on: {
+                          "update:searchInput": function($event) {
+                            _vm.buildingSearch = $event
+                          },
+                          "update:search-input": function($event) {
+                            _vm.buildingSearch = $event
+                          },
+                          change: _vm.setArrangement
+                        },
+                        scopedSlots: _vm._u([
+                          {
+                            key: "item",
+                            fn: function(ref) {
+                              var item = ref.item
+                              return [_vm._v(_vm._s(item.name))]
+                            }
+                          },
+                          {
+                            key: "selection",
+                            fn: function(ref) {
+                              var item = ref.item
+                              return [_vm._v(_vm._s(item.name))]
+                            }
+                          }
+                        ]),
+                        model: {
+                          value: _vm.buildingData.selected,
+                          callback: function($$v) {
+                            _vm.$set(_vm.buildingData, "selected", $$v)
+                          },
+                          expression: "buildingData.selected"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { cols: "12", sm: "4" } },
+                    [
+                      _c("v-switch", {
+                        attrs: { label: "Ввести адрес вручную" },
+                        model: {
+                          value: _vm.isDisabled,
+                          callback: function($$v) {
+                            _vm.isDisabled = $$v
+                          },
+                          expression: "isDisabled"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _vm.isDisabled
+                    ? _c(
+                        "v-col",
+                        { attrs: { cols: "12", sm: "12" } },
                         [
                           _c("p", { staticClass: "title" }, [
-                            _vm._v("Название")
+                            _vm._v("Введите адрес вручную")
                           ]),
                           _vm._v(" "),
-                          _c("p", { staticClass: "body-1" }, [
-                            _vm._v(_vm._s(item.name))
-                          ]),
-                          _vm._v(" "),
-                          _c("p", { staticClass: "title" }, [_vm._v("Срок")]),
-                          _vm._v(" "),
-                          _c("p", { staticClass: "body-1" }, [
-                            _vm._v(_vm._s(item.date))
-                          ]),
-                          _vm._v(" "),
-                          _c("p", { staticClass: "title" }, [
-                            _vm._v("Дата создания")
-                          ]),
-                          _vm._v(" "),
-                          _c("p", { staticClass: "body-1" }, [
-                            _vm._v(_vm._s(item.time))
-                          ]),
-                          _vm._v(" "),
-                          _c("v-checkbox", {
-                            attrs: { label: "Проверено?", value: i },
+                          _c("v-text-field", {
+                            attrs: { "single-line": "", solo: "" },
+                            scopedSlots: _vm._u(
+                              [
+                                {
+                                  key: "prepend-inner",
+                                  fn: function() {
+                                    return [_vm._v(_vm._s(_vm.fullAddress))]
+                                  },
+                                  proxy: true
+                                }
+                              ],
+                              null,
+                              false,
+                              590637598
+                            ),
                             model: {
-                              value: _vm.selected,
+                              value: _vm.address,
                               callback: function($$v) {
-                                _vm.selected = $$v
+                                _vm.address = $$v
                               },
-                              expression: "selected"
+                              expression: "address"
                             }
                           })
                         ],
                         1
                       )
-                    ],
-                    1
-                  )
-                }),
+                    : _vm._e()
+                ],
                 1
               ),
+              _vm._v(" "),
+              _vm.entries.length
+                ? _c(
+                    "v-expansion-panels",
+                    {
+                      staticClass: "panels",
+                      attrs: { multiple: "", focusable: "" }
+                    },
+                    _vm._l(_vm.entries, function(item, i) {
+                      return _c(
+                        "v-expansion-panel",
+                        { key: i },
+                        [
+                          _c(
+                            "v-expansion-panel-header",
+                            { staticClass: "title" },
+                            [_vm._v(_vm._s(item.name))]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-expansion-panel-content",
+                            [
+                              _c("p", { staticClass: "title" }, [
+                                _vm._v("Название")
+                              ]),
+                              _vm._v(" "),
+                              _c("p", { staticClass: "body-1" }, [
+                                _vm._v(_vm._s(item.name))
+                              ]),
+                              _vm._v(" "),
+                              _c("p", { staticClass: "title" }, [
+                                _vm._v("Срок")
+                              ]),
+                              _vm._v(" "),
+                              _c("p", { staticClass: "body-1" }, [
+                                _vm._v(_vm._s(item.date))
+                              ]),
+                              _vm._v(" "),
+                              _c("p", { staticClass: "title" }, [
+                                _vm._v("Дата создания")
+                              ]),
+                              _vm._v(" "),
+                              _c("p", { staticClass: "body-1" }, [
+                                _vm._v(_vm._s(item.time))
+                              ]),
+                              _vm._v(" "),
+                              item.products.length
+                                ? _c("v-data-table", {
+                                    staticClass: "elevation-1",
+                                    attrs: {
+                                      headers: _vm.headers,
+                                      items: item.products,
+                                      "item-key": "name"
+                                    },
+                                    scopedSlots: _vm._u(
+                                      [
+                                        {
+                                          key: "item",
+                                          fn: function(ref) {
+                                            var item = ref.item
+                                            return [
+                                              _c("tr", [
+                                                _c("td", [
+                                                  _vm._v(_vm._s(item.name))
+                                                ]),
+                                                _vm._v(" "),
+                                                _c("td", [
+                                                  _vm._v(
+                                                    _vm._s(item.pivot.count)
+                                                  )
+                                                ]),
+                                                _vm._v(" "),
+                                                _c("td", [
+                                                  _vm._v(
+                                                    _vm._s(item.pivot.price)
+                                                  )
+                                                ]),
+                                                _vm._v(" "),
+                                                _c("td", [
+                                                  _vm._v(
+                                                    _vm._s(item.pivot.total)
+                                                  )
+                                                ])
+                                              ])
+                                            ]
+                                          }
+                                        }
+                                      ],
+                                      null,
+                                      true
+                                    )
+                                  })
+                                : _vm._e(),
+                              _vm._v(" "),
+                              _c("v-checkbox", {
+                                attrs: { label: "Проверено?", value: i },
+                                model: {
+                                  value: _vm.selected,
+                                  callback: function($$v) {
+                                    _vm.selected = $$v
+                                  },
+                                  expression: "selected"
+                                }
+                              })
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      )
+                    }),
+                    1
+                  )
+                : _vm._e(),
               _vm._v(" "),
               _c(
                 "v-btn",
                 {
-                  staticClass: "button",
                   attrs: {
                     disabled: _vm.addressLength,
                     block: "",
@@ -40851,7 +41693,7 @@ var render = function() {
           _c(
             "v-dialog",
             {
-              attrs: { width: "200px" },
+              attrs: { width: "250px" },
               model: {
                 value: _vm.dialog,
                 callback: function($$v) {
@@ -40868,6 +41710,7 @@ var render = function() {
                   _vm._v(" "),
                   _c(
                     "v-card-actions",
+                    { staticClass: "justify-center" },
                     [
                       _c(
                         "v-btn",
@@ -41587,6 +42430,7 @@ var render = function() {
                           key: "item",
                           fn: function(ref) {
                             var item = ref.item
+                            var index = ref.index
                             return [
                               _c("tr", [
                                 _c("td", [_vm._v(_vm._s(item.name))]),
@@ -41607,7 +42451,7 @@ var render = function() {
                                           click: function($event) {
                                             return _vm.removeProduct(
                                               item,
-                                              _vm.i
+                                              index
                                             )
                                           }
                                         }
@@ -41624,7 +42468,7 @@ var render = function() {
                       ],
                       null,
                       false,
-                      2822805185
+                      118014372
                     )
                   })
                 : _vm._e()
@@ -41700,7 +42544,7 @@ var render = function() {
                       return !!v || "Address is required"
                     }
                   ],
-                  readonly: _vm.isEdit
+                  readonly: ""
                 },
                 on: { change: _vm.sendData },
                 model: {

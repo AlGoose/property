@@ -18,7 +18,7 @@ class FixDataType extends Migration
             $table->float('price')->change();
         });
 
-         Schema::table('projects', function (Blueprint $table) { //FIXME: Почему-то не применяется
+         Schema::table('projects', function (Blueprint $table) {
              $table->date('date')->charset('')->change();
              $table->date('time')->charset('')->change();
          });

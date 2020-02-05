@@ -2,31 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Clients\KladrClient;
 use App\Http\Controllers\Controller;
 use App\Project;
 use Illuminate\Http\Request;
 
 class AddressController extends Controller
 {
-  public function getAddress()
+  public function search(Request $request)
   {
-    $info = file_get_contents('https://kladr-api.ru/api.php?query=Ломоносова&contentType=street&cityId=2900000100000');
-    $info = json_decode($info, true);
-    print_r($info);
-    print_r('<br/>');
-    print_r($info['result'][1]);
-    print_r('<br/>');
-    print_r(date('Y-m-d'));
+    $client = KladrClient::getInstance();
+    $response = $client->get('', $request->all());
+    return $response->getBody();
   }
 
   public function addresses(Request $request)
   {
-    \Debugbar::info($request->all());
-    if ($request->address == '') {
-      return array();
-    } else {
-      $projects = Project::where('address', 'like', '%' . $request->address . '%')->get();
-      return $projects;
-    }
+    $projects = Project::where('kladrId', '=', $request->kladrId)->with('products')->get();
+    return $projects;
   }
 }

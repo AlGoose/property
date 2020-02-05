@@ -1,8 +1,7 @@
 <template>
   <v-container fluid>
     <v-form ref="form" v-model="valid" lazy-validation>
-      <h3 align="center" v-if="$route.name === 'edit'">Изменение проекта</h3>
-      <h3 align="center" v-else>Создание проекта</h3>
+      <h3 align="center">{{isEdit ? 'Изменение проекта' : 'Создание проекта'}}</h3>
 
       <v-row>
         <v-col cols="6">
@@ -32,21 +31,19 @@
       </v-row>
 
       <v-btn
-        v-if="$route.name === 'edit'"
         block
         color="indigo"
-        @click="validate"
         outlined
-      >Изменить форму</v-btn>
-      <v-btn v-else block color="indigo" outlined @click="validate">Добавить форму</v-btn>
+        @click="validate"
+      >{{isEdit ? 'Изменить форму' : 'Добавить форму'}}</v-btn>
 
       <v-row justify="center">
         <v-dialog v-model="dialog" width="250px">
           <v-card>
             <v-card-title>Все верно?</v-card-title>
-            <v-card-actions>
+            <v-card-actions class="justify-center">
               <v-btn depressed color="error" @click="dialog = false">Отмена</v-btn>
-              <v-btn depressed color="success" @click="isEdit ? editForm() : addForm()">Добавить</v-btn>
+              <v-btn depressed color="success" @click="isEdit ? editForm() : addForm()">{{isEdit ? 'Изменить' : 'Добавить'}}</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -132,6 +129,7 @@ export default {
   methods: {
     addForm() {
       // console.log('ADDFORM');
+      this.formData.project.kladrId = this.$route.params.kladrId;
       axios
         .post("/project", this.formData)
         .then(response => {
