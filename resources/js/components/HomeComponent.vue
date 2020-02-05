@@ -60,12 +60,14 @@
               hide-no-data
               no-filter
               return-object
-              item-text="name"
+              item-text="id"
               :disabled="isDisabled"
               :loading="isLoading"
               @change="setArrangement"
             >
-              <template v-slot:item="{ item }">{{item.typeShort}}.{{item.name}}</template>
+              <template
+                v-slot:item="{ item }"
+              >{{item.typeShort}}.{{item.name}}, {{item.parents[0].name}}.{{item.parents[0].typeShort}}</template>
               <template v-slot:selection="{ item }">{{item.typeShort}}.{{item.name}}</template>
             </v-autocomplete>
           </v-col>
@@ -322,6 +324,16 @@ export default {
     setArrangement(item) {
       if (item != undefined && item != null) {
         this.kladrId = item.id;
+        item.parents.forEach(parent => {
+          if (parent.type === "Область" || parent.type === "Край") {
+            // this.regionData.selected = parent;
+            this.$set(this.regionData, "selected", parent);
+          } else if (parent.type === "Район" || parent.type === "Регион") {
+            // console.log(parent.type);
+            // this.districtData.selected = parent;
+            this.$set(this.districtData, "selected", parent);
+          }
+        });
       }
     },
 
@@ -356,12 +368,13 @@ export default {
       axios
         .post("/kladr", {
           query: {
-            // withParent: "1",
+            withParent: "1",
             contentType: "region",
             query: this.regionSearch
           }
         })
         .then(response => {
+          console.log(response.data.result);
           this.regionData.regions = response.data.result;
           this.regionData.regions.splice(0, 1);
         })
@@ -377,7 +390,7 @@ export default {
       axios
         .post("/kladr", {
           query: {
-            // withParent: "1",
+            withParent: "1",
             contentType: "district",
             query: this.districtSearch
           }
@@ -396,16 +409,25 @@ export default {
       // console.log("CITY");
       if (this.citySearch === null) return;
 
+      let requestParams = {
+        query: {
+          withParent: "1",
+          contentType: "city",
+          query: this.citySearch
+        }
+      };
+
+      if (
+        this.regionData.selected != undefined &&
+        this.regionData.selected != null
+      ) {
+        requestParams.query.regionId = this.regionData.selected.id;
+      }
+
       axios
-        .post("/kladr", {
-          query: {
-            // withParent: "1",
-            contentType: "city",
-            query: this.citySearch
-          }
-        })
+        .post("/kladr", requestParams)
         .then(response => {
-          // console.log(response.data.result);
+          console.log(response.data.result);
           this.cityData.cities = response.data.result;
           this.cityData.cities.splice(0, 1);
         })
@@ -426,14 +448,14 @@ export default {
       axios
         .post("/kladr", {
           query: {
-            // withParent: "1",
+            withParent: "1",
             contentType: "street",
             cityId: this.cityData.selected.id,
             query: this.streetSearch
           }
         })
         .then(response => {
-          // console.log(response.data.result);
+          console.log(response.data.result);
           this.streetData.streets = response.data.result;
           this.streetData.streets.splice(0, 1);
         })
@@ -454,7 +476,7 @@ export default {
       axios
         .post("/kladr", {
           query: {
-            // withParent: "1",
+            withParent: "1",
             contentType: "building",
             streetId: this.streetData.selected.id,
             query: this.buildingSearch

@@ -2304,6 +2304,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2414,19 +2416,31 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     setArrangement: function setArrangement(item) {
+      var _this = this;
+
       if (item != undefined && item != null) {
         this.kladrId = item.id;
+        item.parents.forEach(function (parent) {
+          if (parent.type === "Область" || parent.type === "Край") {
+            // this.regionData.selected = parent;
+            _this.$set(_this.regionData, "selected", parent);
+          } else if (parent.type === "Район" || parent.type === "Регион") {
+            // console.log(parent.type);
+            // this.districtData.selected = parent;
+            _this.$set(_this.districtData, "selected", parent);
+          }
+        });
       }
     },
     searchProjects: function searchProjects() {
-      var _this = this;
+      var _this2 = this;
 
       axios.post("/addresses", {
         kladrId: this.kladrId
       }).then(function (response) {
-        _this.entries = response.data;
+        _this2.entries = response.data;
 
-        _this.entries.forEach(function (item) {
+        _this2.entries.forEach(function (item) {
           item.products.forEach(function (product) {
             product.pivot.total = product.pivot.count * product.pivot.price;
           });
@@ -2446,102 +2460,109 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     searchRegion: function searchRegion() {
-      var _this2 = this;
+      var _this3 = this;
 
       // console.log("REGION");
       if (this.regionSearch === null) return;
       axios.post("/kladr", {
         query: {
-          // withParent: "1",
+          withParent: "1",
           contentType: "region",
           query: this.regionSearch
         }
       }).then(function (response) {
-        _this2.regionData.regions = response.data.result;
+        console.log(response.data.result);
+        _this3.regionData.regions = response.data.result;
 
-        _this2.regionData.regions.splice(0, 1);
+        _this3.regionData.regions.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
     },
     searchDistrict: function searchDistrict() {
-      var _this3 = this;
+      var _this4 = this;
 
       // console.log("DISTRICT");
       if (this.districtSearch === null) return;
       axios.post("/kladr", {
         query: {
-          // withParent: "1",
+          withParent: "1",
           contentType: "district",
           query: this.districtSearch
         }
       }).then(function (response) {
         // console.log(response.data.result);
-        _this3.districtData.districts = response.data.result;
+        _this4.districtData.districts = response.data.result;
 
-        _this3.districtData.districts.splice(0, 1);
+        _this4.districtData.districts.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
     },
     searchCity: function searchCity() {
-      var _this4 = this;
+      var _this5 = this;
 
       // console.log("CITY");
       if (this.citySearch === null) return;
-      axios.post("/kladr", {
+      var requestParams = {
         query: {
-          // withParent: "1",
+          withParent: "1",
           contentType: "city",
           query: this.citySearch
         }
-      }).then(function (response) {
-        // console.log(response.data.result);
-        _this4.cityData.cities = response.data.result;
+      };
 
-        _this4.cityData.cities.splice(0, 1);
+      if (this.regionData.selected != undefined && this.regionData.selected != null) {
+        requestParams.query.regionId = this.regionData.selected.id;
+      }
+
+      axios.post("/kladr", requestParams).then(function (response) {
+        console.log(response.data.result);
+        _this5.cityData.cities = response.data.result;
+
+        _this5.cityData.cities.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
     },
     searchStreet: function searchStreet() {
-      var _this5 = this;
+      var _this6 = this;
 
       // console.log("STREET");
       if (this.streetSearch === null || this.cityData.selected === null || this.cityData.selected === undefined) return;
       axios.post("/kladr", {
         query: {
-          // withParent: "1",
+          withParent: "1",
           contentType: "street",
           cityId: this.cityData.selected.id,
           query: this.streetSearch
         }
       }).then(function (response) {
-        // console.log(response.data.result);
-        _this5.streetData.streets = response.data.result;
+        console.log(response.data.result);
+        _this6.streetData.streets = response.data.result;
 
-        _this5.streetData.streets.splice(0, 1);
+        _this6.streetData.streets.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
     },
     searchBuilding: function searchBuilding() {
-      var _this6 = this;
+      var _this7 = this;
 
       // console.log("BUILDING");
       if (this.buildingSearch === null || this.streetData.selected === null || this.streetData.selected === undefined) return;
       axios.post("/kladr", {
         query: {
-          // withParent: "1",
+          withParent: "1",
           contentType: "building",
           streetId: this.streetData.selected.id,
           query: this.buildingSearch
         }
       }).then(function (response) {
         // console.log(response.data.result);
-        _this6.buildingData.buildings = response.data.result;
+        _this7.buildingData.buildings = response.data.result;
 
-        _this6.buildingData.buildings.splice(0, 1);
+        _this7.buildingData.buildings.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
@@ -40667,7 +40688,7 @@ var render = function() {
                           "hide-no-data": "",
                           "no-filter": "",
                           "return-object": "",
-                          "item-text": "name",
+                          "item-text": "id",
                           disabled: _vm.isDisabled,
                           loading: _vm.isLoading
                         },
@@ -40689,7 +40710,11 @@ var render = function() {
                                 _vm._v(
                                   _vm._s(item.typeShort) +
                                     "." +
-                                    _vm._s(item.name)
+                                    _vm._s(item.name) +
+                                    ", " +
+                                    _vm._s(item.parents[0].name) +
+                                    "." +
+                                    _vm._s(item.parents[0].typeShort)
                                 )
                               ]
                             }
