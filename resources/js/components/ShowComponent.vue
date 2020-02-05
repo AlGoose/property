@@ -171,10 +171,10 @@
     </v-container>
 
     <v-row justify="center">
-      <v-dialog v-model="dialog" width="200px">
+      <v-dialog v-model="dialog" width="250px">
         <v-card>
           <v-card-title>Точно удалить?</v-card-title>
-          <v-card-actions>
+          <v-card-actions class="justify-center">
             <v-btn depressed color="success" @click="dialog = false">Отмена</v-btn>
             <v-btn depressed color="error" @click="remove">Удалить</v-btn>
           </v-card-actions>

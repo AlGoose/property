@@ -33,7 +33,6 @@ class DataController extends Controller
     {
         $client = ZkabelClient::getInstance();
         $response = $client->get('catalog/findItemByArticle/?q=' . $id);
-
         return $response->getBody();
     }
 }

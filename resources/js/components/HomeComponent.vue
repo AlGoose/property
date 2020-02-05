@@ -227,7 +227,10 @@ export default {
 
   computed: {
     addressLength() {
-      return !(this.entries.length === this.selected.length && (this.fullAddress.length > 0 || this.address.length > 0));
+      return !(
+        this.entries.length === this.selected.length &&
+        (this.fullAddress.length > 0 || this.address.length > 0)
+      );
     },
 
     fullAddress() {
@@ -359,8 +362,8 @@ export default {
           }
         })
         .then(response => {
-          // console.log(response.data.result);
           this.regionData.regions = response.data.result;
+          this.regionData.regions.splice(0, 1);
         })
         .catch(error => {
           console.log(error);
@@ -382,6 +385,7 @@ export default {
         .then(response => {
           // console.log(response.data.result);
           this.districtData.districts = response.data.result;
+          this.districtData.districts.splice(0, 1);
         })
         .catch(error => {
           console.log(error);
@@ -403,6 +407,7 @@ export default {
         .then(response => {
           // console.log(response.data.result);
           this.cityData.cities = response.data.result;
+          this.cityData.cities.splice(0, 1);
         })
         .catch(error => {
           console.log(error);
@@ -430,6 +435,7 @@ export default {
         .then(response => {
           // console.log(response.data.result);
           this.streetData.streets = response.data.result;
+          this.streetData.streets.splice(0, 1);
         })
         .catch(error => {
           console.log(error);
@@ -457,6 +463,7 @@ export default {
         .then(response => {
           // console.log(response.data.result);
           this.buildingData.buildings = response.data.result;
+          this.buildingData.buildings.splice(0, 1);
         })
         .catch(error => {
           console.log(error);

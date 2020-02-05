@@ -2457,8 +2457,9 @@ __webpack_require__.r(__webpack_exports__);
           query: this.regionSearch
         }
       }).then(function (response) {
-        // console.log(response.data.result);
         _this2.regionData.regions = response.data.result;
+
+        _this2.regionData.regions.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2477,6 +2478,8 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (response) {
         // console.log(response.data.result);
         _this3.districtData.districts = response.data.result;
+
+        _this3.districtData.districts.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2495,6 +2498,8 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (response) {
         // console.log(response.data.result);
         _this4.cityData.cities = response.data.result;
+
+        _this4.cityData.cities.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2514,6 +2519,8 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (response) {
         // console.log(response.data.result);
         _this5.streetData.streets = response.data.result;
+
+        _this5.streetData.streets.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2533,6 +2540,8 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (response) {
         // console.log(response.data.result);
         _this6.buildingData.buildings = response.data.result;
+
+        _this6.buildingData.buildings.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
@@ -41684,7 +41693,7 @@ var render = function() {
           _c(
             "v-dialog",
             {
-              attrs: { width: "200px" },
+              attrs: { width: "250px" },
               model: {
                 value: _vm.dialog,
                 callback: function($$v) {
@@ -41701,6 +41710,7 @@ var render = function() {
                   _vm._v(" "),
                   _c(
                     "v-card-actions",
+                    { staticClass: "justify-center" },
                     [
                       _c(
                         "v-btn",

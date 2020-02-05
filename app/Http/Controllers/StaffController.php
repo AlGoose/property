@@ -39,8 +39,7 @@ class StaffController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        \Debugbar::info($request->all());
+        // \Debugbar::info($request->all());
         $staff = Staff::create($request->all());
         return $staff;
     }

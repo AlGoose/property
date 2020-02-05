@@ -18,8 +18,6 @@ class AddressController extends Controller
 
   public function addresses(Request $request)
   {
-    \Debugbar::info($request->all());
-    \Debugbar::info($request->kladrId);
     $projects = Project::where('kladrId', '=', $request->kladrId)->with('products')->get();
     return $projects;
   }
