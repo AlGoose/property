@@ -2415,15 +2415,18 @@ __webpack_require__.r(__webpack_exports__);
     getFullAddress: function getFullAddress(item) {
       var result = "";
 
-      if (item.type === "Район" || item.type === "Регион") {
+      if (item.contentType === "district") {
         result += "".concat(item.name, " ").concat(item.typeShort, ".");
       } else {
         result += "".concat(item.typeShort, ".").concat(item.name);
       }
 
-      item.parents.forEach(function (parent) {
-        result += ", ".concat(parent.name, " ").concat(parent.typeShort, ".");
-      });
+      if (item.parents) {
+        item.parents.forEach(function (parent) {
+          result += ", ".concat(parent.name, " ").concat(parent.typeShort, ".");
+        });
+      }
+
       return result;
     },
     setArrangement: function setArrangement(item) {
@@ -2432,27 +2435,41 @@ __webpack_require__.r(__webpack_exports__);
       if (item != undefined && item != null) {
         this.kladrId = item.id;
         item.parents.forEach(function (parent) {
-          if (parent.type === "Область" || parent.type === "Край") {
+          if (parent.contentType === "region") {
             _this.regionData.regions.push(parent);
 
             _this.regionData.selected = parent;
-          } else if (parent.type === "Район" || parent.type === "Регион") {
+          } else if (parent.contentType === "district") {
             _this.districtData.districts.push(parent);
 
             _this.districtData.selected = parent;
           }
         });
 
-        if (item.type === "Район" || item.type === "Регион") {
-          this.cityData.cities = [];
-          this.cityData.selected = null;
-        }
+        switch (item.contentType) {
+          case "region":
+            {
+              this.districtData.districts = [];
+              this.districtData.selected = null;
+            }
 
-        if (item.type === "Область" || item.type === "Край") {
-          this.cityData.cities = [];
-          this.cityData.selected = null;
-          this.districtData.districts = [];
-          this.districtData.selected = null;
+          case "district":
+            {
+              this.cityData.cities = [];
+              this.cityData.selected = null;
+            }
+
+          case "city":
+            {
+              this.streetData.streets = [];
+              this.streetData.selected = null;
+            }
+
+          case "street":
+            {
+              this.buildingData.buildings = [];
+              this.buildingData.selected = null;
+            }
         }
       }
     },
@@ -2508,13 +2525,19 @@ __webpack_require__.r(__webpack_exports__);
 
       // console.log("DISTRICT");
       if (this.districtSearch === null) return;
-      axios.post("/kladr", {
+      var requestParams = {
         query: {
           withParent: "1",
           contentType: "district",
           query: this.districtSearch
         }
-      }).then(function (response) {
+      };
+
+      if (this.regionData.selected != undefined && this.regionData.selected != null) {
+        requestParams.query.regionId = this.regionData.selected.id;
+      }
+
+      axios.post("/kladr", requestParams).then(function (response) {
         // console.log(response.data.result);
         _this4.districtData.districts = response.data.result;
 
@@ -2610,8 +2633,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
-//
 //
 //
 //
@@ -3667,7 +3688,7 @@ __webpack_require__.r(__webpack_exports__);
 
       if (this.$refs.form.validate()) {
         for (var i = 0; i < this.products.length; i++) {
-          if (this.code == this.products[i].code) {
+          if (this.product.id == this.products[i].code) {
             return;
           }
         }
@@ -40380,7 +40401,7 @@ var render = function() {
               attrs: { block: "", color: "indigo", outlined: "" },
               on: { click: _vm.validate }
             },
-            [_vm._v(_vm._s(_vm.isEdit ? "Изменить форму" : "Добавить форму"))]
+            [_vm._v(_vm._s(_vm.isEdit ? "Изменить проект" : "Добавить проект"))]
           ),
           _vm._v(" "),
           _c(
@@ -41071,7 +41092,7 @@ var render = function() {
                   },
                   on: { click: _vm.createForm }
                 },
-                [_vm._v("Добавить форму")]
+                [_vm._v("Добавить проект")]
               )
             ],
             1
@@ -41105,43 +41126,41 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
-    _c(
-      "div",
-      { staticClass: "row justify-content-center" },
-      [
-        _c("v-data-table", {
-          staticClass: "elevation-3",
-          attrs: {
-            headers: _vm.headers,
-            items: _vm.fruits,
-            "items-per-page": _vm.itemsPerPage,
-            "hide-default-footer": ""
-          },
-          on: { "click:row": _vm.openProject }
-        })
-      ],
-      1
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "text-center" },
-      [
-        _c("v-pagination", {
-          attrs: { length: _vm.length, "total-visible": 7 },
-          model: {
-            value: _vm.page,
-            callback: function($$v) {
-              _vm.page = $$v
-            },
-            expression: "page"
-          }
-        })
-      ],
-      1
-    )
-  ])
+  return _c(
+    "v-container",
+    { attrs: { fluid: "" } },
+    [
+      _c("v-data-table", {
+        staticClass: "elevation-3",
+        attrs: {
+          headers: _vm.headers,
+          items: _vm.fruits,
+          "items-per-page": _vm.itemsPerPage,
+          "hide-default-footer": ""
+        },
+        on: { "click:row": _vm.openProject }
+      }),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "text-center" },
+        [
+          _c("v-pagination", {
+            attrs: { length: _vm.length, "total-visible": 7 },
+            model: {
+              value: _vm.page,
+              callback: function($$v) {
+                _vm.page = $$v
+              },
+              expression: "page"
+            }
+          })
+        ],
+        1
+      )
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true

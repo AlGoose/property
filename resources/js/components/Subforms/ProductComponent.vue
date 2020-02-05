@@ -216,7 +216,7 @@ export default {
     addProduct() {
       if (this.$refs.form.validate()) {
         for (let i = 0; i < this.products.length; i++) {
-          if (this.code == this.products[i].code) {
+          if (this.product.id == this.products[i].code) {
             return;
           }
         }

@@ -165,7 +165,7 @@
           color="indigo"
           outlined
           @click="createForm"
-        >Добавить форму</v-btn>
+        >Добавить проект</v-btn>
       </v-card-text>
     </v-card>
   </v-container>
@@ -320,14 +320,16 @@ export default {
   methods: {
     getFullAddress(item) {
       let result = "";
-      if (item.type === "Район" || item.type === "Регион") {
+      if (item.contentType === "district") {
         result += `${item.name} ${item.typeShort}.`;
       } else {
         result += `${item.typeShort}.${item.name}`;
       }
-      item.parents.forEach(parent => {
-        result += `, ${parent.name} ${parent.typeShort}.`;
-      });
+      if (item.parents) {
+        item.parents.forEach(parent => {
+          result += `, ${parent.name} ${parent.typeShort}.`;
+        });
+      }
 
       return result;
     },
@@ -336,25 +338,32 @@ export default {
       if (item != undefined && item != null) {
         this.kladrId = item.id;
         item.parents.forEach(parent => {
-          if (parent.type === "Область" || parent.type === "Край") {
+          if (parent.contentType === "region") {
             this.regionData.regions.push(parent);
             this.regionData.selected = parent;
-          } else if (parent.type === "Район" || parent.type === "Регион") {
+          } else if (parent.contentType === "district") {
             this.districtData.districts.push(parent);
             this.districtData.selected = parent;
           }
         });
 
-        if(item.type === "Район" || item.type === "Регион") {
-          this.cityData.cities = [];
-          this.cityData.selected = null;
-        }
-
-        if(item.type === "Область" || item.type === "Край") {
-          this.cityData.cities = [];
-          this.cityData.selected = null;
-          this.districtData.districts = [];
-          this.districtData.selected = null;
+        switch (item.contentType) {
+          case "region": {
+            this.districtData.districts = [];
+            this.districtData.selected = null;
+          }
+          case "district": {
+            this.cityData.cities = [];
+            this.cityData.selected = null;
+          }
+          case "city": {
+            this.streetData.streets = [];
+            this.streetData.selected = null;
+          }
+          case "street": {
+            this.buildingData.buildings = [];
+            this.buildingData.selected = null;
+          }
         }
       }
     },
@@ -409,14 +418,23 @@ export default {
       // console.log("DISTRICT");
       if (this.districtSearch === null) return;
 
+      let requestParams = {
+        query: {
+          withParent: "1",
+          contentType: "district",
+          query: this.districtSearch
+        }
+      };
+
+      if (
+        this.regionData.selected != undefined &&
+        this.regionData.selected != null
+      ) {
+        requestParams.query.regionId = this.regionData.selected.id;
+      }
+
       axios
-        .post("/kladr", {
-          query: {
-            withParent: "1",
-            contentType: "district",
-            query: this.districtSearch
-          }
-        })
+        .post("/kladr", requestParams)
         .then(response => {
           // console.log(response.data.result);
           this.districtData.districts = response.data.result;
