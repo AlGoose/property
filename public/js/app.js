@@ -2304,8 +2304,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2410,11 +2408,24 @@ __webpack_require__.r(__webpack_exports__);
       this.inputBuilding();
     },
     kladrId: function kladrId(value) {
-      // console.log("The Most Exact Arrangement", value);
       this.searchProjects();
     }
   },
   methods: {
+    getFullAddress: function getFullAddress(item) {
+      var result = "";
+
+      if (item.type === "Район" || item.type === "Регион") {
+        result += "".concat(item.name, " ").concat(item.typeShort, ".");
+      } else {
+        result += "".concat(item.typeShort, ".").concat(item.name);
+      }
+
+      item.parents.forEach(function (parent) {
+        result += ", ".concat(parent.name, " ").concat(parent.typeShort, ".");
+      });
+      return result;
+    },
     setArrangement: function setArrangement(item) {
       var _this = this;
 
@@ -2422,14 +2433,27 @@ __webpack_require__.r(__webpack_exports__);
         this.kladrId = item.id;
         item.parents.forEach(function (parent) {
           if (parent.type === "Область" || parent.type === "Край") {
-            // this.regionData.selected = parent;
-            _this.$set(_this.regionData, "selected", parent);
+            _this.regionData.regions.push(parent);
+
+            _this.regionData.selected = parent;
           } else if (parent.type === "Район" || parent.type === "Регион") {
-            // console.log(parent.type);
-            // this.districtData.selected = parent;
-            _this.$set(_this.districtData, "selected", parent);
+            _this.districtData.districts.push(parent);
+
+            _this.districtData.selected = parent;
           }
         });
+
+        if (item.type === "Район" || item.type === "Регион") {
+          this.cityData.cities = [];
+          this.cityData.selected = null;
+        }
+
+        if (item.type === "Область" || item.type === "Край") {
+          this.cityData.cities = [];
+          this.cityData.selected = null;
+          this.districtData.districts = [];
+          this.districtData.selected = null;
+        }
       }
     },
     searchProjects: function searchProjects() {
@@ -2514,6 +2538,11 @@ __webpack_require__.r(__webpack_exports__);
 
       if (this.regionData.selected != undefined && this.regionData.selected != null) {
         requestParams.query.regionId = this.regionData.selected.id;
+      }
+
+      if (this.districtData.selected != undefined && this.districtData.selected != null) {
+        delete requestParams.query.regionId;
+        requestParams.query.districtId = this.districtData.selected.id;
       }
 
       axios.post("/kladr", requestParams).then(function (response) {
@@ -40552,7 +40581,7 @@ var render = function() {
                           "hide-no-data": "",
                           "no-filter": "",
                           "return-object": "",
-                          "item-text": "name",
+                          "item-text": "id",
                           loading: _vm.isLoading,
                           disabled: _vm.isDisabled
                         },
@@ -40587,7 +40616,8 @@ var render = function() {
                                 _vm._v(
                                   _vm._s(item.name) +
                                     " " +
-                                    _vm._s(item.typeShort)
+                                    _vm._s(item.typeShort) +
+                                    "."
                                 )
                               ]
                             }
@@ -40620,7 +40650,7 @@ var render = function() {
                           "hide-no-data": "",
                           "no-filter": "",
                           "return-object": "",
-                          "item-text": "name",
+                          "item-text": "id",
                           disabled: _vm.isDisabled,
                           loading: _vm.isLoading
                         },
@@ -40638,13 +40668,7 @@ var render = function() {
                             key: "item",
                             fn: function(ref) {
                               var item = ref.item
-                              return [
-                                _vm._v(
-                                  _vm._s(item.name) +
-                                    " " +
-                                    _vm._s(item.typeShort)
-                                )
-                              ]
+                              return [_vm._v(_vm._s(_vm.getFullAddress(item)))]
                             }
                           },
                           {
@@ -40655,7 +40679,8 @@ var render = function() {
                                 _vm._v(
                                   _vm._s(item.name) +
                                     " " +
-                                    _vm._s(item.typeShort)
+                                    _vm._s(item.typeShort) +
+                                    "."
                                 )
                               ]
                             }
@@ -40706,17 +40731,7 @@ var render = function() {
                             key: "item",
                             fn: function(ref) {
                               var item = ref.item
-                              return [
-                                _vm._v(
-                                  _vm._s(item.typeShort) +
-                                    "." +
-                                    _vm._s(item.name) +
-                                    ", " +
-                                    _vm._s(item.parents[0].name) +
-                                    "." +
-                                    _vm._s(item.parents[0].typeShort)
-                                )
-                              ]
+                              return [_vm._v(_vm._s(_vm.getFullAddress(item)))]
                             }
                           },
                           {
@@ -40762,7 +40777,7 @@ var render = function() {
                           "hide-details": "auto",
                           "no-filter": "",
                           "return-object": "",
-                          "item-text": "name",
+                          "item-text": "id",
                           disabled: _vm.isDisabled,
                           loading: _vm.isLoading
                         },
@@ -40831,7 +40846,7 @@ var render = function() {
                           "hide-details": "auto",
                           "no-filter": "",
                           "return-object": "",
-                          "item-text": "name",
+                          "item-text": "id",
                           disabled: _vm.isDisabled,
                           loading: _vm.isLoading
                         },

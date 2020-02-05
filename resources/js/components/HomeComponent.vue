@@ -16,13 +16,13 @@
               hide-no-data
               no-filter
               return-object
-              item-text="name"
+              item-text="id"
               :loading="isLoading"
               :disabled="isDisabled"
               @change="setArrangement"
             >
               <template v-slot:item="{ item }">{{item.name}} {{item.typeShort}}</template>
-              <template v-slot:selection="{ item }">{{item.name}} {{item.typeShort}}</template>
+              <template v-slot:selection="{ item }">{{item.name}} {{item.typeShort}}.</template>
             </v-autocomplete>
           </v-col>
 
@@ -38,13 +38,13 @@
               hide-no-data
               no-filter
               return-object
-              item-text="name"
+              item-text="id"
               :disabled="isDisabled"
               :loading="isLoading"
               @change="setArrangement"
             >
-              <template v-slot:item="{ item }">{{item.name}} {{item.typeShort}}</template>
-              <template v-slot:selection="{ item }">{{item.name}} {{item.typeShort}}</template>
+              <template v-slot:item="{ item }">{{getFullAddress(item)}}</template>
+              <template v-slot:selection="{ item }">{{item.name}} {{item.typeShort}}.</template>
             </v-autocomplete>
           </v-col>
 
@@ -65,9 +65,7 @@
               :loading="isLoading"
               @change="setArrangement"
             >
-              <template
-                v-slot:item="{ item }"
-              >{{item.typeShort}}.{{item.name}}, {{item.parents[0].name}}.{{item.parents[0].typeShort}}</template>
+              <template v-slot:item="{ item }">{{getFullAddress(item)}}</template>
               <template v-slot:selection="{ item }">{{item.typeShort}}.{{item.name}}</template>
             </v-autocomplete>
           </v-col>
@@ -85,7 +83,7 @@
               hide-details="auto"
               no-filter
               return-object
-              item-text="name"
+              item-text="id"
               :disabled="isDisabled"
               :loading="isLoading"
               @change="setArrangement"
@@ -108,7 +106,7 @@
               hide-details="auto"
               no-filter
               return-object
-              item-text="name"
+              item-text="id"
               :disabled="isDisabled"
               :loading="isLoading"
               @change="setArrangement"
@@ -315,25 +313,49 @@ export default {
     },
 
     kladrId(value) {
-      // console.log("The Most Exact Arrangement", value);
       this.searchProjects();
     }
   },
 
   methods: {
+    getFullAddress(item) {
+      let result = "";
+      if (item.type === "Район" || item.type === "Регион") {
+        result += `${item.name} ${item.typeShort}.`;
+      } else {
+        result += `${item.typeShort}.${item.name}`;
+      }
+      item.parents.forEach(parent => {
+        result += `, ${parent.name} ${parent.typeShort}.`;
+      });
+
+      return result;
+    },
+
     setArrangement(item) {
       if (item != undefined && item != null) {
         this.kladrId = item.id;
         item.parents.forEach(parent => {
           if (parent.type === "Область" || parent.type === "Край") {
-            // this.regionData.selected = parent;
-            this.$set(this.regionData, "selected", parent);
+            this.regionData.regions.push(parent);
+            this.regionData.selected = parent;
           } else if (parent.type === "Район" || parent.type === "Регион") {
-            // console.log(parent.type);
-            // this.districtData.selected = parent;
-            this.$set(this.districtData, "selected", parent);
+            this.districtData.districts.push(parent);
+            this.districtData.selected = parent;
           }
         });
+
+        if(item.type === "Район" || item.type === "Регион") {
+          this.cityData.cities = [];
+          this.cityData.selected = null;
+        }
+
+        if(item.type === "Область" || item.type === "Край") {
+          this.cityData.cities = [];
+          this.cityData.selected = null;
+          this.districtData.districts = [];
+          this.districtData.selected = null;
+        }
       }
     },
 
@@ -422,6 +444,14 @@ export default {
         this.regionData.selected != null
       ) {
         requestParams.query.regionId = this.regionData.selected.id;
+      }
+
+      if (
+        this.districtData.selected != undefined &&
+        this.districtData.selected != null
+      ) {
+        delete requestParams.query.regionId;
+        requestParams.query.districtId = this.districtData.selected.id;
       }
 
       axios
