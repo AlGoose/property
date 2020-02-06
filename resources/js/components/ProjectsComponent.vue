@@ -1,19 +1,17 @@
 <template>
-  <div>
-    <div class="row justify-content-center">
-      <v-data-table
-        :headers="headers"
-        :items="fruits"
-        :items-per-page="itemsPerPage"
-        hide-default-footer
-        class="elevation-3"
-        @click:row="openProject"
-      ></v-data-table>
-    </div>
+  <v-container fluid>
+    <v-data-table
+      :headers="headers"
+      :items="fruits"
+      :items-per-page="itemsPerPage"
+      hide-default-footer
+      class="elevation-3"
+      @click:row="openProject"
+    ></v-data-table>
     <div class="text-center">
       <v-pagination v-model="page" :length="length" :total-visible="7"></v-pagination>
     </div>
-  </div>
+  </v-container>
 </template>
 
 
@@ -25,9 +23,7 @@ export default {
         .get("/project")
         .then(response => {
           this.itemsPerPage = response.data.per_page;
-          this.length = Math.ceil(
-            response.data.total / response.data.per_page
-          );
+          this.length = Math.ceil(response.data.total / response.data.per_page);
           this.fruits = response.data.data;
         })
         .catch(function(error) {
@@ -35,9 +31,7 @@ export default {
         });
     } else {
       this.itemsPerPage = window.projects.per_page;
-      this.length = Math.ceil(
-        window.projects.total / window.projects.per_page
-      );
+      this.length = Math.ceil(window.projects.total / window.projects.per_page);
       this.fruits = window.projects.data;
       window.projects = undefined;
     }

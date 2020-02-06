@@ -2408,25 +2408,80 @@ __webpack_require__.r(__webpack_exports__);
       this.inputBuilding();
     },
     kladrId: function kladrId(value) {
-      // console.log("The Most Exact Arrangement", value);
       this.searchProjects();
     }
   },
   methods: {
+    getFullAddress: function getFullAddress(item) {
+      var result = "";
+
+      if (item.contentType === "district") {
+        result += "".concat(item.name, " ").concat(item.typeShort, ".");
+      } else {
+        result += "".concat(item.typeShort, ".").concat(item.name);
+      }
+
+      if (item.parents) {
+        item.parents.forEach(function (parent) {
+          result += ", ".concat(parent.name, " ").concat(parent.typeShort, ".");
+        });
+      }
+
+      return result;
+    },
     setArrangement: function setArrangement(item) {
+      var _this = this;
+
       if (item != undefined && item != null) {
         this.kladrId = item.id;
+        item.parents.forEach(function (parent) {
+          if (parent.contentType === "region") {
+            _this.regionData.regions.push(parent);
+
+            _this.regionData.selected = parent;
+          } else if (parent.contentType === "district") {
+            _this.districtData.districts.push(parent);
+
+            _this.districtData.selected = parent;
+          }
+        });
+
+        switch (item.contentType) {
+          case "region":
+            {
+              this.districtData.districts = [];
+              this.districtData.selected = null;
+            }
+
+          case "district":
+            {
+              this.cityData.cities = [];
+              this.cityData.selected = null;
+            }
+
+          case "city":
+            {
+              this.streetData.streets = [];
+              this.streetData.selected = null;
+            }
+
+          case "street":
+            {
+              this.buildingData.buildings = [];
+              this.buildingData.selected = null;
+            }
+        }
       }
     },
     searchProjects: function searchProjects() {
-      var _this = this;
+      var _this2 = this;
 
       axios.post("/addresses", {
         kladrId: this.kladrId
       }).then(function (response) {
-        _this.entries = response.data;
+        _this2.entries = response.data;
 
-        _this.entries.forEach(function (item) {
+        _this2.entries.forEach(function (item) {
           item.products.forEach(function (product) {
             product.pivot.total = product.pivot.count * product.pivot.price;
           });
@@ -2446,102 +2501,120 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     searchRegion: function searchRegion() {
-      var _this2 = this;
+      var _this3 = this;
 
       // console.log("REGION");
       if (this.regionSearch === null) return;
       axios.post("/kladr", {
         query: {
-          // withParent: "1",
+          withParent: "1",
           contentType: "region",
           query: this.regionSearch
         }
       }).then(function (response) {
-        _this2.regionData.regions = response.data.result;
+        console.log(response.data.result);
+        _this3.regionData.regions = response.data.result;
 
-        _this2.regionData.regions.splice(0, 1);
+        _this3.regionData.regions.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
     },
     searchDistrict: function searchDistrict() {
-      var _this3 = this;
+      var _this4 = this;
 
       // console.log("DISTRICT");
       if (this.districtSearch === null) return;
-      axios.post("/kladr", {
+      var requestParams = {
         query: {
-          // withParent: "1",
+          withParent: "1",
           contentType: "district",
           query: this.districtSearch
         }
-      }).then(function (response) {
-        // console.log(response.data.result);
-        _this3.districtData.districts = response.data.result;
+      };
 
-        _this3.districtData.districts.splice(0, 1);
+      if (this.regionData.selected != undefined && this.regionData.selected != null) {
+        requestParams.query.regionId = this.regionData.selected.id;
+      }
+
+      axios.post("/kladr", requestParams).then(function (response) {
+        // console.log(response.data.result);
+        _this4.districtData.districts = response.data.result;
+
+        _this4.districtData.districts.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
     },
     searchCity: function searchCity() {
-      var _this4 = this;
+      var _this5 = this;
 
       // console.log("CITY");
       if (this.citySearch === null) return;
-      axios.post("/kladr", {
+      var requestParams = {
         query: {
-          // withParent: "1",
+          withParent: "1",
           contentType: "city",
           query: this.citySearch
         }
-      }).then(function (response) {
-        // console.log(response.data.result);
-        _this4.cityData.cities = response.data.result;
+      };
 
-        _this4.cityData.cities.splice(0, 1);
+      if (this.regionData.selected != undefined && this.regionData.selected != null) {
+        requestParams.query.regionId = this.regionData.selected.id;
+      }
+
+      if (this.districtData.selected != undefined && this.districtData.selected != null) {
+        delete requestParams.query.regionId;
+        requestParams.query.districtId = this.districtData.selected.id;
+      }
+
+      axios.post("/kladr", requestParams).then(function (response) {
+        console.log(response.data.result);
+        _this5.cityData.cities = response.data.result;
+
+        _this5.cityData.cities.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
     },
     searchStreet: function searchStreet() {
-      var _this5 = this;
+      var _this6 = this;
 
       // console.log("STREET");
       if (this.streetSearch === null || this.cityData.selected === null || this.cityData.selected === undefined) return;
       axios.post("/kladr", {
         query: {
-          // withParent: "1",
+          withParent: "1",
           contentType: "street",
           cityId: this.cityData.selected.id,
           query: this.streetSearch
         }
       }).then(function (response) {
-        // console.log(response.data.result);
-        _this5.streetData.streets = response.data.result;
+        console.log(response.data.result);
+        _this6.streetData.streets = response.data.result;
 
-        _this5.streetData.streets.splice(0, 1);
+        _this6.streetData.streets.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
     },
     searchBuilding: function searchBuilding() {
-      var _this6 = this;
+      var _this7 = this;
 
       // console.log("BUILDING");
       if (this.buildingSearch === null || this.streetData.selected === null || this.streetData.selected === undefined) return;
       axios.post("/kladr", {
         query: {
-          // withParent: "1",
+          withParent: "1",
           contentType: "building",
           streetId: this.streetData.selected.id,
           query: this.buildingSearch
         }
       }).then(function (response) {
         // console.log(response.data.result);
-        _this6.buildingData.buildings = response.data.result;
+        _this7.buildingData.buildings = response.data.result;
 
-        _this6.buildingData.buildings.splice(0, 1);
+        _this7.buildingData.buildings.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2560,8 +2633,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
-//
 //
 //
 //
@@ -3617,7 +3688,7 @@ __webpack_require__.r(__webpack_exports__);
 
       if (this.$refs.form.validate()) {
         for (var i = 0; i < this.products.length; i++) {
-          if (this.code == this.products[i].code) {
+          if (this.product.id == this.products[i].code) {
             return;
           }
         }
@@ -40330,7 +40401,7 @@ var render = function() {
               attrs: { block: "", color: "indigo", outlined: "" },
               on: { click: _vm.validate }
             },
-            [_vm._v(_vm._s(_vm.isEdit ? "Изменить форму" : "Добавить форму"))]
+            [_vm._v(_vm._s(_vm.isEdit ? "Изменить проект" : "Добавить проект"))]
           ),
           _vm._v(" "),
           _c(
@@ -40531,7 +40602,7 @@ var render = function() {
                           "hide-no-data": "",
                           "no-filter": "",
                           "return-object": "",
-                          "item-text": "name",
+                          "item-text": "id",
                           loading: _vm.isLoading,
                           disabled: _vm.isDisabled
                         },
@@ -40566,7 +40637,8 @@ var render = function() {
                                 _vm._v(
                                   _vm._s(item.name) +
                                     " " +
-                                    _vm._s(item.typeShort)
+                                    _vm._s(item.typeShort) +
+                                    "."
                                 )
                               ]
                             }
@@ -40599,7 +40671,7 @@ var render = function() {
                           "hide-no-data": "",
                           "no-filter": "",
                           "return-object": "",
-                          "item-text": "name",
+                          "item-text": "id",
                           disabled: _vm.isDisabled,
                           loading: _vm.isLoading
                         },
@@ -40617,13 +40689,7 @@ var render = function() {
                             key: "item",
                             fn: function(ref) {
                               var item = ref.item
-                              return [
-                                _vm._v(
-                                  _vm._s(item.name) +
-                                    " " +
-                                    _vm._s(item.typeShort)
-                                )
-                              ]
+                              return [_vm._v(_vm._s(_vm.getFullAddress(item)))]
                             }
                           },
                           {
@@ -40634,7 +40700,8 @@ var render = function() {
                                 _vm._v(
                                   _vm._s(item.name) +
                                     " " +
-                                    _vm._s(item.typeShort)
+                                    _vm._s(item.typeShort) +
+                                    "."
                                 )
                               ]
                             }
@@ -40667,7 +40734,7 @@ var render = function() {
                           "hide-no-data": "",
                           "no-filter": "",
                           "return-object": "",
-                          "item-text": "name",
+                          "item-text": "id",
                           disabled: _vm.isDisabled,
                           loading: _vm.isLoading
                         },
@@ -40685,13 +40752,7 @@ var render = function() {
                             key: "item",
                             fn: function(ref) {
                               var item = ref.item
-                              return [
-                                _vm._v(
-                                  _vm._s(item.typeShort) +
-                                    "." +
-                                    _vm._s(item.name)
-                                )
-                              ]
+                              return [_vm._v(_vm._s(_vm.getFullAddress(item)))]
                             }
                           },
                           {
@@ -40737,7 +40798,7 @@ var render = function() {
                           "hide-details": "auto",
                           "no-filter": "",
                           "return-object": "",
-                          "item-text": "name",
+                          "item-text": "id",
                           disabled: _vm.isDisabled,
                           loading: _vm.isLoading
                         },
@@ -40806,7 +40867,7 @@ var render = function() {
                           "hide-details": "auto",
                           "no-filter": "",
                           "return-object": "",
-                          "item-text": "name",
+                          "item-text": "id",
                           disabled: _vm.isDisabled,
                           loading: _vm.isLoading
                         },
@@ -41031,7 +41092,7 @@ var render = function() {
                   },
                   on: { click: _vm.createForm }
                 },
-                [_vm._v("Добавить форму")]
+                [_vm._v("Добавить проект")]
               )
             ],
             1
@@ -41065,43 +41126,41 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
-    _c(
-      "div",
-      { staticClass: "row justify-content-center" },
-      [
-        _c("v-data-table", {
-          staticClass: "elevation-3",
-          attrs: {
-            headers: _vm.headers,
-            items: _vm.fruits,
-            "items-per-page": _vm.itemsPerPage,
-            "hide-default-footer": ""
-          },
-          on: { "click:row": _vm.openProject }
-        })
-      ],
-      1
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "text-center" },
-      [
-        _c("v-pagination", {
-          attrs: { length: _vm.length, "total-visible": 7 },
-          model: {
-            value: _vm.page,
-            callback: function($$v) {
-              _vm.page = $$v
-            },
-            expression: "page"
-          }
-        })
-      ],
-      1
-    )
-  ])
+  return _c(
+    "v-container",
+    { attrs: { fluid: "" } },
+    [
+      _c("v-data-table", {
+        staticClass: "elevation-3",
+        attrs: {
+          headers: _vm.headers,
+          items: _vm.fruits,
+          "items-per-page": _vm.itemsPerPage,
+          "hide-default-footer": ""
+        },
+        on: { "click:row": _vm.openProject }
+      }),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "text-center" },
+        [
+          _c("v-pagination", {
+            attrs: { length: _vm.length, "total-visible": 7 },
+            model: {
+              value: _vm.page,
+              callback: function($$v) {
+                _vm.page = $$v
+              },
+              expression: "page"
+            }
+          })
+        ],
+        1
+      )
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true

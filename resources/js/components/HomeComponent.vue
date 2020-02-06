@@ -16,13 +16,13 @@
               hide-no-data
               no-filter
               return-object
-              item-text="name"
+              item-text="id"
               :loading="isLoading"
               :disabled="isDisabled"
               @change="setArrangement"
             >
               <template v-slot:item="{ item }">{{item.name}} {{item.typeShort}}</template>
-              <template v-slot:selection="{ item }">{{item.name}} {{item.typeShort}}</template>
+              <template v-slot:selection="{ item }">{{item.name}} {{item.typeShort}}.</template>
             </v-autocomplete>
           </v-col>
 
@@ -38,13 +38,13 @@
               hide-no-data
               no-filter
               return-object
-              item-text="name"
+              item-text="id"
               :disabled="isDisabled"
               :loading="isLoading"
               @change="setArrangement"
             >
-              <template v-slot:item="{ item }">{{item.name}} {{item.typeShort}}</template>
-              <template v-slot:selection="{ item }">{{item.name}} {{item.typeShort}}</template>
+              <template v-slot:item="{ item }">{{getFullAddress(item)}}</template>
+              <template v-slot:selection="{ item }">{{item.name}} {{item.typeShort}}.</template>
             </v-autocomplete>
           </v-col>
 
@@ -60,12 +60,12 @@
               hide-no-data
               no-filter
               return-object
-              item-text="name"
+              item-text="id"
               :disabled="isDisabled"
               :loading="isLoading"
               @change="setArrangement"
             >
-              <template v-slot:item="{ item }">{{item.typeShort}}.{{item.name}}</template>
+              <template v-slot:item="{ item }">{{getFullAddress(item)}}</template>
               <template v-slot:selection="{ item }">{{item.typeShort}}.{{item.name}}</template>
             </v-autocomplete>
           </v-col>
@@ -83,7 +83,7 @@
               hide-details="auto"
               no-filter
               return-object
-              item-text="name"
+              item-text="id"
               :disabled="isDisabled"
               :loading="isLoading"
               @change="setArrangement"
@@ -106,7 +106,7 @@
               hide-details="auto"
               no-filter
               return-object
-              item-text="name"
+              item-text="id"
               :disabled="isDisabled"
               :loading="isLoading"
               @change="setArrangement"
@@ -165,7 +165,7 @@
           color="indigo"
           outlined
           @click="createForm"
-        >Добавить форму</v-btn>
+        >Добавить проект</v-btn>
       </v-card-text>
     </v-card>
   </v-container>
@@ -313,15 +313,58 @@ export default {
     },
 
     kladrId(value) {
-      // console.log("The Most Exact Arrangement", value);
       this.searchProjects();
     }
   },
 
   methods: {
+    getFullAddress(item) {
+      let result = "";
+      if (item.contentType === "district") {
+        result += `${item.name} ${item.typeShort}.`;
+      } else {
+        result += `${item.typeShort}.${item.name}`;
+      }
+      if (item.parents) {
+        item.parents.forEach(parent => {
+          result += `, ${parent.name} ${parent.typeShort}.`;
+        });
+      }
+
+      return result;
+    },
+
     setArrangement(item) {
       if (item != undefined && item != null) {
         this.kladrId = item.id;
+        item.parents.forEach(parent => {
+          if (parent.contentType === "region") {
+            this.regionData.regions.push(parent);
+            this.regionData.selected = parent;
+          } else if (parent.contentType === "district") {
+            this.districtData.districts.push(parent);
+            this.districtData.selected = parent;
+          }
+        });
+
+        switch (item.contentType) {
+          case "region": {
+            this.districtData.districts = [];
+            this.districtData.selected = null;
+          }
+          case "district": {
+            this.cityData.cities = [];
+            this.cityData.selected = null;
+          }
+          case "city": {
+            this.streetData.streets = [];
+            this.streetData.selected = null;
+          }
+          case "street": {
+            this.buildingData.buildings = [];
+            this.buildingData.selected = null;
+          }
+        }
       }
     },
 
@@ -356,12 +399,13 @@ export default {
       axios
         .post("/kladr", {
           query: {
-            // withParent: "1",
+            withParent: "1",
             contentType: "region",
             query: this.regionSearch
           }
         })
         .then(response => {
+          console.log(response.data.result);
           this.regionData.regions = response.data.result;
           this.regionData.regions.splice(0, 1);
         })
@@ -374,14 +418,23 @@ export default {
       // console.log("DISTRICT");
       if (this.districtSearch === null) return;
 
+      let requestParams = {
+        query: {
+          withParent: "1",
+          contentType: "district",
+          query: this.districtSearch
+        }
+      };
+
+      if (
+        this.regionData.selected != undefined &&
+        this.regionData.selected != null
+      ) {
+        requestParams.query.regionId = this.regionData.selected.id;
+      }
+
       axios
-        .post("/kladr", {
-          query: {
-            // withParent: "1",
-            contentType: "district",
-            query: this.districtSearch
-          }
-        })
+        .post("/kladr", requestParams)
         .then(response => {
           // console.log(response.data.result);
           this.districtData.districts = response.data.result;
@@ -396,16 +449,33 @@ export default {
       // console.log("CITY");
       if (this.citySearch === null) return;
 
+      let requestParams = {
+        query: {
+          withParent: "1",
+          contentType: "city",
+          query: this.citySearch
+        }
+      };
+
+      if (
+        this.regionData.selected != undefined &&
+        this.regionData.selected != null
+      ) {
+        requestParams.query.regionId = this.regionData.selected.id;
+      }
+
+      if (
+        this.districtData.selected != undefined &&
+        this.districtData.selected != null
+      ) {
+        delete requestParams.query.regionId;
+        requestParams.query.districtId = this.districtData.selected.id;
+      }
+
       axios
-        .post("/kladr", {
-          query: {
-            // withParent: "1",
-            contentType: "city",
-            query: this.citySearch
-          }
-        })
+        .post("/kladr", requestParams)
         .then(response => {
-          // console.log(response.data.result);
+          console.log(response.data.result);
           this.cityData.cities = response.data.result;
           this.cityData.cities.splice(0, 1);
         })
@@ -426,14 +496,14 @@ export default {
       axios
         .post("/kladr", {
           query: {
-            // withParent: "1",
+            withParent: "1",
             contentType: "street",
             cityId: this.cityData.selected.id,
             query: this.streetSearch
           }
         })
         .then(response => {
-          // console.log(response.data.result);
+          console.log(response.data.result);
           this.streetData.streets = response.data.result;
           this.streetData.streets.splice(0, 1);
         })
@@ -454,7 +524,7 @@ export default {
       axios
         .post("/kladr", {
           query: {
-            // withParent: "1",
+            withParent: "1",
             contentType: "building",
             streetId: this.streetData.selected.id,
             query: this.buildingSearch

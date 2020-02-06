@@ -35,7 +35,7 @@
         color="indigo"
         outlined
         @click="validate"
-      >{{isEdit ? 'Изменить форму' : 'Добавить форму'}}</v-btn>
+      >{{isEdit ? 'Изменить проект' : 'Добавить проект'}}</v-btn>
 
       <v-row justify="center">
         <v-dialog v-model="dialog" width="250px">
