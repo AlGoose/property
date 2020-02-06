@@ -18,7 +18,7 @@ class AddressController extends Controller
 
   public function addresses(Request $request)
   {
-    $projects = Project::where('kladrId', '=', $request->kladrId)->with('products')->get();
+    $projects = Project::where('kladrId', '=', $request->kladrId)->with('products')->with('dealer')->with('customer')->get();
     return $projects;
   }
 }

@@ -130,30 +130,60 @@
 
         <v-expansion-panels v-if="entries.length" multiple focusable class="panels">
           <v-expansion-panel v-for="(item, i) in entries" :key="i">
-            <v-expansion-panel-header class="title">{{item.name}}</v-expansion-panel-header>
+            <v-expansion-panel-header class="title">
+              {{item.name}}
+              <v-spacer></v-spacer>
+              Стоимость проекта: {{totalPrice(item)}} ₽
+            </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <p class="title">Название</p>
-              <p class="body-1">{{item.name}}</p>
-              <p class="title">Срок</p>
-              <p class="body-1">{{item.date}}</p>
-              <p class="title">Дата создания</p>
-              <p class="body-1">{{item.time}}</p>
-              <v-data-table
-                v-if="item.products.length"
-                :headers="headers"
-                :items="item.products"
-                item-key="name"
-                class="elevation-1"
-              >
-                <template v-slot:item="{ item }">
-                  <tr>
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.pivot.count }}</td>
-                    <td>{{ item.pivot.price }}</td>
-                    <td>{{ item.pivot.total }}</td>
-                  </tr>
-                </template>
-              </v-data-table>
+              <v-row>
+                <v-col cols="12" md="4">
+                  <v-card>
+                    <v-card-text>
+                      <p class="subtitle-2 font-weight-bold">Заказчик</p>
+                      <p class="subtitle-1">{{item.customer.name}}</p>
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+
+                <v-col cols="12" md="4">
+                  <v-card>
+                    <v-card-text>
+                      <p class="subtitle-2 font-weight-bold">Дилер</p>
+                      <p class="subtitle-1">{{item.dealer.name}}</p>
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+
+                <v-col cols="12" md="4">
+                  <v-card>
+                    <v-card-text>
+                      <p class="subtitle-2 font-weight-bold">Дата создания проекта</p>
+                      <p class="subtitle-1">{{item.time}}</p>
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+
+                <v-col cols="12">
+                  <v-data-table
+                    v-if="item.products.length"
+                    :headers="headers"
+                    :items="item.products"
+                    item-key="name"
+                    class="elevation-1"
+                  >
+                    <template v-slot:item="{ item }">
+                      <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.pivot.count }}</td>
+                        <td>{{ item.pivot.price }}</td>
+                        <td>{{ item.pivot.total }}</td>
+                      </tr>
+                    </template>
+                  </v-data-table>
+                </v-col>
+              </v-row>
+
               <v-checkbox v-model="selected" label="Проверено?" :value="i"></v-checkbox>
             </v-expansion-panel-content>
           </v-expansion-panel>
@@ -318,6 +348,14 @@ export default {
   },
 
   methods: {
+    totalPrice(item) {
+      let total = 0.0;
+      item.products.forEach(product => {
+        total += product.pivot.total;
+      });
+      return total;
+    },
+
     getFullAddress(item) {
       let result = "";
       if (item.contentType === "district") {
@@ -405,7 +443,7 @@ export default {
           }
         })
         .then(response => {
-          console.log(response.data.result);
+          // console.log(response.data.result);
           this.regionData.regions = response.data.result;
           this.regionData.regions.splice(0, 1);
         })
@@ -475,7 +513,7 @@ export default {
       axios
         .post("/kladr", requestParams)
         .then(response => {
-          console.log(response.data.result);
+          // console.log(response.data.result);
           this.cityData.cities = response.data.result;
           this.cityData.cities.splice(0, 1);
         })
@@ -503,7 +541,7 @@ export default {
           }
         })
         .then(response => {
-          console.log(response.data.result);
+          // console.log(response.data.result);
           this.streetData.streets = response.data.result;
           this.streetData.streets.splice(0, 1);
         })

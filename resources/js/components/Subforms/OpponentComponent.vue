@@ -51,7 +51,7 @@ export default {
 
   methods: {
     input(value) {
-      if (value === "") return;
+      if (value == null || /^\s*$/.test(value)) return;
 
       if (this.opponents.includes(value)) {
         this.opponent = "";

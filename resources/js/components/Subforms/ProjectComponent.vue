@@ -102,7 +102,8 @@ export default {
 
   watch: {
     address_prop(value) {
-      this.$set(this.projectData, 'address', this.address_prop)
+      this.$set(this.projectData, 'address', this.address_prop);
+      this.sendData();
     }
   },
 

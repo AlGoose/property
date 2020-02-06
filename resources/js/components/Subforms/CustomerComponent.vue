@@ -99,6 +99,14 @@ export default {
   methods: {
     saveStaff(staff) {
       if (!this.customer.id) {
+        if(!staff) {
+          this.$emit("customer", {
+            customer_id: null,
+            customer_staff_id: null
+          });
+          return;
+        }
+
         axios
           .post("/customer", { customer: this.company, staff_id: staff })
           .then(response => {
@@ -108,6 +116,15 @@ export default {
             });
           });
       } else {
+        if (!staff) {
+          console.log("jopa");
+          this.$emit("customer", {
+            customer_id: this.customer.id,
+            customer_staff_id: null
+          });
+          return;
+        }
+
         axios
           .post("/customer", {
             customer: {

@@ -22,10 +22,10 @@
             @project="saveProject"
           ></ProjectComponent>
         </v-col>
-        <v-col cols="5">
+        <v-col cols="12" md="5">
           <OpponentComponent :opponentsData="testData.opponents" @opponents="saveOpponents"></OpponentComponent>
         </v-col>
-        <v-col cols="7">
+        <v-col cols="12" md="7">
           <ProductComponent :productsData="testData.products" @products="saveProducts"></ProductComponent>
         </v-col>
       </v-row>
@@ -118,7 +118,10 @@ export default {
   data: () => ({
     alert: false,
     errors: [],
-    testData: {},
+    testData: {
+      date: new Date().toISOString().substr(0, 10),
+      time: new Date().toISOString().substr(0, 10),
+    },
     isEdit: false,
     dialog: false,
     address: null,

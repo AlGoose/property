@@ -26,10 +26,14 @@ class ProjectRequest extends FormRequest
         return [
             'project.name' => 'required',
             'project.address' => 'required',
+            'project.date' => 'required',
+            'project.time' => 'required',
             'dealer.dealer_id' => 'required|exists:dealers,id',
-            'dealer.dealer_staff_id' => 'required',
-            'customer.customer_id' => 'required',
-            'customer.customer_staff_id' => 'required',
+            'dealer.dealer_staff_id' => 'required|exists:staff,id',
+            'customer.customer_id' => 'required|exists:customers,id',
+            'customer.customer_staff_id' => 'required|exists:staff,id',
+            // 'opponents.*' => 'exists:opponents,id',
+            // 'products.*' => 'exists:products'
         ];
     }
 
@@ -41,10 +45,20 @@ class ProjectRequest extends FormRequest
     public function messages()
     {
         return [
-            'dealer.dealer_id.exists'=>'Диллер указан не верно',
-            'customer.customer_id.required'=>'Заказчик не указан',
-            'required'=>'Поле :attribute не заполнено',
+            'project.name.required' => 'Имя проекта не указано',
+            'project.address.required' => 'Адрес проекта не указан',
+            'project.date.required' => 'Срок защиты проекта не указан',
+            'project.time.required' => 'Время создания проекта не указано',
 
+            'dealer.dealer_id.required'=>'Дилер не указан',
+            'dealer.dealer_id.exists'=>'Дилер указан неверно',
+            'dealer.dealer_staff_id.required'=>'Представитель дилера не указан',
+            'dealer.dealer_staff_id.exists'=>'Представитель дилера указан неверно',
+
+            'customer.customer_id.required'=>'Заказчик не указан',
+            'customer.customer_id.exists'=>'Заказчик указан неверно',
+            'customer.customer_staff_id.required'=>'Представитель заказчика не указан',
+            'customer.customer_staff_id.exists'=>'Представитель заказчика указан неверно',
         ];
     }
 }

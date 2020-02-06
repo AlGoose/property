@@ -97,6 +97,14 @@ export default {
   methods: {
     saveStaff(staff) {
       if (!this.dealer.id) {
+        if(!staff) {
+          this.$emit("dealer", {
+            dealer_id: null,
+            dealer_staff_id: null
+          });
+          return;
+        }
+
         axios
           .post("/dealer", { dealer: this.company, staff_id: staff })
           .then(response => {
@@ -106,6 +114,15 @@ export default {
             });
           });
       } else {
+        if (!staff) {
+          console.log("jopa");
+          this.$emit("dealer", {
+            dealer_id: this.dealer.id,
+            dealer_staff_id: null
+          });
+          return;
+        }
+
         axios
           .post("/dealer", {
             dealer: {

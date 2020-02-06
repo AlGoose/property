@@ -58,7 +58,8 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        return view('welcome');
+        // return view('welcome');
+        return redirect('/');
     }
 
     /**
