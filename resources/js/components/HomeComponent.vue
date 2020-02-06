@@ -106,7 +106,7 @@
               hide-details="auto"
               no-filter
               return-object
-              item-text="id"
+              item-text="name"
               :disabled="isDisabled"
               :loading="isLoading"
               @change="setArrangement"
@@ -402,6 +402,89 @@ export default {
             this.buildingData.buildings = [];
             this.buildingData.selected = null;
           }
+        }
+
+        this.downloadData(item);
+      }
+    },
+
+    downloadData(item) {
+      switch (item.contentType) {
+        case "region": {
+          axios
+            .post("/kladr", {
+              query: {
+                withParent: "1",
+                contentType: "district",
+                regionId: item.id,
+                limit: 100
+              }
+            })
+            .then(response => {
+              this.districtData.districts = response.data.result;
+              this.districtData.districts.splice(0, 1);
+            })
+            .catch(error => {
+              console.log(error);
+            });
+          break;
+        }
+        case "district": {
+          axios
+            .post("/kladr", {
+              query: {
+                withParent: "1",
+                contentType: "city",
+                districtId: item.id,
+                limit: 100
+              }
+            })
+            .then(response => {
+              this.cityData.cities = response.data.result;
+              this.cityData.cities.splice(0, 1);
+            })
+            .catch(error => {
+              console.log(error);
+            });
+          break;
+        }
+        case "city": {
+          axios
+            .post("/kladr", {
+              query: {
+                withParent: "1",
+                contentType: "street",
+                cityId: item.id,
+                limit: 100
+              }
+            })
+            .then(response => {
+              this.streetData.streets = response.data.result;
+              this.streetData.streets.splice(0, 1);
+            })
+            .catch(error => {
+              console.log(error);
+            });
+          break;
+        }
+        case "street": {
+          axios
+            .post("/kladr", {
+              query: {
+                withParent: "1",
+                contentType: "building",
+                streetId: item.id,
+                limit: 100
+              }
+            })
+            .then(response => {
+              this.buildingData.buildings = response.data.result;
+              this.buildingData.buildings.splice(0, 1);
+            })
+            .catch(error => {
+              console.log(error);
+            });
+          break;
         }
       }
     },

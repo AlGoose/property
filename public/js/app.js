@@ -2511,17 +2511,104 @@ __webpack_require__.r(__webpack_exports__);
               this.buildingData.selected = null;
             }
         }
+
+        this.downloadData(item);
+      }
+    },
+    downloadData: function downloadData(item) {
+      var _this2 = this;
+
+      switch (item.contentType) {
+        case "region":
+          {
+            axios.post("/kladr", {
+              query: {
+                withParent: "1",
+                contentType: "district",
+                regionId: item.id,
+                limit: 100
+              }
+            }).then(function (response) {
+              console.log(response.data.result);
+              _this2.districtData.districts = response.data.result;
+
+              _this2.districtData.districts.splice(0, 1);
+            })["catch"](function (error) {
+              console.log(error);
+            });
+            break;
+          }
+
+        case "district":
+          {
+            axios.post("/kladr", {
+              query: {
+                withParent: "1",
+                contentType: "city",
+                districtId: item.id,
+                limit: 100
+              }
+            }).then(function (response) {
+              console.log(response.data.result);
+              _this2.cityData.cities = response.data.result;
+
+              _this2.cityData.cities.splice(0, 1);
+            })["catch"](function (error) {
+              console.log(error);
+            });
+            break;
+          }
+
+        case "city":
+          {
+            axios.post("/kladr", {
+              query: {
+                withParent: "1",
+                contentType: "street",
+                cityId: item.id,
+                limit: 100
+              }
+            }).then(function (response) {
+              console.log(response.data.result);
+              _this2.streetData.streets = response.data.result;
+
+              _this2.streetData.streets.splice(0, 1);
+            })["catch"](function (error) {
+              console.log(error);
+            });
+            break;
+          }
+
+        case "street":
+          {
+            axios.post("/kladr", {
+              query: {
+                withParent: "1",
+                contentType: "building",
+                streetId: item.id,
+                limit: 100
+              }
+            }).then(function (response) {
+              console.log(response.data.result);
+              _this2.buildingData.buildings = response.data.result;
+
+              _this2.buildingData.buildings.splice(0, 1);
+            })["catch"](function (error) {
+              console.log(error);
+            });
+            break;
+          }
       }
     },
     searchProjects: function searchProjects() {
-      var _this2 = this;
+      var _this3 = this;
 
       axios.post("/addresses", {
         kladrId: this.kladrId
       }).then(function (response) {
-        _this2.entries = response.data;
+        _this3.entries = response.data;
 
-        _this2.entries.forEach(function (item) {
+        _this3.entries.forEach(function (item) {
           item.products.forEach(function (product) {
             product.pivot.total = product.pivot.count * product.pivot.price;
           });
@@ -2541,7 +2628,7 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     searchRegion: function searchRegion() {
-      var _this3 = this;
+      var _this4 = this;
 
       // console.log("REGION");
       if (this.regionSearch === null) return;
@@ -2553,15 +2640,15 @@ __webpack_require__.r(__webpack_exports__);
         }
       }).then(function (response) {
         // console.log(response.data.result);
-        _this3.regionData.regions = response.data.result;
+        _this4.regionData.regions = response.data.result;
 
-        _this3.regionData.regions.splice(0, 1);
+        _this4.regionData.regions.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
     },
     searchDistrict: function searchDistrict() {
-      var _this4 = this;
+      var _this5 = this;
 
       // console.log("DISTRICT");
       if (this.districtSearch === null) return;
@@ -2579,15 +2666,15 @@ __webpack_require__.r(__webpack_exports__);
 
       axios.post("/kladr", requestParams).then(function (response) {
         // console.log(response.data.result);
-        _this4.districtData.districts = response.data.result;
+        _this5.districtData.districts = response.data.result;
 
-        _this4.districtData.districts.splice(0, 1);
+        _this5.districtData.districts.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
     },
     searchCity: function searchCity() {
-      var _this5 = this;
+      var _this6 = this;
 
       // console.log("CITY");
       if (this.citySearch === null) return;
@@ -2610,15 +2697,15 @@ __webpack_require__.r(__webpack_exports__);
 
       axios.post("/kladr", requestParams).then(function (response) {
         // console.log(response.data.result);
-        _this5.cityData.cities = response.data.result;
+        _this6.cityData.cities = response.data.result;
 
-        _this5.cityData.cities.splice(0, 1);
+        _this6.cityData.cities.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
     },
     searchStreet: function searchStreet() {
-      var _this6 = this;
+      var _this7 = this;
 
       // console.log("STREET");
       if (this.streetSearch === null || this.cityData.selected === null || this.cityData.selected === undefined) return;
@@ -2631,15 +2718,15 @@ __webpack_require__.r(__webpack_exports__);
         }
       }).then(function (response) {
         // console.log(response.data.result);
-        _this6.streetData.streets = response.data.result;
+        _this7.streetData.streets = response.data.result;
 
-        _this6.streetData.streets.splice(0, 1);
+        _this7.streetData.streets.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
     },
     searchBuilding: function searchBuilding() {
-      var _this7 = this;
+      var _this8 = this;
 
       // console.log("BUILDING");
       if (this.buildingSearch === null || this.streetData.selected === null || this.streetData.selected === undefined) return;
@@ -2652,9 +2739,9 @@ __webpack_require__.r(__webpack_exports__);
         }
       }).then(function (response) {
         // console.log(response.data.result);
-        _this7.buildingData.buildings = response.data.result;
+        _this8.buildingData.buildings = response.data.result;
 
-        _this7.buildingData.buildings.splice(0, 1);
+        _this8.buildingData.buildings.splice(0, 1);
       })["catch"](function (error) {
         console.log(error);
       });
@@ -40955,7 +41042,7 @@ var render = function() {
                           "hide-details": "auto",
                           "no-filter": "",
                           "return-object": "",
-                          "item-text": "id",
+                          "item-text": "name",
                           disabled: _vm.isDisabled,
                           loading: _vm.isLoading
                         },
