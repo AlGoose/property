@@ -9,7 +9,7 @@
         color="grey"
         label="ИНН"
         outlined
-        hide-details
+        :rules="[v =>  v&&v.kpp!==undefined || 'Введите номер ИНН']"
         no-filter
         return-object
         item-text="name"

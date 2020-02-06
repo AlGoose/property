@@ -26,7 +26,7 @@ class ProjectRequest extends FormRequest
         return [
             'project.name' => 'required',
             'project.address' => 'required',
-            'dealer.dealer_id' => 'required',
+            'dealer.dealer_id' => 'required|exists:dealers,id',
             'dealer.dealer_staff_id' => 'required',
             'customer.customer_id' => 'required',
             'customer.customer_staff_id' => 'required',
@@ -41,12 +41,10 @@ class ProjectRequest extends FormRequest
     public function messages()
     {
         return [
-            'project.name.required' => 'Название проекта не указано!',
-            'project.address.required' => 'Адрес не указан!',
-            'dealer.dealer_id' => 'Дилер не указан!',
-            'dealer.dealer_staff_id' => 'Представитель дилера не указан!',
-            'customer.customer_id' => 'Заказчик не указан!',
-            'customer.customer_staff_id' => 'Представитель заказчика не указан!',
+            'dealer.dealer_id.exists'=>'Диллер указан не верно',
+            'customer.customer_id.required'=>'Заказчик не указан',
+            'required'=>'Поле :attribute не заполнено',
+
         ];
     }
 }
