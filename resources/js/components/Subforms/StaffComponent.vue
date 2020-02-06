@@ -35,12 +35,16 @@
                                     ></v-text-field>
                                 </v-col>
                                 <v-col cols="12" md="6">
+
                                     <v-text-field
                                             v-model="agentForm.phone"
                                             label="Телефон"
                                             outlined
+                                            v-mask="'+7(###)###-##-##'"
+                                            validate-on-blur
                                             :rules="phoneRules"
-                                    ></v-text-field>
+                                    >
+                                    </v-text-field>
                                 </v-col>
                                 <v-col cols="12" md="6">
                                     <v-text-field
@@ -65,13 +69,16 @@
 </template>
 
 <script>
+    import {TheMask} from 'vue-the-mask'
+    import {mask} from 'vue-the-mask'
     export default {
         props: ["entity", "mode"],
-
+        components: {TheMask},
+        directives: {mask},
         data: () => ({
             phoneRules: [
                 v => !!v || "Введите номер телефона",
-                v => /^(([0-9]){10})$/.test(v) || "Неверный формат номера"
+                v => v.length == 16 || "Неверный формат номера"
             ],
             emailRules: [
                 v => !!v || "Введите почту",
