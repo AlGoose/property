@@ -16,7 +16,14 @@
                 <v-form ref="form" v-model="valid" lazy-validation>
                   <v-row>
                     <v-col cols="12" md="4">
+                      <v-text-field
+                        v-model="product.article"
+                        label="Артикул"
+                        outlined
+                        v-if="isDisabled"
+                      ></v-text-field>
                       <v-autocomplete
+                        v-else
                         v-model="product"
                         :items="entires"
                         :search-input.sync="search"
@@ -35,6 +42,13 @@
                     </v-col>
                     <v-col cols="12" md="8">
                       <v-text-field
+                        v-model="product.name"
+                        label="Название"
+                        outlined
+                        v-if="isDisabled"
+                      ></v-text-field>
+                      <v-text-field
+                        v-else
                         :value="product != undefined ? product.name : ''"
                         label="Название"
                         solo
@@ -75,6 +89,7 @@
                 </v-form>
               </v-card-text>
               <v-card-actions>
+                <v-switch label="Ввести данные вручную" v-model="isDisabled"></v-switch>
                 <v-spacer></v-spacer>
                 <v-btn outlined color="indigo" @click="closeDialog">Отмена</v-btn>
                 <v-btn outlined color="indigo" @click="addProduct">Добавить</v-btn>
@@ -128,10 +143,15 @@ export default {
     ],
     valid: true,
     dialog: false,
+    isDisabled: false,
     products: [],
     entires: [],
     search: null,
-    product: {},
+    product: {
+      article: null,
+      id: null,
+      name: null
+    },
     count: null,
     price: null,
     total: null,
@@ -216,7 +236,7 @@ export default {
     addProduct() {
       if (this.$refs.form.validate()) {
         for (let i = 0; i < this.products.length; i++) {
-          if (this.product.id == this.products[i].code) {
+          if (this.product.article == this.products[i].article) {
             return;
           }
         }
@@ -244,9 +264,14 @@ export default {
             this.count = null;
             this.price = null;
             this.total = null;
-            this.product = {};
+            this.product = {
+              article: null,
+              id: null,
+              name: null
+            };
             this.entires = [];
             this.dialog = false;
+            this.$refs.form.reset();
           })
           .catch(function(error) {
             console.log(error);
@@ -263,9 +288,14 @@ export default {
       this.count = null;
       this.price = null;
       this.total = null;
-      this.product = {};
+      this.product = {
+        article: null,
+        id: null,
+        name: null
+      };
       this.entires = [];
       this.dialog = false;
+      this.$refs.form.reset();
     }
   }
 };

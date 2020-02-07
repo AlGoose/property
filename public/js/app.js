@@ -2931,7 +2931,6 @@ __webpack_require__.r(__webpack_exports__);
     remove: function remove() {
       var _this4 = this;
 
-      console.log("DELETED", this.editedItem);
       axios["delete"]("/managers/" + this.editedItem.id).then(function (response) {
         _this4.managers.splice(_this4.editedItem.index, 1);
 
@@ -2940,7 +2939,12 @@ __webpack_require__.r(__webpack_exports__);
           _this4.editedItem = {};
         }, 300);
       })["catch"](function (error) {
-        console.log(error);
+        console.log("ERROOOOOOOR", error.response);
+
+        _this4.errors.push(['Нельзя просто так взять и удалить админа!']);
+
+        _this4.removeDialog = false;
+        _this4.alert = true;
       });
     }
   }
@@ -3939,6 +3943,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["productsData"],
   data: function data() {
@@ -3962,10 +3981,15 @@ __webpack_require__.r(__webpack_exports__);
       }],
       valid: true,
       dialog: false,
+      isDisabled: false,
       products: [],
       entires: [],
       search: null,
-      product: {},
+      product: {
+        article: null,
+        id: null,
+        name: null
+      },
       count: null,
       price: null,
       total: null,
@@ -4046,7 +4070,7 @@ __webpack_require__.r(__webpack_exports__);
 
       if (this.$refs.form.validate()) {
         for (var i = 0; i < this.products.length; i++) {
-          if (this.product.id == this.products[i].code) {
+          if (this.product.article == this.products[i].article) {
             return;
           }
         }
@@ -4074,9 +4098,15 @@ __webpack_require__.r(__webpack_exports__);
           _this3.count = null;
           _this3.price = null;
           _this3.total = null;
-          _this3.product = {};
+          _this3.product = {
+            article: null,
+            id: null,
+            name: null
+          };
           _this3.entires = [];
           _this3.dialog = false;
+
+          _this3.$refs.form.reset();
         })["catch"](function (error) {
           console.log(error);
         });
@@ -4090,9 +4120,14 @@ __webpack_require__.r(__webpack_exports__);
       this.count = null;
       this.price = null;
       this.total = null;
-      this.product = {};
+      this.product = {
+        article: null,
+        id: null,
+        name: null
+      };
       this.entires = [];
       this.dialog = false;
+      this.$refs.form.reset();
     }
   }
 });
@@ -41285,7 +41320,10 @@ var render = function() {
                     { attrs: { cols: "12", sm: "4" } },
                     [
                       _c("v-switch", {
-                        attrs: { label: "Ввести адрес вручную" },
+                        attrs: {
+                          label: "Ввести адрес вручную",
+                          disabled: !_vm.regionData.selected
+                        },
                         model: {
                           value: _vm.isDisabled,
                           callback: function($$v) {
@@ -41617,7 +41655,7 @@ var render = function() {
                   "v-toolbar",
                   { attrs: { flat: "", color: "white" } },
                   [
-                    _c("v-toolbar-title", [_vm._v("My CRUD")]),
+                    _c("v-toolbar-title", [_vm._v("Админка")]),
                     _vm._v(" "),
                     _c("v-divider", {
                       staticClass: "mx-4",
@@ -43086,59 +43124,81 @@ var render = function() {
                                         "v-col",
                                         { attrs: { cols: "12", md: "4" } },
                                         [
-                                          _c("v-autocomplete", {
-                                            attrs: {
-                                              items: _vm.entires,
-                                              "search-input": _vm.search,
-                                              color: "grey",
-                                              label: "Артикул",
-                                              outlined: "",
-                                              "hide-details": "",
-                                              "no-filter": "",
-                                              "item-text": "name",
-                                              "return-object": "",
-                                              loading: _vm.isLoading
-                                            },
-                                            on: {
-                                              "update:searchInput": function(
-                                                $event
-                                              ) {
-                                                _vm.search = $event
-                                              },
-                                              "update:search-input": function(
-                                                $event
-                                              ) {
-                                                _vm.search = $event
-                                              }
-                                            },
-                                            scopedSlots: _vm._u([
-                                              {
-                                                key: "item",
-                                                fn: function(ref) {
-                                                  var item = ref.item
-                                                  return [
-                                                    _vm._v(_vm._s(item.name))
-                                                  ]
+                                          _vm.isDisabled
+                                            ? _c("v-text-field", {
+                                                attrs: {
+                                                  label: "Артикул",
+                                                  outlined: ""
+                                                },
+                                                model: {
+                                                  value: _vm.product.article,
+                                                  callback: function($$v) {
+                                                    _vm.$set(
+                                                      _vm.product,
+                                                      "article",
+                                                      $$v
+                                                    )
+                                                  },
+                                                  expression: "product.article"
                                                 }
-                                              },
-                                              {
-                                                key: "selection",
-                                                fn: function(ref) {
-                                                  var item = ref.item
-                                                  return [
-                                                    _vm._v(_vm._s(item.article))
-                                                  ]
+                                              })
+                                            : _c("v-autocomplete", {
+                                                attrs: {
+                                                  items: _vm.entires,
+                                                  "search-input": _vm.search,
+                                                  color: "grey",
+                                                  label: "Артикул",
+                                                  outlined: "",
+                                                  "hide-details": "",
+                                                  "no-filter": "",
+                                                  "item-text": "name",
+                                                  "return-object": "",
+                                                  loading: _vm.isLoading
+                                                },
+                                                on: {
+                                                  "update:searchInput": function(
+                                                    $event
+                                                  ) {
+                                                    _vm.search = $event
+                                                  },
+                                                  "update:search-input": function(
+                                                    $event
+                                                  ) {
+                                                    _vm.search = $event
+                                                  }
+                                                },
+                                                scopedSlots: _vm._u([
+                                                  {
+                                                    key: "item",
+                                                    fn: function(ref) {
+                                                      var item = ref.item
+                                                      return [
+                                                        _vm._v(
+                                                          _vm._s(item.name)
+                                                        )
+                                                      ]
+                                                    }
+                                                  },
+                                                  {
+                                                    key: "selection",
+                                                    fn: function(ref) {
+                                                      var item = ref.item
+                                                      return [
+                                                        _vm._v(
+                                                          _vm._s(item.article)
+                                                        )
+                                                      ]
+                                                    }
+                                                  }
+                                                ]),
+                                                model: {
+                                                  value: _vm.product,
+                                                  callback: function($$v) {
+                                                    _vm.product = $$v
+                                                  },
+                                                  expression: "product"
                                                 }
-                                              }
-                                            ]),
-                                            model: {
-                                              value: _vm.product,
-                                              callback: function($$v) {
-                                                _vm.product = $$v
-                                              },
-                                              expression: "product"
-                                            }
-                                          })
+                                              })
                                         ],
                                         1
                                       ),
@@ -43147,25 +43207,44 @@ var render = function() {
                                         "v-col",
                                         { attrs: { cols: "12", md: "8" } },
                                         [
-                                          _c("v-text-field", {
-                                            attrs: {
-                                              value:
-                                                _vm.product != undefined
-                                                  ? _vm.product.name
-                                                  : "",
-                                              label: "Название",
-                                              solo: "",
-                                              flat: "",
-                                              readonly: "",
-                                              rules: [
-                                                function(v) {
-                                                  return (
-                                                    !!v || "Выберите продукт"
-                                                  )
+                                          _vm.isDisabled
+                                            ? _c("v-text-field", {
+                                                attrs: {
+                                                  label: "Название",
+                                                  outlined: ""
+                                                },
+                                                model: {
+                                                  value: _vm.product.name,
+                                                  callback: function($$v) {
+                                                    _vm.$set(
+                                                      _vm.product,
+                                                      "name",
+                                                      $$v
+                                                    )
+                                                  },
+                                                  expression: "product.name"
                                                 }
-                                              ]
-                                            }
-                                          })
+                                              })
+                                            : _c("v-text-field", {
+                                                attrs: {
+                                                  value:
+                                                    _vm.product != undefined
+                                                      ? _vm.product.name
+                                                      : "",
+                                                  label: "Название",
+                                                  solo: "",
+                                                  flat: "",
+                                                  readonly: "",
+                                                  rules: [
+                                                    function(v) {
+                                                      return (
+                                                        !!v ||
+                                                        "Выберите продукт"
+                                                      )
+                                                    }
+                                                  ]
+                                                }
+                                              })
                                         ],
                                         1
                                       ),
@@ -43285,6 +43364,17 @@ var render = function() {
                           _c(
                             "v-card-actions",
                             [
+                              _c("v-switch", {
+                                attrs: { label: "Ввести данные вручную" },
+                                model: {
+                                  value: _vm.isDisabled,
+                                  callback: function($$v) {
+                                    _vm.isDisabled = $$v
+                                  },
+                                  expression: "isDisabled"
+                                }
+                              }),
+                              _vm._v(" "),
                               _c("v-spacer"),
                               _vm._v(" "),
                               _c(

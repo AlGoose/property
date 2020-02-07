@@ -3,7 +3,7 @@
     <v-data-table :headers="headers" :items="managers" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="white">
-          <v-toolbar-title>My CRUD</v-toolbar-title>
+          <v-toolbar-title>Админка</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
           <v-dialog v-model="editDialog" max-width="500px">
@@ -182,7 +182,6 @@ export default {
     },
 
     remove() {
-      console.log("DELETED", this.editedItem);
       axios
         .delete("/managers/" + this.editedItem.id)
         .then(response => {
@@ -193,7 +192,10 @@ export default {
           }, 300);
         })
         .catch(error => {
-          console.log(error);
+          console.log("ERROOOOOOOR", error.response);
+          this.errors.push(['Нельзя просто так взять и удалить админа!']);
+          this.removeDialog = false;
+          this.alert = true;
         });
     }
   }

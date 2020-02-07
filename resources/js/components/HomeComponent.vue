@@ -117,7 +117,7 @@
           </v-col>
 
           <v-col cols="12" sm="4">
-            <v-switch label="Ввести адрес вручную" v-model="isDisabled"></v-switch>
+            <v-switch label="Ввести адрес вручную" v-model="isDisabled" :disabled="!regionData.selected"></v-switch>
           </v-col>
 
           <v-col cols="12" sm="12" v-if="isDisabled">

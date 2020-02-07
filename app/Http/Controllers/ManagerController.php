@@ -17,8 +17,11 @@ class ManagerController extends Controller
      */
     public function index(Request $request)
     {
+        if(\Auth::user()->id != 1) {
+            abort(403);
+        }
+        
         $managers = User::all();
-
         if ($request->ajax()) return $managers;
 
         return view('managers')->with('managers', $managers);
@@ -42,14 +45,12 @@ class ManagerController extends Controller
      */
     public function store(ManagerRequest $request)
     {
-        \Debugbar::info($request->all());
         $user = User::create([
             'name' => $request['name'],
             'email' => $request['email'],
             'password' => Hash::make(Str::random(12)),
         ]);
 
-        \Debugbar::info($user);
         return $user;
     }
 
@@ -100,10 +101,13 @@ class ManagerController extends Controller
      */
     public function destroy($id)
     {
+        if(\Auth::user()->id != 1) {
+            abort(403);
+        }
+        
         if($id == 1) {
             abort(403);
         }
-        \Debugbar::info($id);
         User::destroy($id);
     }
 }

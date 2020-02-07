@@ -58,7 +58,6 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        // return view('welcome');
         return redirect('/');
     }
 
@@ -119,6 +118,10 @@ class ProjectController extends Controller
      */
     public function edit(Request $request, Project $project)
     {
+        if($project->user_id != \Auth::user()->id) {
+            abort(403);
+        }
+
         $project->user = $project->user()->first();
 
         $project->dealer = $project->dealer()->first();
