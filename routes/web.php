@@ -22,6 +22,7 @@ Route::get('/data/findByInn/{id}', 'DataController@findByInn');
 Route::get('/data/findProductById/{id}', 'DataController@findProductById');
 
 Route::resource('/project', 'ProjectController');
+Route::resource('/managers', 'ManagerController');
 
 Route::get('/{any}', 'SinglePageController@index')->middleware('auth')->where(['any' => '.*']);
 

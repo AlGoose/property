@@ -7,6 +7,7 @@ import Home from './components/HomeComponent'
 import Show from './components/ShowComponent'
 import Form from './components/FormComponent'
 import Projects from './components/ProjectsComponent'
+import Managers from './components/ManagersComponent'
 
 const router = new VueRouter({
     mode: 'history',
@@ -36,6 +37,12 @@ const router = new VueRouter({
             path: '/project',
             name: 'project',
             component: Projects,
+        },
+
+        {
+            path: '/managers',
+            name: 'managers',
+            component: Managers,
         },
     ],
 });

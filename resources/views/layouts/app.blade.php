@@ -72,6 +72,7 @@
                         @else
                             <router-link class="link" to="/">Домой</router-link>
                             <router-link class="link" to="/project">Проекты</router-link>
+                            <router-link class="link" to="/managers">Манагеры</router-link>
 
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
