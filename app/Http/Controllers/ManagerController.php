@@ -7,6 +7,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 
 class ManagerController extends Controller
 {
@@ -17,10 +18,10 @@ class ManagerController extends Controller
      */
     public function index(Request $request)
     {
-        if(\Auth::user()->id != 1) {
+        if (\Auth::user()->id != 1) {
             abort(403);
         }
-        
+
         $managers = User::all();
         if ($request->ajax()) return $managers;
 
@@ -50,7 +51,9 @@ class ManagerController extends Controller
             'email' => $request['email'],
             'password' => Hash::make(Str::random(12)),
         ]);
-
+        // $response = Password::broker()->sendResetLink($request->only('email'));
+        
+        // \Debugbar::info($response == Password::RESET_LINK_SENT);
         return $user;
     }
 
@@ -101,11 +104,11 @@ class ManagerController extends Controller
      */
     public function destroy($id)
     {
-        if(\Auth::user()->id != 1) {
+        if (\Auth::user()->id != 1) {
             abort(403);
         }
-        
-        if($id == 1) {
+
+        if ($id == 1) {
             abort(403);
         }
         User::destroy($id);
