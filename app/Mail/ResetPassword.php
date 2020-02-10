@@ -31,6 +31,6 @@ class ResetPassword extends Mailable
      */
     public function build()
     {
-        return $this->view('mail.reset')->with(['token'=>$this->token])->subject('Сброс пароля');
+        return $this->view('mail.reset')->with(['token'=>$this->token])->from('noreply@nzeta.ru');
     }
 }
