@@ -264,11 +264,9 @@ export default {
             this.count = null;
             this.price = null;
             this.total = null;
-            this.product = {
-              article: null,
-              id: null,
-              name: null
-            };
+            this.product.article = null;
+            this.product.id = null;
+            this.product.name = null;
             this.entires = [];
             this.dialog = false;
             this.$refs.form.reset();
@@ -288,11 +286,12 @@ export default {
       this.count = null;
       this.price = null;
       this.total = null;
-      this.product = {
-        article: null,
-        id: null,
-        name: null
-      };
+      this.$set(this.product, 'article', null);
+      this.$set(this.product, 'id', null);
+      this.$set(this.product, 'name', null);
+      // this.product.article = null;
+      // this.product.id = null;
+      // this.product.name = null;
       this.entires = [];
       this.dialog = false;
       this.$refs.form.reset();
