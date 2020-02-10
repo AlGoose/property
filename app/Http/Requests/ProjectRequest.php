@@ -26,14 +26,12 @@ class ProjectRequest extends FormRequest
         return [
             'project.name' => 'required',
             'project.address' => 'required',
-            'project.date' => 'required',
-            'project.time' => 'required',
+            'project.date' => 'required|date|after:today',
+            'project.time' => 'required|date|before:tomorrow',
             'dealer.dealer_id' => 'required|exists:dealers,id',
             'dealer.dealer_staff_id' => 'required|exists:staff,id',
             'customer.customer_id' => 'required|exists:customers,id',
             'customer.customer_staff_id' => 'required|exists:staff,id',
-            // 'opponents.*' => 'exists:opponents,id',
-            // 'products.*' => 'exists:products'
         ];
     }
 
