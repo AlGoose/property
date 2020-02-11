@@ -4275,18 +4275,40 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["address_prop", "isEdit", "projectData"],
   data: function data() {
     return {
       dateMenu: false,
       timeMenu: false,
-      tenderMenu: false
+      tenderMenu: false,
+      files: []
     };
   },
   watch: {
     address_prop: function address_prop(value) {
-      this.$set(this.projectData, 'address', this.address_prop);
+      this.$set(this.projectData, "address", this.address_prop);
       this.sendData();
     }
   },
@@ -4299,6 +4321,24 @@ __webpack_require__.r(__webpack_exports__);
         date: this.projectData.date,
         time: this.projectData.time,
         tender_date: this.projectData.tender_date
+      });
+    },
+    test: function test() {
+      console.log("test");
+      var formData = new FormData();
+      this.files.forEach(function (file) {
+        formData.append("files[]", file);
+      });
+      formData.append("project_id", 2);
+      console.log(formData);
+      axios.post("/file", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      }).then(function () {
+        console.log("SUCCESS!!");
+      })["catch"](function () {
+        console.log("FAILURE!!");
       });
     }
   }
@@ -43917,6 +43957,85 @@ var render = function() {
                           })
                         ],
                         1
+                      )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { cols: "12" } },
+                    [
+                      _c("v-file-input", {
+                        attrs: {
+                          counter: "",
+                          label: "Добавить файл(-ы)",
+                          multiple: "",
+                          outlined: "",
+                          "show-size": 1000,
+                          "prepend-icon": ""
+                        },
+                        scopedSlots: _vm._u(
+                          [
+                            {
+                              key: "selection",
+                              fn: function(ref) {
+                                var index = ref.index
+                                var text = ref.text
+                                return [
+                                  index < 2
+                                    ? _c(
+                                        "v-chip",
+                                        {
+                                          attrs: {
+                                            color: "indigo",
+                                            dark: "",
+                                            label: "",
+                                            small: ""
+                                          }
+                                        },
+                                        [_vm._v(_vm._s(text))]
+                                      )
+                                    : index === 2
+                                    ? _c(
+                                        "span",
+                                        {
+                                          staticClass:
+                                            "overline grey--text text--darken-3 mx-2"
+                                        },
+                                        [
+                                          _vm._v(
+                                            "+" +
+                                              _vm._s(_vm.files.length - 2) +
+                                              " файл(-ов)"
+                                          )
+                                        ]
+                                      )
+                                    : _vm._e()
+                                ]
+                              }
+                            }
+                          ],
+                          null,
+                          false,
+                          2550344827
+                        ),
+                        model: {
+                          value: _vm.files,
+                          callback: function($$v) {
+                            _vm.files = $$v
+                          },
+                          expression: "files"
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "v-btn",
+                        {
+                          attrs: { color: "success" },
+                          on: { click: _vm.test }
+                        },
+                        [_vm._v("test")]
                       )
                     ],
                     1

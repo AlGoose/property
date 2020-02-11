@@ -119,6 +119,27 @@
           </v-menu>
         </v-col>
 
+        <v-col cols="12">
+          <v-file-input
+            v-model="files"
+            counter
+            label="Добавить файл(-ы)"
+            multiple
+            outlined
+            :show-size="1000"
+            prepend-icon
+          >
+            <template v-slot:selection="{ index, text }">
+              <v-chip v-if="index < 2" color="indigo" dark label small>{{ text }}</v-chip>
+
+              <span
+                v-else-if="index === 2"
+                class="overline grey--text text--darken-3 mx-2"
+              >+{{ files.length - 2 }} файл(-ов)</span>
+            </template>
+          </v-file-input>
+          <v-btn color="success" @click="test">test</v-btn>
+        </v-col>
       </v-row>
     </v-card-text>
   </v-card>
@@ -131,12 +152,13 @@ export default {
   data: () => ({
     dateMenu: false,
     timeMenu: false,
-    tenderMenu: false
+    tenderMenu: false,
+    files: []
   }),
 
   watch: {
     address_prop(value) {
-      this.$set(this.projectData, 'address', this.address_prop);
+      this.$set(this.projectData, "address", this.address_prop);
       this.sendData();
     }
   },
@@ -151,6 +173,29 @@ export default {
         time: this.projectData.time,
         tender_date: this.projectData.tender_date
       });
+    },
+
+    test() {
+      console.log("test");
+      let formData = new FormData();
+      this.files.forEach(file => {
+        formData.append("files[]", file);
+      });
+      formData.append("project_id", 2);
+      console.log(formData);
+
+      axios
+        .post("/file", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        })
+        .then(function() {
+          console.log("SUCCESS!!");
+        })
+        .catch(function() {
+          console.log("FAILURE!!");
+        });
     }
   }
 };

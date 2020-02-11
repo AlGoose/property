@@ -11,16 +11,7 @@
 |
 */
 
-use Illuminate\Support\Facades\Password;
-
 Auth::routes();
-// Route::get('/test', function () {
-//     // $user = \App\User::find(1);
-//     // $broker = Password::broker();
-//     // $token = $broker->getToken($user);
-
-//     // \Mail::to($user)->send((new \App\Mail\NewUser($user,$token)));
-// });
 
 Route::post('/addresses', 'AddressController@addresses');
 Route::post('/kladr', 'AddressController@search');
@@ -43,5 +34,6 @@ Route::resource('/dealer', 'DealerController');
 Route::resource('/customer', 'CustomerController');
 Route::resource('/opponent', 'OpponentController');
 Route::resource('/staff', 'StaffController');
+Route::resource('/file', 'FileController');
 
 

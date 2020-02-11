@@ -6,8 +6,10 @@ use App\Dealer;
 use App\Project;
 use App\Staff;
 use App\Customer;
+use App\FileProject;
 use Illuminate\Http\Request;
 use App\Http\Requests\ProjectRequest;
+use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller
 {
@@ -83,7 +85,7 @@ class ProjectController extends Controller
         $project->save();
 
         $project->opponents()->attach($request->opponents);
-        $project->products()->attach($request->products);   
+        $project->products()->attach($request->products);
     }
 
     /**
@@ -118,7 +120,7 @@ class ProjectController extends Controller
      */
     public function edit(Request $request, Project $project)
     {
-        if($project->user_id != \Auth::user()->id) {
+        if ($project->user_id != \Auth::user()->id) {
             abort(403);
         }
 

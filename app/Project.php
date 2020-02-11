@@ -64,7 +64,11 @@ class Project extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class)->withTimestamps()->withPivot('count','price');
+        return $this->belongsToMany(Product::class)->withTimestamps()->withPivot('count', 'price');
     }
 
+    public function files()
+    {
+        return $this->hasMany(FileProject::class);
+    }
 }
