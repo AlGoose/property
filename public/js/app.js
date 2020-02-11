@@ -4117,6 +4117,7 @@ __webpack_require__.r(__webpack_exports__);
       this.$delete(this.ids, item.id);
     },
     closeDialog: function closeDialog() {
+      this.$refs.form.reset();
       this.count = null;
       this.price = null;
       this.total = null;
@@ -4127,7 +4128,6 @@ __webpack_require__.r(__webpack_exports__);
       };
       this.entires = [];
       this.dialog = false;
-      this.$refs.form.reset();
     }
   }
 });
@@ -101217,8 +101217,8 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! D:\SOFT\laragon\www\property\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! D:\SOFT\laragon\www\property\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\laragon\www\property\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\laragon\www\property\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
