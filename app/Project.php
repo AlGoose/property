@@ -27,6 +27,7 @@ class Project extends Model
         'address',
         'date',
         'time',
+        'tender_date',
         'work',
         'kladrId'
     ];

@@ -8,13 +8,13 @@
         outlined
         @change="sendData"
         :readonly="isEdit"
-        :rules="[v => !!v || 'Name is required']"
+        :rules="[v => !!v || 'Введите название']"
       ></v-text-field>
       <v-text-field
         v-model="projectData.address"
         label="Адрес"
         outlined
-        :rules="[v => !!v || 'Address is required']"
+        :rules="[v => !!v || 'Введите адрес']"
         @change="sendData"
         readonly
       ></v-text-field>
@@ -26,8 +26,9 @@
         label="Проделанная работа"
         @change="sendData"
       ></v-textarea>
+
       <v-row>
-        <v-col md="6">
+        <v-col cols="12" md="4">
           <v-menu
             v-model="dateMenu"
             :close-on-content-click="false"
@@ -43,7 +44,7 @@
                 readonly
                 outlined
                 v-on="on"
-                :rules="[v => !!v || 'Date is required']"
+                :rules="[v => !!v || 'Выберите дату']"
               ></v-text-field>
             </template>
             <v-date-picker
@@ -56,7 +57,8 @@
             ></v-date-picker>
           </v-menu>
         </v-col>
-        <v-col md="6">
+
+        <v-col cols="12" md="4">
           <v-menu
             v-model="timeMenu"
             :close-on-content-click="false"
@@ -73,7 +75,7 @@
                 readonly
                 outlined
                 v-on="on"
-                :rules="[v => !!v || 'Date is required']"
+                :rules="[v => !!v || 'Выберите дату']"
               ></v-text-field>
             </template>
             <v-date-picker
@@ -86,6 +88,37 @@
             ></v-date-picker>
           </v-menu>
         </v-col>
+
+        <v-col cols="12" md="4">
+          <v-menu
+            v-model="tenderMenu"
+            :close-on-content-click="false"
+            :nudge-right="20"
+            transition="scale-transition"
+            offset-y
+            min-width="290px"
+            :disabled="isEdit"
+          >
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                v-model="projectData.tender_date"
+                label="Дата тендера"
+                readonly
+                outlined
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              no-title
+              scrollable
+              locale="Rus"
+              v-model="projectData.tender_date"
+              @input="tenderMenu = false"
+              @change="sendData"
+            ></v-date-picker>
+          </v-menu>
+        </v-col>
+
       </v-row>
     </v-card-text>
   </v-card>
@@ -97,7 +130,8 @@ export default {
 
   data: () => ({
     dateMenu: false,
-    timeMenu: false
+    timeMenu: false,
+    tenderMenu: false
   }),
 
   watch: {
@@ -114,7 +148,8 @@ export default {
         address: this.projectData.address,
         work: this.projectData.work,
         date: this.projectData.date,
-        time: this.projectData.time
+        time: this.projectData.time,
+        tender_date: this.projectData.tender_date
       });
     }
   }

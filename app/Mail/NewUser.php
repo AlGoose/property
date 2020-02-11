@@ -7,6 +7,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use App\User;
 
 class NewUser extends Mailable
 {
@@ -17,12 +18,11 @@ class NewUser extends Mailable
      *
      * @return void
      */
-    public function __construct(Authenticatable $user,string $token)
+    public function __construct(Authenticatable $user, string $token)
     {
         //
         $this->user = $user;
         $this->token = $token;
-
     }
 
     /**
@@ -32,6 +32,10 @@ class NewUser extends Mailable
      */
     public function build()
     {
-        return $this->view('mail.new')->with(['user'=>$this->user,'token'=>$this->token])->subject('Приветствуем тебя '.$this->user->name.' на сайте');
+        return $this->view('mail.new')
+            ->with(['user' => $this->user, 'token' => $this->token])
+            ->to($this->user)
+            ->from(User::find(1))
+            ->subject('Добро пожаловать на project.nzeta!');
     }
 }

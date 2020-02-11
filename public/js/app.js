@@ -2036,15 +2036,11 @@ __webpack_require__.r(__webpack_exports__);
 
       if (window.project == undefined) {
         axios.get("/project/" + this.$route.params.id + "/edit").then(function (response) {
-          // console.log("AXIOS");
-          // console.log(response);
           _this.testData = response.data;
         })["catch"](function (error) {
           console.log(error);
         });
       } else {
-        // console.log("BLADE");
-        // console.log(window.project);
         this.testData = window.project;
       }
     } else {
@@ -2059,7 +2055,8 @@ __webpack_require__.r(__webpack_exports__);
       errors: [],
       testData: {
         date: new Date().toISOString().substr(0, 10),
-        time: new Date().toISOString().substr(0, 10)
+        time: new Date().toISOString().substr(0, 10),
+        tender_date: null
       },
       isEdit: false,
       dialog: false,
@@ -2832,6 +2829,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2882,13 +2885,11 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     editItem: function editItem(item) {
-      console.log(item);
       this.editedIndex = this.managers.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.editDialog = true;
     },
     deleteItem: function deleteItem(item) {
-      console.log(item);
       var index = this.managers.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.editedItem.index = index;
@@ -2941,10 +2942,15 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (error) {
         console.log("ERROOOOOOOR", error.response);
 
-        _this4.errors.push(['Нельзя просто так взять и удалить админа!']);
+        _this4.errors.push(["Нельзя просто так взять и удалить админа!"]);
 
         _this4.removeDialog = false;
         _this4.alert = true;
+      });
+    },
+    sendPassword: function sendPassword() {
+      axios.post("/managers/".concat(this.editedItem.id, "/sendPassword")).then(function (response) {})["catch"](function (error) {
+        console.log(error);
       });
     }
   }
@@ -3553,7 +3559,6 @@ __webpack_require__.r(__webpack_exports__);
         });
       } else {
         if (!staff) {
-          console.log("jopa");
           this.$emit("customer", {
             customer_id: this.customer.id,
             customer_staff_id: null
@@ -3704,7 +3709,6 @@ __webpack_require__.r(__webpack_exports__);
         });
       } else {
         if (!staff) {
-          console.log("jopa");
           this.$emit("dealer", {
             dealer_id: this.dealer.id,
             dealer_staff_id: null
@@ -3834,6 +3838,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
 //
 //
 //
@@ -4095,6 +4101,8 @@ __webpack_require__.r(__webpack_exports__);
 
           _this3.products.push(product);
 
+          _this3.$refs.form.reset();
+
           _this3.count = null;
           _this3.price = null;
           _this3.total = null;
@@ -4105,8 +4113,6 @@ __webpack_require__.r(__webpack_exports__);
           };
           _this3.entires = [];
           _this3.dialog = false;
-
-          _this3.$refs.form.reset();
         })["catch"](function (error) {
           console.log(error);
         });
@@ -4117,6 +4123,7 @@ __webpack_require__.r(__webpack_exports__);
       this.$delete(this.ids, item.id);
     },
     closeDialog: function closeDialog() {
+      this.$refs.form.reset();
       this.count = null;
       this.price = null;
       this.total = null;
@@ -4127,7 +4134,6 @@ __webpack_require__.r(__webpack_exports__);
       };
       this.entires = [];
       this.dialog = false;
-      this.$refs.form.reset();
     }
   }
 });
@@ -4236,12 +4242,46 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["address_prop", "isEdit", "projectData"],
   data: function data() {
     return {
       dateMenu: false,
-      timeMenu: false
+      timeMenu: false,
+      tenderMenu: false
     };
   },
   watch: {
@@ -4257,7 +4297,8 @@ __webpack_require__.r(__webpack_exports__);
         address: this.projectData.address,
         work: this.projectData.work,
         date: this.projectData.date,
-        time: this.projectData.time
+        time: this.projectData.time,
+        tender_date: this.projectData.tender_date
       });
     }
   }
@@ -4276,6 +4317,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue_the_mask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue-the-mask */ "./node_modules/vue-the-mask/dist/vue-the-mask.js");
 /* harmony import */ var vue_the_mask__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue_the_mask__WEBPACK_IMPORTED_MODULE_0__);
+//
 //
 //
 //
@@ -41788,6 +41830,17 @@ var render = function() {
                             _c(
                               "v-card-actions",
                               [
+                                _vm.editedIndex != -1
+                                  ? _c(
+                                      "v-btn",
+                                      {
+                                        attrs: { color: "black", outlined: "" },
+                                        on: { click: _vm.sendPassword }
+                                      },
+                                      [_vm._v("Отправить пароль")]
+                                    )
+                                  : _vm._e(),
+                                _vm._v(" "),
                                 _c("v-spacer"),
                                 _vm._v(" "),
                                 _c(
@@ -42722,7 +42775,11 @@ var render = function() {
               color: "grey",
               label: "ИНН",
               outlined: "",
-              "hide-details": "",
+              rules: [
+                function(v) {
+                  return (v && v.kpp !== undefined) || "Введите номер ИНН"
+                }
+              ],
               "no-filter": "",
               "return-object": "",
               "item-text": "name",
@@ -43128,7 +43185,14 @@ var render = function() {
                                             ? _c("v-text-field", {
                                                 attrs: {
                                                   label: "Артикул",
-                                                  outlined: ""
+                                                  outlined: "",
+                                                  rules: [
+                                                    function(v) {
+                                                      return (
+                                                        !!v || "Введите артикул"
+                                                      )
+                                                    }
+                                                  ]
                                                 },
                                                 model: {
                                                   value: _vm.product.article,
@@ -43211,7 +43275,15 @@ var render = function() {
                                             ? _c("v-text-field", {
                                                 attrs: {
                                                   label: "Название",
-                                                  outlined: ""
+                                                  outlined: "",
+                                                  rules: [
+                                                    function(v) {
+                                                      return (
+                                                        !!v ||
+                                                        "Введите название"
+                                                      )
+                                                    }
+                                                  ]
                                                 },
                                                 model: {
                                                   value: _vm.product.name,
@@ -43512,7 +43584,7 @@ var render = function() {
                   readonly: _vm.isEdit,
                   rules: [
                     function(v) {
-                      return !!v || "Name is required"
+                      return !!v || "Введите название"
                     }
                   ]
                 },
@@ -43532,7 +43604,7 @@ var render = function() {
                   outlined: "",
                   rules: [
                     function(v) {
-                      return !!v || "Address is required"
+                      return !!v || "Введите адрес"
                     }
                   ],
                   readonly: ""
@@ -43569,7 +43641,7 @@ var render = function() {
                 [
                   _c(
                     "v-col",
-                    { attrs: { md: "6" } },
+                    { attrs: { cols: "12", md: "4" } },
                     [
                       _c(
                         "v-menu",
@@ -43598,7 +43670,7 @@ var render = function() {
                                             outlined: "",
                                             rules: [
                                               function(v) {
-                                                return !!v || "Date is required"
+                                                return !!v || "Выберите дату"
                                               }
                                             ]
                                           },
@@ -43623,7 +43695,7 @@ var render = function() {
                             ],
                             null,
                             false,
-                            694755483
+                            2038509707
                           ),
                           model: {
                             value: _vm.dateMenu,
@@ -43664,7 +43736,7 @@ var render = function() {
                   _vm._v(" "),
                   _c(
                     "v-col",
-                    { attrs: { md: "6" } },
+                    { attrs: { cols: "12", md: "4" } },
                     [
                       _c(
                         "v-menu",
@@ -43694,7 +43766,7 @@ var render = function() {
                                             outlined: "",
                                             rules: [
                                               function(v) {
-                                                return !!v || "Date is required"
+                                                return !!v || "Выберите дату"
                                               }
                                             ]
                                           },
@@ -43719,7 +43791,7 @@ var render = function() {
                             ],
                             null,
                             false,
-                            2094555134
+                            3615846926
                           ),
                           model: {
                             value: _vm.timeMenu,
@@ -43749,6 +43821,98 @@ var render = function() {
                                 _vm.$set(_vm.projectData, "time", $$v)
                               },
                               expression: "projectData.time"
+                            }
+                          })
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { cols: "12", md: "4" } },
+                    [
+                      _c(
+                        "v-menu",
+                        {
+                          attrs: {
+                            "close-on-content-click": false,
+                            "nudge-right": 20,
+                            transition: "scale-transition",
+                            "offset-y": "",
+                            "min-width": "290px",
+                            disabled: _vm.isEdit
+                          },
+                          scopedSlots: _vm._u(
+                            [
+                              {
+                                key: "activator",
+                                fn: function(ref) {
+                                  var on = ref.on
+                                  return [
+                                    _c(
+                                      "v-text-field",
+                                      _vm._g(
+                                        {
+                                          attrs: {
+                                            label: "Дата тендера",
+                                            readonly: "",
+                                            outlined: ""
+                                          },
+                                          model: {
+                                            value: _vm.projectData.tender_date,
+                                            callback: function($$v) {
+                                              _vm.$set(
+                                                _vm.projectData,
+                                                "tender_date",
+                                                $$v
+                                              )
+                                            },
+                                            expression:
+                                              "projectData.tender_date"
+                                          }
+                                        },
+                                        on
+                                      )
+                                    )
+                                  ]
+                                }
+                              }
+                            ],
+                            null,
+                            false,
+                            998358222
+                          ),
+                          model: {
+                            value: _vm.tenderMenu,
+                            callback: function($$v) {
+                              _vm.tenderMenu = $$v
+                            },
+                            expression: "tenderMenu"
+                          }
+                        },
+                        [
+                          _vm._v(" "),
+                          _c("v-date-picker", {
+                            attrs: {
+                              "no-title": "",
+                              scrollable: "",
+                              locale: "Rus"
+                            },
+                            on: {
+                              input: function($event) {
+                                _vm.tenderMenu = false
+                              },
+                              change: _vm.sendData
+                            },
+                            model: {
+                              value: _vm.projectData.tender_date,
+                              callback: function($$v) {
+                                _vm.$set(_vm.projectData, "tender_date", $$v)
+                              },
+                              expression: "projectData.tender_date"
                             }
                           })
                         ],
@@ -43801,6 +43965,11 @@ var render = function() {
                 color: "grey",
                 label: "Представитель",
                 outlined: "",
+                rules: [
+                  function(v) {
+                    return !!v || "Выберите представителя"
+                  }
+                ],
                 "item-text": "name",
                 "item-value": "id"
               },

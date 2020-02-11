@@ -9,7 +9,7 @@
         color="grey"
         label="ИНН"
         outlined
-        hide-details
+        :rules="[v => v && v.kpp !== undefined || 'Введите номер ИНН']"
         no-filter
         return-object
         item-text="name"
@@ -89,7 +89,7 @@ export default {
           this.companies = response.data;
           this.isLoading = false;
         })
-        .catch((error) => {
+        .catch(error => {
           console.log(error);
           this.isLoading = false;
         });
@@ -99,7 +99,7 @@ export default {
   methods: {
     saveStaff(staff) {
       if (!this.customer.id) {
-        if(!staff) {
+        if (!staff) {
           this.$emit("customer", {
             customer_id: null,
             customer_staff_id: null
@@ -117,7 +117,6 @@ export default {
           });
       } else {
         if (!staff) {
-          console.log("jopa");
           this.$emit("customer", {
             customer_id: this.customer.id,
             customer_staff_id: null

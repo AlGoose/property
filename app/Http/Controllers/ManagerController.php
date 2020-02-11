@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Password;
 
 class ManagerController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -51,9 +55,6 @@ class ManagerController extends Controller
             'email' => $request['email'],
             'password' => Hash::make(Str::random(12)),
         ]);
-        // $response = Password::broker()->sendResetLink($request->only('email'));
-        
-        // \Debugbar::info($response == Password::RESET_LINK_SENT);
         return $user;
     }
 
@@ -112,5 +113,16 @@ class ManagerController extends Controller
             abort(403);
         }
         User::destroy($id);
+    }
+
+    public function sendPassword($id)
+    {
+        // \Debugbar::info($id);
+
+        $user = \App\User::find(1);
+        $broker = Password::broker();
+        $token = $broker->getToken($user);
+
+        \Mail::to($user)->send((new \App\Mail\NewUser($user, $token)));
     }
 }

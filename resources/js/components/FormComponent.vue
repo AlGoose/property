@@ -95,17 +95,12 @@ export default {
         axios
           .get("/project/" + this.$route.params.id + "/edit")
           .then(response => {
-            // console.log("AXIOS");
-            // console.log(response);
-
             this.testData = response.data;
           })
           .catch(error => {
             console.log(error);
           });
       } else {
-        // console.log("BLADE");
-        // console.log(window.project);
         this.testData = window.project;
       }
     } else {
@@ -121,6 +116,7 @@ export default {
     testData: {
       date: new Date().toISOString().substr(0, 10),
       time: new Date().toISOString().substr(0, 10),
+      tender_date: null,
     },
     isEdit: false,
     dialog: false,

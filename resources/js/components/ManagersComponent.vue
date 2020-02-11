@@ -31,6 +31,12 @@
               </v-card-text>
 
               <v-card-actions>
+                <v-btn
+                  color="black"
+                  @click="sendPassword"
+                  outlined
+                  v-if="editedIndex != -1"
+                >Отправить пароль</v-btn>
                 <v-spacer></v-spacer>
                 <v-btn color="red" @click="close" outlined>Отмена</v-btn>
                 <v-btn color="indigo" @click="save" outlined>Сохранить</v-btn>
@@ -127,14 +133,12 @@ export default {
 
   methods: {
     editItem(item) {
-      console.log(item);
       this.editedIndex = this.managers.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.editDialog = true;
     },
 
     deleteItem(item) {
-      console.log(item);
       const index = this.managers.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.editedItem.index = index;
@@ -193,9 +197,18 @@ export default {
         })
         .catch(error => {
           console.log("ERROOOOOOOR", error.response);
-          this.errors.push(['Нельзя просто так взять и удалить админа!']);
+          this.errors.push(["Нельзя просто так взять и удалить админа!"]);
           this.removeDialog = false;
           this.alert = true;
+        });
+    },
+
+    sendPassword() {
+      axios
+        .post(`/managers/${this.editedItem.id}/sendPassword`)
+        .then(response => {})
+        .catch(error => {
+          console.log(error);
         });
     }
   }

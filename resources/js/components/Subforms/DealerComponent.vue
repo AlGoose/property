@@ -9,7 +9,7 @@
         color="grey"
         label="ИНН"
         outlined
-        :rules="[v =>  v&&v.kpp!==undefined || 'Введите номер ИНН']"
+        :rules="[v => v && v.kpp !== undefined || 'Введите номер ИНН']"
         no-filter
         return-object
         item-text="name"
@@ -115,7 +115,6 @@ export default {
           });
       } else {
         if (!staff) {
-          console.log("jopa");
           this.$emit("dealer", {
             dealer_id: this.dealer.id,
             dealer_staff_id: null

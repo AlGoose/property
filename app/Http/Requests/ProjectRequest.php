@@ -46,7 +46,9 @@ class ProjectRequest extends FormRequest
             'project.name.required' => 'Имя проекта не указано',
             'project.address.required' => 'Адрес проекта не указан',
             'project.date.required' => 'Срок защиты проекта не указан',
+            'project.date.after' => 'Срок защиты проекта должен быть позже сегодняшнего дня',
             'project.time.required' => 'Время создания проекта не указано',
+            'project.time.before' => 'Время создания проекта должен быть не позже сегодняшнего дня',
 
             'dealer.dealer_id.required'=>'Дилер не указан',
             'dealer.dealer_id.exists'=>'Дилер указан неверно',

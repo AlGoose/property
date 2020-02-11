@@ -14,15 +14,14 @@
 use Illuminate\Support\Facades\Password;
 
 Auth::routes();
-Route::get('/test', function () {
-    $user = \App\User::find(1);
-    $broker = Password::broker();
-    $token = $broker->getToken($user);
+// Route::get('/test', function () {
+//     // $user = \App\User::find(1);
+//     // $broker = Password::broker();
+//     // $token = $broker->getToken($user);
 
-    \Mail::to($user)->send((new \App\Mail\NewUser($user,$token)));
+//     // \Mail::to($user)->send((new \App\Mail\NewUser($user,$token)));
+// });
 
-
-});
 Route::post('/addresses', 'AddressController@addresses');
 Route::post('/kladr', 'AddressController@search');
 
@@ -34,6 +33,8 @@ Route::get('/data/findProductById/{id}', 'DataController@findProductById');
 
 Route::resource('/project', 'ProjectController');
 Route::resource('/managers', 'ManagerController');
+Route::post('/managers/{id}/sendPassword', 'ManagerController@sendPassword');
+
 
 Route::get('/{any}', 'SinglePageController@index')->middleware('auth')->where(['any' => '.*']);
 

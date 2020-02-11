@@ -7,6 +7,7 @@
         color="grey"
         label="Представитель"
         outlined
+        :rules="[v => !!v || 'Выберите представителя']"
         item-text="name"
         item-value="id"
       ></v-autocomplete>
