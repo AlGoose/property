@@ -52,7 +52,7 @@ class FileController extends Controller
             $file = new FileProject;
             $file->name = $item->getClientOriginalName();
             $file->path = $res;
-            $file->project()->associate(Project::find($request->project_id));
+            $file->project()->associate(Project::find($request->project_id)); //ID проекта пока захардкожен и равен 2
             $file->save();
         }
     }
