@@ -147,6 +147,20 @@
                 </v-data-table>
               </v-expansion-panel-content>
             </v-expansion-panel>
+
+            <v-expansion-panel>
+              <v-expansion-panel-header class="title">Документы</v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <v-list>
+                  <v-list-item v-for="(file, i) in files" :key="'C'+ i">
+                    <v-list-item-content>
+                      <v-list-item-title>{{file.name}}</v-list-item-title>
+                    </v-list-item-content>
+                    <v-icon>mdi-download-outline</v-icon>
+                  </v-list-item>
+                </v-list>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
           </v-expansion-panels>
         </v-card-text>
 
@@ -197,6 +211,7 @@ export default {
       axios
         .get("/project/" + this.project_id)
         .then(response => {
+          console.log("SHOW_COMPONENT", response.data);
           this.initial(response.data);
         })
         .catch(error => {
@@ -310,7 +325,8 @@ export default {
         }
       },
       opponents: [],
-      products: []
+      products: [],
+      files: []
     };
   },
 
@@ -339,6 +355,8 @@ export default {
       this.products.forEach(item => {
         item.pivot.total = item.pivot.count * item.pivot.price;
       });
+
+      this.files = form.files;
 
       this.user_id = form.user_id;
       window.project = undefined;

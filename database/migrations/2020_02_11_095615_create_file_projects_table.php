@@ -17,13 +17,7 @@ class CreateFileProjectsTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('path');
-            $table->bigInteger('project_id')->unsigned();
             $table->timestamps();
-            $table->softDeletes();
-        });
-
-        Schema::table('file_projects', function (Blueprint $table) {
-            $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
         });
     }
 

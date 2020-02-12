@@ -20,7 +20,11 @@
             :isEdit="isEdit"
             :projectData="testData"
             @project="saveProject"
+            @files="saveFiles"
           ></ProjectComponent>
+        </v-col>
+        <v-col cols="12">
+          <FileComponent :filesData="testData.files" @files="saveFiles"></FileComponent>
         </v-col>
         <v-col cols="12" md="5">
           <OpponentComponent :opponentsData="testData.opponents" @opponents="saveOpponents"></OpponentComponent>
@@ -43,7 +47,11 @@
             <v-card-title>Все верно?</v-card-title>
             <v-card-actions class="justify-center">
               <v-btn depressed color="error" @click="dialog = false">Отмена</v-btn>
-              <v-btn depressed color="success" @click="isEdit ? editForm() : addForm()">{{isEdit ? 'Изменить' : 'Добавить'}}</v-btn>
+              <v-btn
+                depressed
+                color="success"
+                @click="isEdit ? editForm() : addForm()"
+              >{{isEdit ? 'Изменить' : 'Добавить'}}</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -77,6 +85,7 @@ import CustomerComponent from "./Subforms/CustomerComponent";
 import OpponentComponent from "./Subforms/OpponentComponent";
 import ProductComponent from "./Subforms/ProductComponent";
 import ProjectComponent from "./Subforms/ProjectComponent";
+import FileComponent from "./Subforms/FileComponent";
 
 export default {
   components: {
@@ -84,24 +93,34 @@ export default {
     CustomerComponent,
     OpponentComponent,
     ProductComponent,
-    ProjectComponent
+    ProjectComponent,
+    FileComponent
   },
   directives: { mask },
 
   mounted() {
     if (this.$route.name === "edit") {
+      console.log("EDIT");
       this.isEdit = true;
       if (window.project == undefined) {
+        console.log("AXIOS");
+
         axios
           .get("/project/" + this.$route.params.id + "/edit")
           .then(response => {
             this.testData = response.data;
+            console.log("EDIT_MODE_DATA", this.testData);
+            this.address = this.testData.address;
+            console.log("FORM_ADDRESS", this.address);
           })
           .catch(error => {
             console.log(error);
           });
       } else {
+        console.log("BLADE");
         this.testData = window.project;
+        this.address = this.testData.address;
+        console.log("FORM_ADDRESS", this.address);
       }
     } else {
       if (this.$route.params.address) {
@@ -116,27 +135,45 @@ export default {
     testData: {
       date: new Date().toISOString().substr(0, 10),
       time: new Date().toISOString().substr(0, 10),
-      tender_date: null,
+      tender_date: null
     },
     isEdit: false,
     dialog: false,
     address: null,
     formData: {},
+    formFiles: [],
     valid: true
   }),
 
   methods: {
     addForm() {
-      // console.log('ADDFORM');
       this.formData.project.kladrId = this.$route.params.kladrId;
       axios
         .post("/project", this.formData)
         .then(response => {
-          // console.log(response);
-          this.dialog = false;
-          this.$router.push({
-            name: "home"
+          console.log(response.data);
+
+          let formData = new FormData();
+          this.formFiles.forEach(file => {
+            formData.append("files[]", file);
           });
+
+          axios
+            .post("/project/" + response.data + "/files", formData, {
+              headers: {
+                "Content-Type": "multipart/form-data"
+              }
+            })
+            .then(response => {
+              console.log(response.data);
+              this.dialog = false;
+              // this.$router.push({
+              //   name: "home"
+              // });
+            })
+            .catch(error => {
+              console.log(error);
+            });
         })
         .catch(error => {
           console.log("ERROOOOOOOR", error.response);
@@ -147,12 +184,28 @@ export default {
     },
 
     editForm() {
-      // console.log('EDITFORM');
       axios
-        .put("/project/" + this.$route.params.id, this.formData)
+        .put("/project/" + this.$route.params.id + "/files", this.formData)
         .then(response => {
-          this.dialog = false;
-          this.$router.go(-1);
+          let dataForm = new FormData();
+          this.formFiles.forEach(file => {
+            console.log(file.name);
+            dataForm.append("files[]", file);
+          });
+
+          axios
+            .put("/project/" + this.$route.params.id + "/files", dataForm, {
+              headers: {
+                "Content-Type": "multipart/form-data"
+              }
+            })
+            .then(response => {
+              this.dialog = false;
+              this.$router.go(-1);
+            })
+            .catch(error => {
+              console.log(error);
+            });
         })
         .catch(error => {
           console.log(error);
@@ -188,6 +241,11 @@ export default {
     saveProducts(value) {
       this.formData.products = value;
       // console.log("FormData | ", this.formData);
+    },
+
+    saveFiles(value) {
+      this.formFiles = value;
+      // console.log("FormFiles | ", this.formFiles);
     }
   }
 };

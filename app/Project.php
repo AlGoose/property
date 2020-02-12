@@ -69,6 +69,6 @@ class Project extends Model
 
     public function files()
     {
-        return $this->hasMany(FileProject::class);
+        return $this->belongsToMany(FileProject::class)->withTimestamps();
     }
 }

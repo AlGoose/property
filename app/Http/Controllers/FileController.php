@@ -47,13 +47,27 @@ class FileController extends Controller
      */
     public function store(Request $request)
     {
-        foreach ($request['files'] as $item) {
-            $res = Storage::put('project_files', $item);
-            $file = new FileProject;
-            $file->name = $item->getClientOriginalName();
-            $file->path = $res;
-            $file->project()->associate(Project::find($request->project_id)); //ID проекта пока захардкожен и равен 2
-            $file->save();
+        $filesCollection = [];
+        if ($request->hasFile('files')) {
+            // \Debugbar::info('OK');
+            $uploadFiles = $request->allFiles()['files'];
+
+            /**@var \Illuminate\Http\UploadedFile $uploadFile */
+            foreach ($uploadFiles as $uploadFile) {
+                $filesCollection[] = FileProject::store($uploadFile)->id;
+            }
+
+            $res = Project::find($request->project_id)->files()->sync($filesCollection);
+
+            if ($res['detached']) {
+                foreach ($res['detached'] as $id) {
+                    $file = FileProject::find($id);
+                    $success = Storage::delete($file->path);
+                    if ($success) {
+                        $file->delete();
+                    }
+                }
+            }
         }
     }
 
@@ -66,6 +80,9 @@ class FileController extends Controller
     public function show($id)
     {
         //Выгрузка файла?
+        // \Debugbar::info(Project::find(4)->files()->get());
+        \Debugbar::info(FileProject::find(14)->projects);
+        return '123';
     }
 
     /**
@@ -99,10 +116,10 @@ class FileController extends Controller
      */
     public function destroy($id)
     {
-        $file = FileProject::find($id);
-        $result = Storage::delete($file->path);
-        if($result) {
-            $file->delete();
-        }
+        // $file = FileProject::find($id);
+        // $result = Storage::delete($file->path);
+        // if ($result) {
+        //     $file->delete();
+        // }
     }
 }

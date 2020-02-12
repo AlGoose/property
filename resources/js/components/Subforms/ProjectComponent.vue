@@ -118,28 +118,6 @@
             ></v-date-picker>
           </v-menu>
         </v-col>
-
-        <v-col cols="12">
-          <v-file-input
-            v-model="files"
-            counter
-            label="Добавить файл(-ы)"
-            multiple
-            outlined
-            :show-size="1000"
-            prepend-icon
-          >
-            <template v-slot:selection="{ index, text }">
-              <v-chip v-if="index < 2" color="indigo" dark label small>{{ text }}</v-chip>
-
-              <span
-                v-else-if="index === 2"
-                class="overline grey--text text--darken-3 mx-2"
-              >+{{ files.length - 2 }} файл(-ов)</span>
-            </template>
-          </v-file-input>
-          <v-btn color="success" @click="test">test</v-btn>
-        </v-col>
       </v-row>
     </v-card-text>
   </v-card>
@@ -153,12 +131,16 @@ export default {
     dateMenu: false,
     timeMenu: false,
     tenderMenu: false,
+    tempFiles: [],
     files: []
   }),
 
   watch: {
     address_prop(value) {
       this.$set(this.projectData, "address", this.address_prop);
+      if (this.projectData.files) {
+        this.files = this.projectData.files;
+      }
       this.sendData();
     }
   },
@@ -173,23 +155,13 @@ export default {
         time: this.projectData.time,
         tender_date: this.projectData.tender_date
       });
+
+      this.$emit("files", this.files);
     },
 
     test() {
-      console.log("test");
-      let formData = new FormData();
-      this.files.forEach(file => {
-        formData.append("files[]", file);
-      });
-      formData.append("project_id", 2);
-      console.log(formData);
-
       axios
-        .post("/file", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
-        })
+        .get("/file/14")
         .then(function() {
           console.log("SUCCESS!!");
         })
@@ -197,6 +169,27 @@ export default {
           console.log("FAILURE!!");
         });
     }
+
+    // removeFile(index) {
+    //   this.files.splice(index, 1);
+    //   this.sendData();
+    // },
+
+    // addFiles(files) {
+    //   // let sendFiles = [];
+    //   files.forEach(file => {
+    //     for (let i = 0; i < this.files.length; i++) {
+    //       if (this.files[i].name === file.name) {
+    //         return;
+    //       }
+    //     }
+    //     this.files.push(file);
+    //     // sendFiles.push(file);
+    //   });
+    //   this.tempFiles = [];
+
+    //   this.sendData();
+    // }
   }
 };
 </script>

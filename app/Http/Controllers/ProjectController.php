@@ -71,7 +71,7 @@ class ProjectController extends Controller
      */
     public function store(ProjectRequest $request)
     {
-        \Debugbar::info($request->all());
+        // \Debugbar::info($request->all());
         $project = new Project($request->project);
 
         $project->user()->associate(\Auth::user());
@@ -86,6 +86,8 @@ class ProjectController extends Controller
 
         $project->opponents()->attach($request->opponents);
         $project->products()->attach($request->products);
+
+        return $project->id;
     }
 
     /**
@@ -94,18 +96,20 @@ class ProjectController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, Project $project)
+    public function show(Project $project, Request $request)
     {
-        $project->user = $project->user()->get()[0];
+        $project->user = $project->user()->get()->first();
 
-        $project->dealer = $project->dealer()->get()[0];
-        $project->dealer_staff = $project->dealer_staff()->get()[0];
+        $project->dealer = $project->dealer()->get()->first();
+        $project->dealer_staff = $project->dealer_staff()->get()->first();
 
-        $project->customer = $project->customer()->get()[0];
-        $project->customer_staff = $project->customer_staff()->get()[0];
+        $project->customer = $project->customer()->get()->first();
+        $project->customer_staff = $project->customer_staff()->get()->first();
 
         $project->opponents = $project->opponents()->get();
         $project->products = $project->products()->get();
+
+        $project->files = $project->files()->get();
 
         if ($request->ajax()) return $project;
 
@@ -118,7 +122,7 @@ class ProjectController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request, Project $project)
+    public function edit(Project $project, Request $request)
     {
         if ($project->user_id != \Auth::user()->id) {
             abort(403);
@@ -134,6 +138,8 @@ class ProjectController extends Controller
 
         $project->opponents = $project->opponents()->get();
         $project->products = $project->products()->get();
+
+        $project->files = $project->files()->get();
 
         if ($request->ajax()) return $project;
 
@@ -171,5 +177,58 @@ class ProjectController extends Controller
     public function destroy($id)
     {
         Project::destroy($id);
+    }
+
+    public function saveFile(Project $project, Request $request)
+    {
+        $filesCollection = [];
+        if ($request->hasFile('files')) {
+            // \Debugbar::info('OK');
+            $uploadFiles = $request->allFiles()['files'];
+
+            /**@var \Illuminate\Http\UploadedFile $uploadFile */
+            foreach ($uploadFiles as $uploadFile) {
+                $filesCollection[] = FileProject::store($uploadFile)->id;
+            }
+            \Debugbar::info($filesCollection);
+
+            $project->files()->attach($filesCollection);
+        }
+        return $project->files;
+    }
+
+    public function updateFile(Project $project, Request $request)
+    {
+        dd($request->all());
+        $filesCollection = [];
+        if ($request->hasFile('files')) {
+            // \Debugbar::info('OK');
+            $uploadFiles = $request->allFiles()['files'];
+
+            /**@var \Illuminate\Http\UploadedFile $uploadFile */
+            foreach ($uploadFiles as $uploadFile) {
+                $filesCollection[] = FileProject::store($uploadFile)->id;
+            }
+
+            $res =  $project->files()->sync($filesCollection);
+
+            if ($res['detached']) {
+                foreach ($res['detached'] as $id) {
+                    $file = FileProject::find($id);
+                    if(!count($file->projects)) {
+                        $file->delete();
+                    }
+                }
+            }
+        }
+    }
+
+    public function deleteFile(Project $project, FileProject $fileProject, Request $request)
+    {
+        $project->files()->detach($fileProject->id);
+        $fileProject->refresh();
+        if(!count($fileProject->projects)) {
+            $fileProject->delete();
+        }
     }
 }
