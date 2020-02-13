@@ -152,28 +152,10 @@ export default {
         .post("/project", this.formData)
         .then(response => {
           console.log(response.data);
-
-          let formData = new FormData();
-          this.formFiles.forEach(file => {
-            formData.append("files[]", file);
-          });
-
-          axios
-            .post("/project/" + response.data + "/files", formData, {
-              headers: {
-                "Content-Type": "multipart/form-data"
-              }
-            })
-            .then(response => {
-              console.log(response.data);
-              this.dialog = false;
-              // this.$router.push({
-              //   name: "home"
-              // });
-            })
-            .catch(error => {
-              console.log(error);
-            });
+          this.dialog = false;
+          // this.$router.push({
+          //   name: "home"
+          // });
         })
         .catch(error => {
           console.log("ERROOOOOOOR", error.response);
@@ -245,6 +227,7 @@ export default {
 
     saveFiles(value) {
       this.formFiles = value;
+      this.formData.files = value;
       // console.log("FormFiles | ", this.formFiles);
     }
   }

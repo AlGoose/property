@@ -130,17 +130,12 @@ export default {
   data: () => ({
     dateMenu: false,
     timeMenu: false,
-    tenderMenu: false,
-    tempFiles: [],
-    files: []
+    tenderMenu: false
   }),
 
   watch: {
     address_prop(value) {
       this.$set(this.projectData, "address", this.address_prop);
-      if (this.projectData.files) {
-        this.files = this.projectData.files;
-      }
       this.sendData();
     }
   },
@@ -155,41 +150,7 @@ export default {
         time: this.projectData.time,
         tender_date: this.projectData.tender_date
       });
-
-      this.$emit("files", this.files);
-    },
-
-    test() {
-      axios
-        .get("/file/14")
-        .then(function() {
-          console.log("SUCCESS!!");
-        })
-        .catch(function() {
-          console.log("FAILURE!!");
-        });
     }
-
-    // removeFile(index) {
-    //   this.files.splice(index, 1);
-    //   this.sendData();
-    // },
-
-    // addFiles(files) {
-    //   // let sendFiles = [];
-    //   files.forEach(file => {
-    //     for (let i = 0; i < this.files.length; i++) {
-    //       if (this.files[i].name === file.name) {
-    //         return;
-    //       }
-    //     }
-    //     this.files.push(file);
-    //     // sendFiles.push(file);
-    //   });
-    //   this.tempFiles = [];
-
-    //   this.sendData();
-    // }
   }
 };
 </script>

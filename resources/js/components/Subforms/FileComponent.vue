@@ -31,43 +31,69 @@ export default {
   data: () => ({
     tempFiles: [],
     files: [],
-    ids:[]
+    ids: []
   }),
 
   watch: {
-    filesData(val) {
-        console.log(val);
-    //   val.forEach(item => {
-    //     this.opponents.push(item.name);
-    //     this.ids.push(item.id);
-    //   });
+    filesData(value) {
+      console.log(value);
+      //   val.forEach(item => {
+      //     this.opponents.push(item.name);
+      //     this.ids.push(item.id);
+      //   });
     },
 
-    ids(val) {
-    //   this.$emit("opponents", val);
+    ids(value) {
+      console.log('BOBER');
+      console.log(value);
+        this.$emit("files", value);
     }
   },
 
   methods: {
     removeFile(index) {
       this.files.splice(index, 1);
-    //   this.sendData();
+      //   this.sendData();
     },
 
     addFiles(files) {
-      // let sendFiles = [];
+      if (files.length === 0) return;
+
+      let counter = 0;
+      let formData = new FormData();
+
       files.forEach(file => {
         for (let i = 0; i < this.files.length; i++) {
           if (this.files[i].name === file.name) {
             return;
           }
         }
-        this.files.push(file);
-        // sendFiles.push(file);
+        formData.append("files[]", file);
+        counter++;
       });
-      this.tempFiles = [];
 
-    //   this.sendData();
+      if (counter === 0) {
+        this.tempFiles = [];
+        return;
+      }
+
+      axios
+        .post("/file", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        })
+        .then(response => {
+          // console.log(response.data);
+          this.files = response.data;
+          this.files.forEach(file => {
+            this.ids.push(file.id);
+          });
+          this.tempFiles = [];
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
   }
 };

@@ -71,7 +71,7 @@ class ProjectController extends Controller
      */
     public function store(ProjectRequest $request)
     {
-        // \Debugbar::info($request->all());
+        \Debugbar::info($request->all());
         $project = new Project($request->project);
 
         $project->user()->associate(\Auth::user());
@@ -86,6 +86,7 @@ class ProjectController extends Controller
 
         $project->opponents()->attach($request->opponents);
         $project->products()->attach($request->products);
+        // $project->files()->attach($request->files);
 
         return $project->id;
     }
@@ -166,6 +167,17 @@ class ProjectController extends Controller
 
         $project->opponents()->sync($request->opponents);
         $project->products()->sync($request->products);
+
+        // $res = $project->files()->sync($request->files);
+
+        // if ($res['detached']) {
+        //     foreach ($res['detached'] as $id) {
+        //         $file = FileProject::find($id);
+        //         if (!count($file->projects)) {
+        //             $file->delete();
+        //         }
+        //     }
+        // }
     }
 
     /**
@@ -179,56 +191,56 @@ class ProjectController extends Controller
         Project::destroy($id);
     }
 
-    public function saveFile(Project $project, Request $request)
-    {
-        $filesCollection = [];
-        if ($request->hasFile('files')) {
-            // \Debugbar::info('OK');
-            $uploadFiles = $request->allFiles()['files'];
+    // public function saveFile(Project $project, Request $request)
+    // {
+    //     $filesCollection = [];
+    //     if ($request->hasFile('files')) {
+    //         // \Debugbar::info('OK');
+    //         $uploadFiles = $request->allFiles()['files'];
 
-            /**@var \Illuminate\Http\UploadedFile $uploadFile */
-            foreach ($uploadFiles as $uploadFile) {
-                $filesCollection[] = FileProject::store($uploadFile)->id;
-            }
-            \Debugbar::info($filesCollection);
+    //         /**@var \Illuminate\Http\UploadedFile $uploadFile */
+    //         foreach ($uploadFiles as $uploadFile) {
+    //             $filesCollection[] = FileProject::store($uploadFile)->id;
+    //         }
+    //         \Debugbar::info($filesCollection);
 
-            $project->files()->attach($filesCollection);
-        }
-        return $project->files;
-    }
+    //         $project->files()->attach($filesCollection);
+    //     }
+    //     return $project->files;
+    // }
 
-    public function updateFile(Project $project, Request $request)
-    {
-        dd($request->all());
-        $filesCollection = [];
-        if ($request->hasFile('files')) {
-            // \Debugbar::info('OK');
-            $uploadFiles = $request->allFiles()['files'];
+    // public function updateFile(Project $project, Request $request)
+    // {
+    //     dd($request->all());
+    //     $filesCollection = [];
+    //     if ($request->hasFile('files')) {
+    //         // \Debugbar::info('OK');
+    //         $uploadFiles = $request->allFiles()['files'];
 
-            /**@var \Illuminate\Http\UploadedFile $uploadFile */
-            foreach ($uploadFiles as $uploadFile) {
-                $filesCollection[] = FileProject::store($uploadFile)->id;
-            }
+    //         /**@var \Illuminate\Http\UploadedFile $uploadFile */
+    //         foreach ($uploadFiles as $uploadFile) {
+    //             $filesCollection[] = FileProject::store($uploadFile)->id;
+    //         }
 
-            $res =  $project->files()->sync($filesCollection);
+    //         $res =  $project->files()->sync($filesCollection);
 
-            if ($res['detached']) {
-                foreach ($res['detached'] as $id) {
-                    $file = FileProject::find($id);
-                    if(!count($file->projects)) {
-                        $file->delete();
-                    }
-                }
-            }
-        }
-    }
+    //         if ($res['detached']) {
+    //             foreach ($res['detached'] as $id) {
+    //                 $file = FileProject::find($id);
+    //                 if (!count($file->projects)) {
+    //                     $file->delete();
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
-    public function deleteFile(Project $project, FileProject $fileProject, Request $request)
-    {
-        $project->files()->detach($fileProject->id);
-        $fileProject->refresh();
-        if(!count($fileProject->projects)) {
-            $fileProject->delete();
-        }
-    }
+    // public function deleteFile(Project $project, FileProject $fileProject, Request $request)
+    // {
+    //     $project->files()->detach($fileProject->id);
+    //     $fileProject->refresh();
+    //     if (!count($fileProject->projects)) {
+    //         $fileProject->delete();
+    //     }
+    // }
 }

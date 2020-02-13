@@ -2092,24 +2092,9 @@ __webpack_require__.r(__webpack_exports__);
       this.formData.project.kladrId = this.$route.params.kladrId;
       axios.post("/project", this.formData).then(function (response) {
         console.log(response.data);
-        var formData = new FormData();
-
-        _this2.formFiles.forEach(function (file) {
-          formData.append("files[]", file);
-        });
-
-        axios.post("/project/" + response.data + "/files", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
-        }).then(function (response) {
-          console.log(response.data);
-          _this2.dialog = false; // this.$router.push({
-          //   name: "home"
-          // });
-        })["catch"](function (error) {
-          console.log(error);
-        });
+        _this2.dialog = false; // this.$router.push({
+        //   name: "home"
+        // });
       })["catch"](function (error) {
         console.log("ERROOOOOOOR", error.response);
         _this2.errors = error.response.data.errors;
@@ -2164,7 +2149,8 @@ __webpack_require__.r(__webpack_exports__);
       this.formData.products = value; // console.log("FormData | ", this.formData);
     },
     saveFiles: function saveFiles(value) {
-      this.formFiles = value; // console.log("FormFiles | ", this.formFiles);
+      this.formFiles = value;
+      this.formData.files = value; // console.log("FormFiles | ", this.formFiles);
     }
   }
 });
@@ -3849,13 +3835,16 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   watch: {
-    filesData: function filesData(val) {
-      console.log(val); //   val.forEach(item => {
+    filesData: function filesData(value) {
+      console.log(value); //   val.forEach(item => {
       //     this.opponents.push(item.name);
       //     this.ids.push(item.id);
       //   });
     },
-    ids: function ids(val) {//   this.$emit("opponents", val);
+    ids: function ids(value) {
+      console.log('BOBER');
+      console.log(value);
+      this.$emit("files", value);
     }
   },
   methods: {
@@ -3865,7 +3854,9 @@ __webpack_require__.r(__webpack_exports__);
     addFiles: function addFiles(files) {
       var _this = this;
 
-      // let sendFiles = [];
+      if (files.length === 0) return;
+      var counter = 0;
+      var formData = new FormData();
       files.forEach(function (file) {
         for (var i = 0; i < _this.files.length; i++) {
           if (_this.files[i].name === file.name) {
@@ -3873,10 +3864,31 @@ __webpack_require__.r(__webpack_exports__);
           }
         }
 
-        _this.files.push(file); // sendFiles.push(file);
-
+        formData.append("files[]", file);
+        counter++;
       });
-      this.tempFiles = []; //   this.sendData();
+
+      if (counter === 0) {
+        this.tempFiles = [];
+        return;
+      }
+
+      axios.post("/file", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      }).then(function (response) {
+        // console.log(response.data);
+        _this.files = response.data;
+
+        _this.files.forEach(function (file) {
+          _this.ids.push(file.id);
+        });
+
+        _this.tempFiles = [];
+      })["catch"](function (error) {
+        console.log(error);
+      });
     }
   }
 });
@@ -4426,19 +4438,12 @@ __webpack_require__.r(__webpack_exports__);
     return {
       dateMenu: false,
       timeMenu: false,
-      tenderMenu: false,
-      tempFiles: [],
-      files: []
+      tenderMenu: false
     };
   },
   watch: {
     address_prop: function address_prop(value) {
       this.$set(this.projectData, "address", this.address_prop);
-
-      if (this.projectData.files) {
-        this.files = this.projectData.files;
-      }
-
       this.sendData();
     }
   },
@@ -4452,33 +4457,7 @@ __webpack_require__.r(__webpack_exports__);
         time: this.projectData.time,
         tender_date: this.projectData.tender_date
       });
-      this.$emit("files", this.files);
-    },
-    test: function test() {
-      axios.get("/file/14").then(function () {
-        console.log("SUCCESS!!");
-      })["catch"](function () {
-        console.log("FAILURE!!");
-      });
-    } // removeFile(index) {
-    //   this.files.splice(index, 1);
-    //   this.sendData();
-    // },
-    // addFiles(files) {
-    //   // let sendFiles = [];
-    //   files.forEach(file => {
-    //     for (let i = 0; i < this.files.length; i++) {
-    //       if (this.files[i].name === file.name) {
-    //         return;
-    //       }
-    //     }
-    //     this.files.push(file);
-    //     // sendFiles.push(file);
-    //   });
-    //   this.tempFiles = [];
-    //   this.sendData();
-    // }
-
+    }
   }
 });
 

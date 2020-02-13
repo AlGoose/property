@@ -54,21 +54,23 @@ class FileController extends Controller
 
             /**@var \Illuminate\Http\UploadedFile $uploadFile */
             foreach ($uploadFiles as $uploadFile) {
-                $filesCollection[] = FileProject::store($uploadFile)->id;
+                // $filesCollection[] = FileProject::store($uploadFile)->id;
+                $filesCollection[] = FileProject::store($uploadFile);
             }
 
-            $res = Project::find($request->project_id)->files()->sync($filesCollection);
+            // $res = Project::find($request->project_id)->files()->sync($filesCollection);
 
-            if ($res['detached']) {
-                foreach ($res['detached'] as $id) {
-                    $file = FileProject::find($id);
-                    $success = Storage::delete($file->path);
-                    if ($success) {
-                        $file->delete();
-                    }
-                }
-            }
+            // if ($res['detached']) {
+            //     foreach ($res['detached'] as $id) {
+            //         $file = FileProject::find($id);
+            //         $success = Storage::delete($file->path);
+            //         if ($success) {
+            //             $file->delete();
+            //         }
+            //     }
+            // }
         }
+        return $filesCollection;
     }
 
     /**
