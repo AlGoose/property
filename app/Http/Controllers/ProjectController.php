@@ -61,6 +61,7 @@ class ProjectController extends Controller
     public function create()
     {
         return redirect('/');
+        // return view('welcome');
     }
 
     /**
@@ -129,22 +130,26 @@ class ProjectController extends Controller
             abort(403);
         }
 
-        $project->user = $project->user()->first();
+        $res = (object)[];
+        $res->project = $project->getOriginal();
+        $res->user = $project->user()->first();
 
-        $project->dealer = $project->dealer()->first();
-        $project->dealer->current_staff = $project->dealer_staff()->first();
+        $res->dealer = $project->dealer()->first();
+        $res->dealer->current_staff = $project->dealer_staff()->first();
 
-        $project->customer = $project->customer()->first();
-        $project->customer->current_staff = $project->customer_staff()->first();
+        $res->customer = $project->customer()->first();
+        $res->customer->current_staff = $project->customer_staff()->first();
 
-        $project->opponents = $project->opponents()->get();
-        $project->products = $project->products()->get();
+        $res->opponents = $project->opponents()->get();
+        $res->products = $project->products()->get();
 
-        $project->files = $project->files()->get();
+        $res->files = $project->files()->get();
 
-        if ($request->ajax()) return $project;
+        if ($request->ajax()) return json_encode($res);
 
-        return view('form')->with('project', $project);
+        return view('form')->with('project', $res);
+        // \Debugbar::info($res);
+        // return '123';
     }
 
     /**

@@ -1932,14 +1932,12 @@ module.exports = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var vue_the_mask__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue-the-mask */ "./node_modules/vue-the-mask/dist/vue-the-mask.js");
-/* harmony import */ var vue_the_mask__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue_the_mask__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _Subforms_DealerComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Subforms/DealerComponent */ "./resources/js/components/Subforms/DealerComponent.vue");
-/* harmony import */ var _Subforms_CustomerComponent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Subforms/CustomerComponent */ "./resources/js/components/Subforms/CustomerComponent.vue");
-/* harmony import */ var _Subforms_OpponentComponent__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Subforms/OpponentComponent */ "./resources/js/components/Subforms/OpponentComponent.vue");
-/* harmony import */ var _Subforms_ProductComponent__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Subforms/ProductComponent */ "./resources/js/components/Subforms/ProductComponent.vue");
-/* harmony import */ var _Subforms_ProjectComponent__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Subforms/ProjectComponent */ "./resources/js/components/Subforms/ProjectComponent.vue");
-/* harmony import */ var _Subforms_FileComponent__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Subforms/FileComponent */ "./resources/js/components/Subforms/FileComponent.vue");
+/* harmony import */ var _Subforms_DealerComponent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Subforms/DealerComponent */ "./resources/js/components/Subforms/DealerComponent.vue");
+/* harmony import */ var _Subforms_CustomerComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Subforms/CustomerComponent */ "./resources/js/components/Subforms/CustomerComponent.vue");
+/* harmony import */ var _Subforms_OpponentComponent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Subforms/OpponentComponent */ "./resources/js/components/Subforms/OpponentComponent.vue");
+/* harmony import */ var _Subforms_ProductComponent__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Subforms/ProductComponent */ "./resources/js/components/Subforms/ProductComponent.vue");
+/* harmony import */ var _Subforms_ProjectComponent__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Subforms/ProjectComponent */ "./resources/js/components/Subforms/ProjectComponent.vue");
+/* harmony import */ var _Subforms_FileComponent__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Subforms/FileComponent */ "./resources/js/components/Subforms/FileComponent.vue");
 //
 //
 //
@@ -2014,13 +2012,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-
 
 
 
@@ -2029,61 +2020,67 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
-    DealerComponent: _Subforms_DealerComponent__WEBPACK_IMPORTED_MODULE_1__["default"],
-    CustomerComponent: _Subforms_CustomerComponent__WEBPACK_IMPORTED_MODULE_2__["default"],
-    OpponentComponent: _Subforms_OpponentComponent__WEBPACK_IMPORTED_MODULE_3__["default"],
-    ProductComponent: _Subforms_ProductComponent__WEBPACK_IMPORTED_MODULE_4__["default"],
-    ProjectComponent: _Subforms_ProjectComponent__WEBPACK_IMPORTED_MODULE_5__["default"],
-    FileComponent: _Subforms_FileComponent__WEBPACK_IMPORTED_MODULE_6__["default"]
+    DealerComponent: _Subforms_DealerComponent__WEBPACK_IMPORTED_MODULE_0__["default"],
+    CustomerComponent: _Subforms_CustomerComponent__WEBPACK_IMPORTED_MODULE_1__["default"],
+    OpponentComponent: _Subforms_OpponentComponent__WEBPACK_IMPORTED_MODULE_2__["default"],
+    ProductComponent: _Subforms_ProductComponent__WEBPACK_IMPORTED_MODULE_3__["default"],
+    ProjectComponent: _Subforms_ProjectComponent__WEBPACK_IMPORTED_MODULE_4__["default"],
+    FileComponent: _Subforms_FileComponent__WEBPACK_IMPORTED_MODULE_5__["default"]
   },
-  directives: {
-    mask: vue_the_mask__WEBPACK_IMPORTED_MODULE_0__["mask"]
+  data: function data() {
+    return {
+      alert: false,
+      valid: true,
+      dialog: false,
+      errors: [],
+      testData: {},
+      formData: {},
+      project: {
+        project: {
+          address: null,
+          date: new Date().toISOString().substr(0, 10),
+          time: new Date().toISOString().substr(0, 10),
+          tender_date: null
+        },
+        dealer: {},
+        customer: {},
+        opponents: [],
+        products: [],
+        files: []
+      }
+    };
+  },
+  computed: {
+    isEdit: function isEdit() {
+      return this.$route.name === "edit";
+    }
   },
   mounted: function mounted() {
     var _this = this;
 
-    if (this.$route.name === "edit") {
+    if (this.isEdit) {
       console.log("EDIT");
-      this.isEdit = true;
 
       if (window.project == undefined) {
         console.log("AXIOS");
         axios.get("/project/" + this.$route.params.id + "/edit").then(function (response) {
-          _this.testData = response.data;
-          console.log("EDIT_MODE_DATA", _this.testData);
-          _this.address = _this.testData.address;
-          console.log("FORM_ADDRESS", _this.address);
+          _this.testData = response.data; //TODO: REMOVE
+
+          _this.project = response.data;
         })["catch"](function (error) {
           console.log(error);
         });
       } else {
         console.log("BLADE");
-        this.testData = window.project;
-        this.address = this.testData.address;
-        console.log("FORM_ADDRESS", this.address);
+        this.testData = window.project; //TODO: REMOVE
+
+        this.project = window.project;
       }
     } else {
       if (this.$route.params.address) {
-        this.address = this.$route.params.address;
+        this.project.project.address = this.$route.params.address;
       }
     }
-  },
-  data: function data() {
-    return {
-      alert: false,
-      errors: [],
-      testData: {
-        date: new Date().toISOString().substr(0, 10),
-        time: new Date().toISOString().substr(0, 10),
-        tender_date: null
-      },
-      isEdit: false,
-      dialog: false,
-      address: null,
-      formData: {},
-      formFiles: [],
-      valid: true
-    };
   },
   methods: {
     addForm: function addForm() {
@@ -2129,7 +2126,10 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     validate: function validate() {
-      if (this.$refs.form.validate()) {
+      return this.$refs.form.validate();
+    },
+    openDialog: function openDialog() {
+      if (this.validate()) {
         this.dialog = true;
       }
     },
@@ -2138,19 +2138,6 @@ __webpack_require__.r(__webpack_exports__);
     },
     saveCustomer: function saveCustomer(value) {
       this.formData.customer = value; // console.log("FormData | ", this.formData);
-    },
-    saveProject: function saveProject(value) {
-      this.formData.project = value; // console.log("FormData | ", this.formData);
-    },
-    saveOpponents: function saveOpponents(value) {
-      this.formData.opponents = value; // console.log("FormData | ", this.formData);
-    },
-    saveProducts: function saveProducts(value) {
-      this.formData.products = value; // console.log("FormData | ", this.formData);
-    },
-    saveFiles: function saveFiles(value) {
-      this.formFiles = value;
-      this.formData.files = value; // console.log("FormFiles | ", this.formFiles);
     }
   }
 });
@@ -3830,26 +3817,12 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       tempFiles: [],
-      files: [],
-      ids: []
+      files: []
     };
-  },
-  watch: {
-    filesData: function filesData(value) {
-      console.log(value); //   val.forEach(item => {
-      //     this.opponents.push(item.name);
-      //     this.ids.push(item.id);
-      //   });
-    },
-    ids: function ids(value) {
-      console.log('BOBER');
-      console.log(value);
-      this.$emit("files", value);
-    }
   },
   methods: {
     removeFile: function removeFile(index) {
-      this.files.splice(index, 1); //   this.sendData();
+      this.filesData.splice(index, 1);
     },
     addFiles: function addFiles(files) {
       var _this = this;
@@ -3858,8 +3831,8 @@ __webpack_require__.r(__webpack_exports__);
       var counter = 0;
       var formData = new FormData();
       files.forEach(function (file) {
-        for (var i = 0; i < _this.files.length; i++) {
-          if (_this.files[i].name === file.name) {
+        for (var i = 0; i < _this.filesData.length; i++) {
+          if (_this.filesData[i].name === file.name) {
             return;
           }
         }
@@ -3878,13 +3851,9 @@ __webpack_require__.r(__webpack_exports__);
           "Content-Type": "multipart/form-data"
         }
       }).then(function (response) {
-        // console.log(response.data);
-        _this.files = response.data;
-
-        _this.files.forEach(function (file) {
-          _this.ids.push(file.id);
+        response.data.forEach(function (file) {
+          _this.filesData.push(file);
         });
-
         _this.tempFiles = [];
       })["catch"](function (error) {
         console.log(error);
@@ -3937,50 +3906,34 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       opponent: null,
-      opponents: [],
-      ids: [],
       model: 1
     };
   },
-  watch: {
-    opponentsData: function opponentsData(val) {
-      var _this = this;
-
-      val.forEach(function (item) {
-        _this.opponents.push(item.name);
-
-        _this.ids.push(item.id);
-      });
-    },
-    ids: function ids(val) {
-      this.$emit("opponents", val);
-    }
-  },
   methods: {
-    input: function input(value) {
-      var _this2 = this;
+    addOpponent: function addOpponent(value) {
+      var _this = this;
 
       if (value == null || /^\s*$/.test(value)) return;
 
-      if (this.opponents.includes(value)) {
-        this.opponent = "";
-        return;
+      for (var i = 0; i < this.opponentsData.length; i++) {
+        if (this.opponentsData[i].name === value) {
+          return;
+        }
       }
 
       var opponent = {
         name: value
       };
       axios.post("/opponent", opponent).then(function (response) {
-        _this2.ids.push(response.data.id);
+        _this.opponentsData.push(response.data);
+
+        _this.opponent = "";
       })["catch"](function (error) {
         console.log(error);
       });
-      this.opponents.push(value);
-      this.opponent = "";
     },
-    remove: function remove(item, i) {
-      this.opponents.splice(i, 1);
-      this.ids.splice(i, 1);
+    remove: function remove(i) {
+      this.opponentsData.splice(i, 1);
     }
   }
 });
@@ -4124,6 +4077,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["productsData"],
+  //TODO: Общую сумму добавить в pivot таблицу
   data: function data() {
     return {
       headers: [{
@@ -4162,24 +4116,8 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   watch: {
-    productsData: function productsData(val) {
-      var _this = this;
-
-      this.products = val;
-      this.products.forEach(function (item) {
-        item.pivot.total = item.pivot.count * item.pivot.price;
-
-        _this.$set(_this.ids, item.id, {
-          price: item.pivot.price,
-          count: item.pivot.count
-        });
-      });
-    },
     search: function search() {
       this.inputArticle();
-    },
-    ids: function ids(value) {
-      this.$emit("products", value);
     }
   },
   created: function created() {
@@ -4187,7 +4125,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     searchProduct: function searchProduct() {
-      var _this2 = this;
+      var _this = this;
 
       if (this.search === null || this.search.length < 4) return;
 
@@ -4200,12 +4138,12 @@ __webpack_require__.r(__webpack_exports__);
       this.isLoading = true;
       axios.get("/data/findProductById/" + this.search).then(function (response) {
         // console.log(response);
-        _this2.entires = response.data.result;
-        _this2.isLoading = false;
+        _this.entires = response.data.result;
+        _this.isLoading = false;
       })["catch"](function (error) {
         console.log(error);
-        _this2.entires = [];
-        _this2.isLoading = false;
+        _this.entires = [];
+        _this.isLoading = false;
       });
     },
     onChangeCount: function onChangeCount(value) {
@@ -4230,11 +4168,11 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     addProduct: function addProduct() {
-      var _this3 = this;
+      var _this2 = this;
 
       if (this.$refs.form.validate()) {
-        for (var i = 0; i < this.products.length; i++) {
-          if (this.product.article == this.products[i].article) {
+        for (var i = 0; i < this.productsData.length; i++) {
+          if (this.product.article == this.productsData[i].article) {
             return;
           }
         }
@@ -4245,39 +4183,39 @@ __webpack_require__.r(__webpack_exports__);
           name: this.product.name
         };
         axios.post("/product", product).then(function (response) {
-          _this3.$set(_this3.ids, response.data.id, {
-            price: _this3.price,
-            count: _this3.count
+          _this2.$set(_this2.ids, response.data.id, {
+            price: _this2.price,
+            count: _this2.count
           });
 
           product.id = response.data.id;
           product.pivot = {
-            price: _this3.price,
-            count: _this3.count,
-            total: _this3.total
+            price: _this2.price,
+            count: _this2.count,
+            total: _this2.total
           };
 
-          _this3.products.push(product);
+          _this2.productsData.push(product);
 
-          _this3.$refs.form.reset();
+          _this2.$refs.form.reset();
 
-          _this3.count = null;
-          _this3.price = null;
-          _this3.total = null;
-          _this3.product = {
+          _this2.count = null;
+          _this2.price = null;
+          _this2.total = null;
+          _this2.product = {
             article: null,
             id: null,
             name: null
           };
-          _this3.entires = [];
-          _this3.dialog = false;
+          _this2.entires = [];
+          _this2.dialog = false;
         })["catch"](function (error) {
           console.log(error);
         });
       }
     },
     removeProduct: function removeProduct(item, index) {
-      this.products.splice(index, 1);
+      this.productsData.splice(index, 1);
       this.$delete(this.ids, item.id);
     },
     closeDialog: function closeDialog() {
@@ -4427,37 +4365,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["address_prop", "isEdit", "projectData"],
+  props: ["isEdit", "projectData"],
   data: function data() {
     return {
       dateMenu: false,
       timeMenu: false,
       tenderMenu: false
     };
-  },
-  watch: {
-    address_prop: function address_prop(value) {
-      this.$set(this.projectData, "address", this.address_prop);
-      this.sendData();
-    }
-  },
-  methods: {
-    sendData: function sendData() {
-      this.$emit("project", {
-        name: this.projectData.name,
-        address: this.projectData.address,
-        work: this.projectData.work,
-        date: this.projectData.date,
-        time: this.projectData.time,
-        tender_date: this.projectData.tender_date
-      });
-    }
   }
 });
 
@@ -40964,11 +40879,9 @@ var render = function() {
                 [
                   _c("ProjectComponent", {
                     attrs: {
-                      address_prop: _vm.address,
                       isEdit: _vm.isEdit,
-                      projectData: _vm.testData
-                    },
-                    on: { project: _vm.saveProject, files: _vm.saveFiles }
+                      projectData: _vm.project.project
+                    }
                   })
                 ],
                 1
@@ -40979,8 +40892,7 @@ var render = function() {
                 { attrs: { cols: "12" } },
                 [
                   _c("FileComponent", {
-                    attrs: { filesData: _vm.testData.files },
-                    on: { files: _vm.saveFiles }
+                    attrs: { filesData: _vm.project.files }
                   })
                 ],
                 1
@@ -40991,8 +40903,7 @@ var render = function() {
                 { attrs: { cols: "12", md: "5" } },
                 [
                   _c("OpponentComponent", {
-                    attrs: { opponentsData: _vm.testData.opponents },
-                    on: { opponents: _vm.saveOpponents }
+                    attrs: { opponentsData: _vm.project.opponents }
                   })
                 ],
                 1
@@ -41003,8 +40914,7 @@ var render = function() {
                 { attrs: { cols: "12", md: "7" } },
                 [
                   _c("ProductComponent", {
-                    attrs: { productsData: _vm.testData.products },
-                    on: { products: _vm.saveProducts }
+                    attrs: { productsData: _vm.project.products }
                   })
                 ],
                 1
@@ -41017,7 +40927,7 @@ var render = function() {
             "v-btn",
             {
               attrs: { block: "", color: "indigo", outlined: "" },
-              on: { click: _vm.validate }
+              on: { click: _vm.openDialog }
             },
             [_vm._v(_vm._s(_vm.isEdit ? "Изменить проект" : "Добавить проект"))]
           ),
@@ -43214,14 +43124,14 @@ var render = function() {
             }
           }),
           _vm._v(" "),
-          _vm.files != undefined && _vm.files.length != 0
+          _vm.filesData != undefined && _vm.filesData.length != 0
             ? _c(
                 "v-list",
                 { attrs: { flat: "" } },
                 [
                   _c(
                     "v-list-item-group",
-                    _vm._l(_vm.files, function(file, index) {
+                    _vm._l(_vm.filesData, function(file, index) {
                       return _c(
                         "v-list-item",
                         { key: index },
@@ -43307,10 +43217,10 @@ var render = function() {
                     ) {
                       return null
                     }
-                    return _vm.input(_vm.opponent)
+                    return _vm.addOpponent(_vm.opponent)
                   },
                   "click:append": function($event) {
-                    return _vm.input(_vm.opponent)
+                    return _vm.addOpponent(_vm.opponent)
                   }
                 },
                 model: {
@@ -43322,7 +43232,7 @@ var render = function() {
                 }
               }),
               _vm._v(" "),
-              _vm.opponents.length
+              _vm.opponentsData.length
                 ? _c(
                     "v-list",
                     { attrs: { flat: "" } },
@@ -43339,13 +43249,13 @@ var render = function() {
                             expression: "model"
                           }
                         },
-                        _vm._l(_vm.opponents, function(item, i) {
+                        _vm._l(_vm.opponentsData, function(item, i) {
                           return _c(
                             "v-list-item",
                             { key: i },
                             [
                               _c("v-list-item-title", {
-                                domProps: { textContent: _vm._s(item) }
+                                domProps: { textContent: _vm._s(item.name) }
                               }),
                               _vm._v(" "),
                               _c(
@@ -43786,12 +43696,12 @@ var render = function() {
                 1
               ),
               _vm._v(" "),
-              _vm.products.length
+              _vm.productsData.length
                 ? _c("v-data-table", {
                     staticClass: "elevation-1",
                     attrs: {
                       headers: _vm.headers,
-                      items: _vm.products,
+                      items: _vm.productsData,
                       "item-key": "name"
                     },
                     scopedSlots: _vm._u(
@@ -43895,7 +43805,6 @@ var render = function() {
                     }
                   ]
                 },
-                on: { change: _vm.sendData },
                 model: {
                   value: _vm.projectData.name,
                   callback: function($$v) {
@@ -43916,7 +43825,6 @@ var render = function() {
                   ],
                   readonly: ""
                 },
-                on: { change: _vm.sendData },
                 model: {
                   value: _vm.projectData.address,
                   callback: function($$v) {
@@ -43933,7 +43841,6 @@ var render = function() {
                   outlined: "",
                   label: "Проделанная работа"
                 },
-                on: { change: _vm.sendData },
                 model: {
                   value: _vm.projectData.work,
                   callback: function($$v) {
@@ -44023,8 +43930,7 @@ var render = function() {
                             on: {
                               input: function($event) {
                                 _vm.dateMenu = false
-                              },
-                              change: _vm.sendData
+                              }
                             },
                             model: {
                               value: _vm.projectData.date,
@@ -44119,8 +44025,7 @@ var render = function() {
                             on: {
                               input: function($event) {
                                 _vm.timeMenu = false
-                              },
-                              change: _vm.sendData
+                              }
                             },
                             model: {
                               value: _vm.projectData.time,
@@ -44211,8 +44116,7 @@ var render = function() {
                             on: {
                               input: function($event) {
                                 _vm.tenderMenu = false
-                              },
-                              change: _vm.sendData
+                              }
                             },
                             model: {
                               value: _vm.projectData.tender_date,

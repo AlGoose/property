@@ -13,7 +13,7 @@ class ManagerController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware(['auth', 'admin']);
     }
     /**
      * Display a listing of the resource.
@@ -22,10 +22,6 @@ class ManagerController extends Controller
      */
     public function index(Request $request)
     {
-        if (\Auth::user()->id != 1) {
-            abort(403);
-        }
-
         $managers = User::all();
         if ($request->ajax()) return $managers;
 
@@ -105,10 +101,6 @@ class ManagerController extends Controller
      */
     public function destroy($id)
     {
-        if (\Auth::user()->id != 1) {
-            abort(403);
-        }
-
         if ($id == 1) {
             abort(403);
         }

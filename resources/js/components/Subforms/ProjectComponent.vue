@@ -6,7 +6,6 @@
         v-model="projectData.name"
         label="Название"
         outlined
-        @change="sendData"
         :readonly="isEdit"
         :rules="[v => !!v || 'Введите название']"
       ></v-text-field>
@@ -15,7 +14,6 @@
         label="Адрес"
         outlined
         :rules="[v => !!v || 'Введите адрес']"
-        @change="sendData"
         readonly
       ></v-text-field>
       <v-textarea
@@ -24,8 +22,8 @@
         no-resize
         outlined
         label="Проделанная работа"
-        @change="sendData"
       ></v-textarea>
+      <!-- @change="sendData" -->
 
       <v-row>
         <v-col cols="12" md="4">
@@ -53,7 +51,6 @@
               locale="Rus"
               v-model="projectData.date"
               @input="dateMenu = false"
-              @change="sendData"
             ></v-date-picker>
           </v-menu>
         </v-col>
@@ -84,7 +81,6 @@
               locale="Rus"
               v-model="projectData.time"
               @input="timeMenu = false"
-              @change="sendData"
             ></v-date-picker>
           </v-menu>
         </v-col>
@@ -114,7 +110,6 @@
               locale="Rus"
               v-model="projectData.tender_date"
               @input="tenderMenu = false"
-              @change="sendData"
             ></v-date-picker>
           </v-menu>
         </v-col>
@@ -125,32 +120,12 @@
 
 <script>
 export default {
-  props: ["address_prop", "isEdit", "projectData"],
+  props: ["isEdit", "projectData"],
 
   data: () => ({
     dateMenu: false,
     timeMenu: false,
     tenderMenu: false
-  }),
-
-  watch: {
-    address_prop(value) {
-      this.$set(this.projectData, "address", this.address_prop);
-      this.sendData();
-    }
-  },
-
-  methods: {
-    sendData() {
-      this.$emit("project", {
-        name: this.projectData.name,
-        address: this.projectData.address,
-        work: this.projectData.work,
-        date: this.projectData.date,
-        time: this.projectData.time,
-        tender_date: this.projectData.tender_date
-      });
-    }
-  }
+  })
 };
 </script>

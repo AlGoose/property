@@ -12,9 +12,9 @@
         @change="addFiles"
       ></v-file-input>
 
-      <v-list flat v-if="files != undefined && files.length != 0">
+      <v-list flat v-if="filesData != undefined && filesData.length != 0">
         <v-list-item-group>
-          <v-list-item v-for="(file, index) in files" :key="index">
+          <v-list-item v-for="(file, index) in filesData" :key="index">
             <v-list-item-title v-text="file.name"></v-list-item-title>
             <v-icon @click="removeFile(index)">mdi-minus-circle-outline</v-icon>
           </v-list-item>
@@ -31,29 +31,11 @@ export default {
   data: () => ({
     tempFiles: [],
     files: [],
-    ids: []
   }),
-
-  watch: {
-    filesData(value) {
-      console.log(value);
-      //   val.forEach(item => {
-      //     this.opponents.push(item.name);
-      //     this.ids.push(item.id);
-      //   });
-    },
-
-    ids(value) {
-      console.log('BOBER');
-      console.log(value);
-        this.$emit("files", value);
-    }
-  },
 
   methods: {
     removeFile(index) {
-      this.files.splice(index, 1);
-      //   this.sendData();
+      this.filesData.splice(index, 1);
     },
 
     addFiles(files) {
@@ -63,8 +45,8 @@ export default {
       let formData = new FormData();
 
       files.forEach(file => {
-        for (let i = 0; i < this.files.length; i++) {
-          if (this.files[i].name === file.name) {
+        for (let i = 0; i < this.filesData.length; i++) {
+          if (this.filesData[i].name === file.name) {
             return;
           }
         }
@@ -84,10 +66,8 @@ export default {
           }
         })
         .then(response => {
-          // console.log(response.data);
-          this.files = response.data;
-          this.files.forEach(file => {
-            this.ids.push(file.id);
+          response.data.forEach(file => {
+            this.filesData.push(file);
           });
           this.tempFiles = [];
         })

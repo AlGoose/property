@@ -101,9 +101,9 @@
         </v-row>
 
         <v-data-table
-          v-if="products.length"
+          v-if="productsData.length"
           :headers="headers"
-          :items="products"
+          :items="productsData"
           item-key="name"
           class="elevation-1"
         >
@@ -126,7 +126,7 @@
 
 <script>
 export default {
-  props: ["productsData"],
+  props: ["productsData"], //TODO: Общую сумму добавить в pivot таблицу
 
   data: () => ({
     headers: [
@@ -162,23 +162,8 @@ export default {
   }),
 
   watch: {
-    productsData(val) {
-      this.products = val;
-      this.products.forEach(item => {
-        item.pivot.total = item.pivot.count * item.pivot.price;
-        this.$set(this.ids, item.id, {
-          price: item.pivot.price,
-          count: item.pivot.count
-        });
-      });
-    },
-
     search() {
       this.inputArticle();
-    },
-
-    ids(value) {
-      this.$emit("products", value);
     }
   },
 
@@ -237,8 +222,8 @@ export default {
 
     addProduct() {
       if (this.$refs.form.validate()) {
-        for (let i = 0; i < this.products.length; i++) {
-          if (this.product.article == this.products[i].article) {
+        for (let i = 0; i < this.productsData.length; i++) {
+          if (this.product.article == this.productsData[i].article) {
             return;
           }
         }
@@ -262,7 +247,7 @@ export default {
               count: this.count,
               total: this.total
             };
-            this.products.push(product);
+            this.productsData.push(product);
             this.$refs.form.reset();
             this.count = null;
             this.price = null;
@@ -282,7 +267,7 @@ export default {
     },
 
     removeProduct(item, index) {
-      this.products.splice(index, 1);
+      this.productsData.splice(index, 1);
       this.$delete(this.ids, item.id);
     },
 

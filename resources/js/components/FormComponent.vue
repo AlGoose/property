@@ -15,22 +15,16 @@
           ></CustomerComponent>
         </v-col>
         <v-col cols="12">
-          <ProjectComponent
-            :address_prop="address"
-            :isEdit="isEdit"
-            :projectData="testData"
-            @project="saveProject"
-            @files="saveFiles"
-          ></ProjectComponent>
+          <ProjectComponent :isEdit="isEdit" :projectData="project.project"></ProjectComponent>
         </v-col>
         <v-col cols="12">
-          <FileComponent :filesData="testData.files" @files="saveFiles"></FileComponent>
+          <FileComponent :filesData="project.files"></FileComponent>
         </v-col>
         <v-col cols="12" md="5">
-          <OpponentComponent :opponentsData="testData.opponents" @opponents="saveOpponents"></OpponentComponent>
+          <OpponentComponent :opponentsData="project.opponents"></OpponentComponent>
         </v-col>
         <v-col cols="12" md="7">
-          <ProductComponent :productsData="testData.products" @products="saveProducts"></ProductComponent>
+          <ProductComponent :productsData="project.products"></ProductComponent>
         </v-col>
       </v-row>
 
@@ -38,7 +32,7 @@
         block
         color="indigo"
         outlined
-        @click="validate"
+        @click="openDialog"
       >{{isEdit ? 'Изменить проект' : 'Добавить проект'}}</v-btn>
 
       <v-row justify="center">
@@ -79,7 +73,6 @@
 </template>
 
 <script>
-import { mask } from "vue-the-mask";
 import DealerComponent from "./Subforms/DealerComponent";
 import CustomerComponent from "./Subforms/CustomerComponent";
 import OpponentComponent from "./Subforms/OpponentComponent";
@@ -96,54 +89,60 @@ export default {
     ProjectComponent,
     FileComponent
   },
-  directives: { mask },
+
+  data: () => ({
+    alert: false,
+    valid: true,
+    dialog: false,
+    errors: [],
+    testData: {},
+    formData: {},
+    project: {
+      project: {
+        address: null,
+        date: new Date().toISOString().substr(0, 10),
+        time: new Date().toISOString().substr(0, 10),
+        tender_date: null
+      },
+      dealer: {},
+      customer: {},
+      opponents: [],
+      products: [],
+      files: []
+    }
+  }),
+
+  computed: {
+    isEdit() {
+      return this.$route.name === "edit";
+    }
+  },
 
   mounted() {
-    if (this.$route.name === "edit") {
+    if (this.isEdit) {
       console.log("EDIT");
-      this.isEdit = true;
       if (window.project == undefined) {
         console.log("AXIOS");
-
         axios
           .get("/project/" + this.$route.params.id + "/edit")
           .then(response => {
-            this.testData = response.data;
-            console.log("EDIT_MODE_DATA", this.testData);
-            this.address = this.testData.address;
-            console.log("FORM_ADDRESS", this.address);
+            this.testData = response.data; //TODO: REMOVE
+            this.project = response.data;
           })
           .catch(error => {
             console.log(error);
           });
       } else {
         console.log("BLADE");
-        this.testData = window.project;
-        this.address = this.testData.address;
-        console.log("FORM_ADDRESS", this.address);
+        this.testData = window.project; //TODO: REMOVE
+        this.project = window.project;
       }
     } else {
       if (this.$route.params.address) {
-        this.address = this.$route.params.address;
+        this.project.project.address = this.$route.params.address;
       }
     }
   },
-
-  data: () => ({
-    alert: false,
-    errors: [],
-    testData: {
-      date: new Date().toISOString().substr(0, 10),
-      time: new Date().toISOString().substr(0, 10),
-      tender_date: null
-    },
-    isEdit: false,
-    dialog: false,
-    address: null,
-    formData: {},
-    formFiles: [],
-    valid: true
-  }),
 
   methods: {
     addForm() {
@@ -195,7 +194,11 @@ export default {
     },
 
     validate() {
-      if (this.$refs.form.validate()) {
+      return this.$refs.form.validate();
+    },
+
+    openDialog() {
+      if (this.validate()) {
         this.dialog = true;
       }
     },
@@ -208,27 +211,6 @@ export default {
     saveCustomer(value) {
       this.formData.customer = value;
       // console.log("FormData | ", this.formData);
-    },
-
-    saveProject(value) {
-      this.formData.project = value;
-      // console.log("FormData | ", this.formData);
-    },
-
-    saveOpponents(value) {
-      this.formData.opponents = value;
-      // console.log("FormData | ", this.formData);
-    },
-
-    saveProducts(value) {
-      this.formData.products = value;
-      // console.log("FormData | ", this.formData);
-    },
-
-    saveFiles(value) {
-      this.formFiles = value;
-      this.formData.files = value;
-      // console.log("FormFiles | ", this.formFiles);
     }
   }
 };

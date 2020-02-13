@@ -29,9 +29,9 @@ class FileProject extends Model
             $attributes['name'] = $uploadedFile->getClientOriginalName();
             $hash = md5_file($uploadedFile->path());
             $filename = $hash . '.' . $uploadedFile->extension();
-            $dir = substr($hash, 0, 3);
+            $dir = substr($hash, 0, 2);
 
-            $path = $uploadedFile->storeAs('project_files/' . $dir, $filename);
+            $path = $uploadedFile->storeAs('public/project_files/' . $dir, $filename);
 
             return self::firstOrCreate(['path' => $path], $attributes);
         }
