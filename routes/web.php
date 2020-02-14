@@ -26,10 +26,10 @@ Route::resource('/project', 'ProjectController');
 Route::resource('/managers', 'ManagerController');
 Route::post('/managers/{id}/sendPassword', 'ManagerController@sendPassword');
 
-Route::resource('/file', 'FileController');
 Route::post('/project/{project}/files', 'ProjectController@saveFile');
 Route::put('/project/{project}/files', 'ProjectController@updateFile');
 Route::delete('/project/{project}/files/{fileProject}', 'ProjectController@deleteFile');
+Route::resource('/file', 'FileController');
 
 Route::get('/{any}', 'SinglePageController@index')->middleware('auth')->where(['any' => '.*']);
 

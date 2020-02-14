@@ -156,7 +156,11 @@
                     <v-list-item-content>
                       <v-list-item-title>{{file.name}}</v-list-item-title>
                     </v-list-item-content>
-                    <v-icon>mdi-download-outline</v-icon>
+                    <a :href="file.src" :download="file.name">
+                      <v-btn color="indigo" icon>
+                        <v-icon>mdi-download-outline</v-icon>
+                      </v-btn>
+                    </a>
                   </v-list-item>
                 </v-list>
               </v-expansion-panel-content>

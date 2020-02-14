@@ -61,7 +61,6 @@ class ProjectController extends Controller
     public function create()
     {
         return redirect('/');
-        // return view('welcome');
     }
 
     /**
@@ -78,16 +77,16 @@ class ProjectController extends Controller
         $project->user()->associate(\Auth::user());
 
         $project->customer()->associate(Customer::find($request->customer['customer_id']));
-        $project->customer_staff()->associate(Staff::find($request->customer['customer_staff_id']));
+        $project->customer_staff()->associate(Staff::find($request->customer['staff_id']));
 
         $project->dealer()->associate(Dealer::find($request->dealer['dealer_id']));
-        $project->dealer_staff()->associate(Staff::find($request->dealer['dealer_staff_id']));
+        $project->dealer_staff()->associate(Staff::find($request->dealer['staff_id']));
 
         $project->save();
 
         $project->opponents()->attach($request->opponents);
         $project->products()->attach($request->products);
-        // $project->files()->attach($request->files);
+        $project->files()->attach($request->documents);
 
         return $project->id;
     }
@@ -148,8 +147,6 @@ class ProjectController extends Controller
         if ($request->ajax()) return json_encode($res);
 
         return view('form')->with('project', $res);
-        // \Debugbar::info($res);
-        // return '123';
     }
 
     /**
@@ -162,27 +159,26 @@ class ProjectController extends Controller
     public function update(Request $request, Project $project)
     {
         // \Debugbar::info($request->all());
-
         $project->work = $request->project['work'];
         $project->date = $request->project['date'];
-        $project->time = $request->project['time'];
-        $project->customer_staff()->associate(Staff::find($request->customer['customer_staff_id']));
-        $project->dealer_staff()->associate(Staff::find($request->dealer['dealer_staff_id']));
+        $project->tender_date = $request->project['tender_date'];
+        $project->customer_staff()->associate(Staff::find($request->customer['staff_id']));
+        $project->dealer_staff()->associate(Staff::find($request->dealer['staff_id']));
         $project->save();
 
         $project->opponents()->sync($request->opponents);
         $project->products()->sync($request->products);
 
-        // $res = $project->files()->sync($request->files);
+        $res = $project->files()->sync($request->documents);
 
-        // if ($res['detached']) {
-        //     foreach ($res['detached'] as $id) {
-        //         $file = FileProject::find($id);
-        //         if (!count($file->projects)) {
-        //             $file->delete();
-        //         }
-        //     }
-        // }
+        if ($res['detached']) {
+            foreach ($res['detached'] as $id) {
+                $file = FileProject::find($id);
+                if (!count($file->projects)) {
+                    $file->delete();
+                }
+            }
+        }
     }
 
     /**
@@ -195,57 +191,4 @@ class ProjectController extends Controller
     {
         Project::destroy($id);
     }
-
-    // public function saveFile(Project $project, Request $request)
-    // {
-    //     $filesCollection = [];
-    //     if ($request->hasFile('files')) {
-    //         // \Debugbar::info('OK');
-    //         $uploadFiles = $request->allFiles()['files'];
-
-    //         /**@var \Illuminate\Http\UploadedFile $uploadFile */
-    //         foreach ($uploadFiles as $uploadFile) {
-    //             $filesCollection[] = FileProject::store($uploadFile)->id;
-    //         }
-    //         \Debugbar::info($filesCollection);
-
-    //         $project->files()->attach($filesCollection);
-    //     }
-    //     return $project->files;
-    // }
-
-    // public function updateFile(Project $project, Request $request)
-    // {
-    //     dd($request->all());
-    //     $filesCollection = [];
-    //     if ($request->hasFile('files')) {
-    //         // \Debugbar::info('OK');
-    //         $uploadFiles = $request->allFiles()['files'];
-
-    //         /**@var \Illuminate\Http\UploadedFile $uploadFile */
-    //         foreach ($uploadFiles as $uploadFile) {
-    //             $filesCollection[] = FileProject::store($uploadFile)->id;
-    //         }
-
-    //         $res =  $project->files()->sync($filesCollection);
-
-    //         if ($res['detached']) {
-    //             foreach ($res['detached'] as $id) {
-    //                 $file = FileProject::find($id);
-    //                 if (!count($file->projects)) {
-    //                     $file->delete();
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
-    // public function deleteFile(Project $project, FileProject $fileProject, Request $request)
-    // {
-    //     $project->files()->detach($fileProject->id);
-    //     $fileProject->refresh();
-    //     if (!count($fileProject->projects)) {
-    //         $fileProject->delete();
-    //     }
-    // }
 }

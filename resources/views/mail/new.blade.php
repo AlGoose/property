@@ -6,7 +6,7 @@
  <body>
   <h2>Я вас категорически приветствую, {{$user->name}}!</h2>
   <p>Пройдите по ссылке ниже, чтобы закончить регистрацию.</p>
-  <a href="{{ url('http://property.test/password/reset/' . $token . '?email=' . $user->email) }}"
+  <a href="{{ url('/password/reset/' . $token . '?email=' . $user->email) }}"
     style="display: inline-block;
         background: #4b0082;
         color: #fff;

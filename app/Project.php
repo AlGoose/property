@@ -29,7 +29,8 @@ class Project extends Model
         'time',
         'tender_date',
         'work',
-        'kladrId'
+        'kladrId',
+        'isTenderWon'
     ];
 
     public function user()

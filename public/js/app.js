@@ -2062,16 +2062,13 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     if (this.isEdit) {
-      // console.log("EDIT");
       if (window.project == undefined) {
-        // console.log("AXIOS");
         axios.get("/project/" + this.$route.params.id + "/edit").then(function (response) {
           _this.project = response.data;
         })["catch"](function (error) {
           console.log(error);
         });
       } else {
-        // console.log("BLADE");
         this.project = window.project;
       }
     } else {
@@ -2084,28 +2081,53 @@ __webpack_require__.r(__webpack_exports__);
     addForm: function addForm() {
       var _this2 = this;
 
-      this.project.project.kladrId = this.$route.params.kladrId;
-      axios.post("/project", this.project).then(function (response) {
-        // console.log(response.data);
-        _this2.dialog = false; // this.$router.push({
-        //   name: "home"
-        // });
-      })["catch"](function (error) {
-        console.log("ERROOOOOOOR", error.response);
-        _this2.errors = error.response.data.errors;
-        _this2.dialog = false;
-        _this2.alert = true;
+      var request = this.prepareProject();
+      this.sendRequest("post", "/project", request, function () {
+        _this2.$router.push({
+          name: "home"
+        });
       });
     },
     editForm: function editForm() {
       var _this3 = this;
 
-      axios.put("/project/" + this.$route.params.id, this.project).then(function (response) {
-        _this3.dialog = false;
-
+      var request = this.prepareProject();
+      this.sendRequest("put", "/project/" + this.$route.params.id, request, function () {
         _this3.$router.go(-1);
+      });
+    },
+    prepareProject: function prepareProject() {
+      var request = {
+        products: {}
+      };
+      request.project = this.project.project;
+      request.project.kladrId = this.$route.params.kladrId;
+      request.customer = this.project.customer;
+      request.dealer = this.project.dealer;
+      request.documents = this.project.files.map(function (item) {
+        return item.id;
+      });
+      request.opponents = this.project.opponents.map(function (item) {
+        return item.id;
+      });
+      this.project.products.forEach(function (item) {
+        request.products[item.id] = {
+          count: item.pivot.count,
+          price: item.pivot.price
+        };
+      });
+      return request;
+    },
+    sendRequest: function sendRequest(type, path, request, callback) {
+      var _this4 = this;
+
+      axios[type](path, request).then(function (response) {
+        _this4.dialog = false;
+        callback();
       })["catch"](function (error) {
-        console.log(error);
+        _this4.errors = error.response.data.errors;
+        _this4.dialog = false;
+        _this4.alert = true;
       });
     },
     validate: function validate() {
@@ -3066,6 +3088,10 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
 //
 //
 //
@@ -42672,9 +42698,33 @@ var render = function() {
                                         1
                                       ),
                                       _vm._v(" "),
-                                      _c("v-icon", [
-                                        _vm._v("mdi-download-outline")
-                                      ])
+                                      _c(
+                                        "a",
+                                        {
+                                          attrs: {
+                                            href: file.src,
+                                            download: file.name
+                                          }
+                                        },
+                                        [
+                                          _c(
+                                            "v-btn",
+                                            {
+                                              attrs: {
+                                                color: "indigo",
+                                                icon: ""
+                                              }
+                                            },
+                                            [
+                                              _c("v-icon", [
+                                                _vm._v("mdi-download-outline")
+                                              ])
+                                            ],
+                                            1
+                                          )
+                                        ],
+                                        1
+                                      )
                                     ],
                                     1
                                   )

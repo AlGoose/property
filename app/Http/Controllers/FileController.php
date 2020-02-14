@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\FileProject;
-use Illuminate\Support\Facades\Storage;
-use App\Project;
 
 class FileController extends Controller
 {
@@ -54,21 +52,8 @@ class FileController extends Controller
 
             /**@var \Illuminate\Http\UploadedFile $uploadFile */
             foreach ($uploadFiles as $uploadFile) {
-                // $filesCollection[] = FileProject::store($uploadFile)->id;
                 $filesCollection[] = FileProject::store($uploadFile);
             }
-
-            // $res = Project::find($request->project_id)->files()->sync($filesCollection);
-
-            // if ($res['detached']) {
-            //     foreach ($res['detached'] as $id) {
-            //         $file = FileProject::find($id);
-            //         $success = Storage::delete($file->path);
-            //         if ($success) {
-            //             $file->delete();
-            //         }
-            //     }
-            // }
         }
         return $filesCollection;
     }
@@ -81,10 +66,7 @@ class FileController extends Controller
      */
     public function show($id)
     {
-        //Выгрузка файла?
-        // \Debugbar::info(Project::find(4)->files()->get());
-        \Debugbar::info(FileProject::find(14)->projects);
-        return '123';
+        //
     }
 
     /**
@@ -107,7 +89,7 @@ class FileController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //Как правильно?
+        //
     }
 
     /**
@@ -118,10 +100,6 @@ class FileController extends Controller
      */
     public function destroy($id)
     {
-        // $file = FileProject::find($id);
-        // $result = Storage::delete($file->path);
-        // if ($result) {
-        //     $file->delete();
-        // }
+        //
     }
 }

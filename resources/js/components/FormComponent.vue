@@ -123,9 +123,7 @@ export default {
 
   mounted() {
     if (this.isEdit) {
-      // console.log("EDIT");
       if (window.project == undefined) {
-        // console.log("AXIOS");
         axios
           .get("/project/" + this.$route.params.id + "/edit")
           .then(response => {
@@ -135,7 +133,6 @@ export default {
             console.log(error);
           });
       } else {
-        // console.log("BLADE");
         this.project = window.project;
       }
     } else {
@@ -147,33 +144,61 @@ export default {
 
   methods: {
     addForm() {
-      this.project.project.kladrId = this.$route.params.kladrId;
-      axios
-        .post("/project", this.project)
-        .then(response => {
-          // console.log(response.data);
-          this.dialog = false;
-          // this.$router.push({
-          //   name: "home"
-          // });
-        })
-        .catch(error => {
-          console.log("ERROOOOOOOR", error.response);
-          this.errors = error.response.data.errors;
-          this.dialog = false;
-          this.alert = true;
+      let request = this.prepareProject();
+      this.sendRequest("post", "/project", request, () => {
+        this.$router.push({
+          name: "home"
         });
+      });
     },
 
     editForm() {
-      axios
-        .put("/project/" + this.$route.params.id, this.project)
+      let request = this.prepareProject();
+      this.sendRequest(
+        "put",
+        "/project/" + this.$route.params.id,
+        request,
+        () => {
+          this.$router.go(-1);
+        }
+      );
+    },
+
+    prepareProject() {
+      let request = {
+        products: {}
+      };
+
+      request.project = this.project.project;
+      request.project.kladrId = this.$route.params.kladrId;
+      request.customer = this.project.customer;
+      request.dealer = this.project.dealer;
+      request.documents = this.project.files.map(item => {
+        return item.id;
+      });
+      request.opponents = this.project.opponents.map(item => {
+        return item.id;
+      });
+      this.project.products.forEach(item => {
+        request.products[item.id] = {
+          count: item.pivot.count,
+          price: item.pivot.price
+        };
+      });
+
+      return request;
+    },
+
+    sendRequest(type, path, request, callback) {
+      axios[type](path, request)
         .then(response => {
           this.dialog = false;
-          this.$router.go(-1);
+          callback();
         })
         .catch(error => {
-          console.log(error);
+          this.errors = error.response.data.errors;
+          this.dialog = false;
+          this.alert = true;
         });
     },
 

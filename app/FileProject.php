@@ -13,6 +13,8 @@ class FileProject extends Model
      *
      * @var array
      */
+    protected $appends = ['src'];
+
     protected $fillable = [
         'name',
         'path'
@@ -41,5 +43,10 @@ class FileProject extends Model
     public function delete() {
         Storage::delete($this->path);
         return parent::delete();
+    }
+
+    public function getSrcAttribute()
+    {
+        return Storage::url($this->path);
     }
 }
