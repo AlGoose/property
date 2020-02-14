@@ -69,7 +69,7 @@ class ProjectController extends Controller
      */
     public function store(ProjectRequest $request)
     {
-        // \Debugbar::info($request->all());
+        \Debugbar::info($request->all());
         $project = new Project($request->project);
 
         $project->user()->associate(\Auth::user());
