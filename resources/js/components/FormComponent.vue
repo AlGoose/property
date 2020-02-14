@@ -128,12 +128,18 @@ export default {
           .get("/project/" + this.$route.params.id + "/edit")
           .then(response => {
             this.project = response.data;
+            this.project.products.forEach(item => {
+              item.pivot.total = item.pivot.count * item.pivot.price;
+            });
           })
           .catch(error => {
             console.log(error);
           });
       } else {
         this.project = window.project;
+        this.project.products.forEach(item => {
+          item.pivot.total = item.pivot.count * item.pivot.price;
+        });
       }
     } else {
       if (this.$route.params.address) {

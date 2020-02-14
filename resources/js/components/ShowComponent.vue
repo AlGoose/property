@@ -1,8 +1,11 @@
 <template>
   <div>
     <v-container>
-      <v-card outlined>
-        <v-card-title>{{project.name.data}}</v-card-title>
+      <v-row justify="center" v-if="!isReady">
+        <v-progress-circular :size="70" :width="7" color="indigo" indeterminate></v-progress-circular>
+      </v-row>
+      <v-card outlined v-else>
+        <v-card-title>{{project.project.name}}</v-card-title>
         <v-card-text>
           <v-expansion-panels multiple focusable>
             <v-expansion-panel>
@@ -13,13 +16,13 @@
                     <v-card flat>
                       <v-card-text>
                         <p class="title">Название</p>
-                        <p class="body-1">{{project.name.data}}</p>
+                        <p class="body-1">{{project.project.name}}</p>
                         <p class="title">Адрес</p>
-                        <p class="body-1">{{project.address.data}}</p>
+                        <p class="body-1">{{project.project.address}}</p>
                         <p class="title">Дата</p>
-                        <p class="body-1">{{project.date.data}}</p>
+                        <p class="body-1">{{project.project.date}}</p>
                         <p class="title">Время</p>
-                        <p class="body-1">{{project.time.data}}</p>
+                        <p class="body-1">{{project.project.time}}</p>
                       </v-card-text>
                     </v-card>
                   </v-col>
@@ -29,7 +32,7 @@
                       <v-card-title>Проделанная работа</v-card-title>
                       <v-card-text>
                         <v-textarea
-                          :value="project.work.data"
+                          :value="project.project.work"
                           no-resize
                           height="200px"
                           solo
@@ -51,13 +54,13 @@
                     <v-card flat>
                       <v-card-text>
                         <p class="title">ИНН</p>
-                        <p class="body-1">{{dealer.inn.data}}</p>
+                        <p class="body-1">{{project.dealer.inn}}</p>
                         <p class="title">КПП</p>
-                        <p class="body-1">{{dealer.kpp.data}}</p>
+                        <p class="body-1">{{project.dealer.kpp}}</p>
                         <p class="title">Имя</p>
-                        <p class="body-1">{{dealer.name.data}}</p>
+                        <p class="body-1">{{project.dealer.name}}</p>
                         <p class="title">Адрес</p>
-                        <p class="body-1">{{dealer.address.data}}</p>
+                        <p class="body-1">{{project.dealer.address}}</p>
                       </v-card-text>
                     </v-card>
                   </v-col>
@@ -66,11 +69,11 @@
                     <v-card flat>
                       <v-card-text>
                         <p class="title">Представитель</p>
-                        <p class="body-1">{{dealer_staff.name.data}}</p>
+                        <p class="body-1">{{project.dealer.current_staff.name}}</p>
                         <p class="title">Телефон</p>
-                        <p class="body-1">{{dealer_staff.phone.data}}</p>
+                        <p class="body-1">{{project.dealer.current_staff.phone}}</p>
                         <p class="title">Почта</p>
-                        <p class="body-1">{{dealer_staff.email.data}}</p>
+                        <p class="body-1">{{project.dealer.current_staff.email}}</p>
                       </v-card-text>
                     </v-card>
                   </v-col>
@@ -86,13 +89,13 @@
                     <v-card flat>
                       <v-card-text>
                         <p class="title">ИНН</p>
-                        <p class="body-1">{{customer.inn.data}}</p>
+                        <p class="body-1">{{project.customer.inn}}</p>
                         <p class="title">КПП</p>
-                        <p class="body-1">{{customer.kpp.data}}</p>
+                        <p class="body-1">{{project.customer.kpp}}</p>
                         <p class="title">Имя</p>
-                        <p class="body-1">{{customer.name.data}}</p>
+                        <p class="body-1">{{project.customer.name}}</p>
                         <p class="title">Адрес</p>
-                        <p class="body-1">{{customer.address.data}}</p>
+                        <p class="body-1">{{project.customer.address}}</p>
                       </v-card-text>
                     </v-card>
                   </v-col>
@@ -101,11 +104,11 @@
                     <v-card flat>
                       <v-card-text>
                         <p class="title">Представитель</p>
-                        <p class="body-1">{{customer_staff.name.data}}</p>
+                        <p class="body-1">{{project.customer.current_staff.name}}</p>
                         <p class="title">Телефон</p>
-                        <p class="body-1">{{customer_staff.phone.data}}</p>
+                        <p class="body-1">{{project.customer.current_staff.phone}}</p>
                         <p class="title">Почта</p>
-                        <p class="body-1">{{customer_staff.email.data}}</p>
+                        <p class="body-1">{{project.customer.current_staff.email}}</p>
                       </v-card-text>
                     </v-card>
                   </v-col>
@@ -117,7 +120,7 @@
               <v-expansion-panel-header class="title">Конкуренты</v-expansion-panel-header>
               <v-expansion-panel-content>
                 <v-list>
-                  <v-list-item v-for="(item, i) in opponents" :key="'C'+ i">
+                  <v-list-item v-for="(item, i) in project.opponents" :key="'C'+ i">
                     <v-list-item-content>
                       <v-list-item-title>{{item.name}}</v-list-item-title>
                     </v-list-item-content>
@@ -130,9 +133,9 @@
               <v-expansion-panel-header class="title">Детали</v-expansion-panel-header>
               <v-expansion-panel-content>
                 <v-data-table
-                  v-if="products.length"
+                  v-if="project.products.length"
                   :headers="headers"
-                  :items="products"
+                  :items="project.products"
                   item-key="name"
                   class="elevation-1"
                 >
@@ -152,7 +155,7 @@
               <v-expansion-panel-header class="title">Документы</v-expansion-panel-header>
               <v-expansion-panel-content>
                 <v-list>
-                  <v-list-item v-for="(file, i) in files" :key="'C'+ i">
+                  <v-list-item v-for="(file, i) in project.files" :key="'C'+ i">
                     <v-list-item-content>
                       <v-list-item-title>{{file.name}}</v-list-item-title>
                     </v-list-item-content>
@@ -174,15 +177,15 @@
             class="ma-2"
             outlined
             color="teal"
-            v-if="user_id === auth_id"
+            v-if="project.project.user_id === auth_id"
             @click="edit"
           >Редактировать</v-btn>
           <v-btn
             class="ma-2"
             outlined
             color="error"
-            v-if="user_id === auth_id"
-            @click="validate"
+            v-if="project.project.user_id === auth_id"
+            @click="dialog = true"
           >Удалить</v-btn>
         </v-card-actions>
       </v-card>
@@ -205,29 +208,10 @@
 
 <script>
 export default {
-  mounted: function() {
-    this.project_id = this.$route.params.id;
-    this.auth_id = window.current_user.id;
-
-    let form;
-
-    if (window.project == undefined) {
-      axios
-        .get("/project/" + this.project_id)
-        .then(response => {
-          // console.log("SHOW_COMPONENT", response.data);
-          this.initial(response.data);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    } else {
-      this.initial(window.project);
-    }
-  },
-
   data() {
     return {
+      isReady: false,
+      dialog: false,
       headers: [
         {
           text: "Название продукта",
@@ -238,137 +222,48 @@ export default {
         { text: "Цена за единицу (₽)", value: "pivot.price" },
         { text: "Общая стоимость (₽)", value: "pivot.total" }
       ],
-      dialog: false,
       auth_id: "",
-      user_id: "",
-      project_id: "",
-      dealer: {
-        inn: {
-          label: "ИНН",
-          data: ""
-        },
-        kpp: {
-          label: "КПП",
-          data: ""
-        },
-        name: {
-          label: "Имя",
-          data: ""
-        },
-        address: {
-          label: "Адрес",
-          data: ""
-        }
-      },
-      dealer_staff: {
-        name: {
-          label: "Представитель",
-          data: ""
-        },
-        phone: {
-          label: "Телефон",
-          data: ""
-        },
-        email: {
-          label: "Почта",
-          data: ""
-        }
-      },
-      customer: {
-        inn: {
-          label: "ИНН",
-          data: ""
-        },
-        kpp: {
-          label: "КПП",
-          data: ""
-        },
-        name: {
-          label: "Имя",
-          data: ""
-        },
-        address: {
-          label: "Адрес",
-          data: ""
-        }
-      },
-      customer_staff: {
-        name: {
-          label: "Представитель",
-          data: ""
-        },
-        phone: {
-          label: "Телефон",
-          data: ""
-        },
-        email: {
-          label: "Почта",
-          data: ""
-        }
-      },
       project: {
-        name: {
-          label: "Название",
-          data: ""
-        },
-        address: {
-          label: "Адрес",
-          data: ""
-        },
-        work: {
-          label: "Работа",
-          data: ""
-        },
-        date: {
-          label: "Дата",
-          data: ""
-        },
-        time: {
-          label: "Время",
-          data: ""
-        }
-      },
-      opponents: [],
-      products: [],
-      files: []
+        project: {},
+        dealer: {},
+        customer: {},
+        opponents: [],
+        products: [],
+        files: []
+      }
     };
   },
 
-  methods: {
-    initial(form) {
-      for (let prop in this.dealer) {
-        this.dealer[prop].data = form.dealer[prop];
-      }
-      for (let prop in this.dealer_staff) {
-        this.dealer_staff[prop].data = form.dealer_staff[prop];
-      }
+  mounted: function() {
+    this.auth_id = window.current_user.id;
 
-      for (let prop in this.customer) {
-        this.customer[prop].data = form.customer[prop];
-      }
-      for (let prop in this.customer_staff) {
-        this.customer_staff[prop].data = form.customer_staff[prop];
-      }
-
-      for (let prop in this.project) {
-        this.project[prop].data = form[prop];
-      }
-
-      this.opponents = form.opponents;
-      this.products = form.products;
-      this.products.forEach(item => {
+    if (window.project == undefined) {
+      axios
+        .get("/project/" + this.$route.params.id)
+        .then(response => {
+          this.project = response.data;
+          this.project.products.forEach(item => {
+            item.pivot.total = item.pivot.count * item.pivot.price;
+          });
+          this.isReady = true;
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    } else {
+      this.project = window.project;
+      this.project.products.forEach(item => {
         item.pivot.total = item.pivot.count * item.pivot.price;
       });
-
-      this.files = form.files;
-
-      this.user_id = form.user_id;
       window.project = undefined;
-    },
+      this.isReady = true;
+    }
+  },
 
+  methods: {
     remove() {
       axios
-        .delete("/project/" + this.project_id)
+        .delete("/project/" + this.$route.params.id)
         .then(response => {
           this.$router.push("/project");
         })
@@ -385,10 +280,6 @@ export default {
 
     back() {
       this.$router.push("/project");
-    },
-
-    validate() {
-      this.dialog = true;
     }
   }
 };

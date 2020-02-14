@@ -112,7 +112,7 @@
               <td>{{ item.name }}</td>
               <td>{{ item.pivot.count }}</td>
               <td>{{ item.pivot.price }}</td>
-              <td>{{ item.pivot.total }}</td>
+              <td>{{ item.pivot.count * item.pivot.price }}</td>
               <td>
                 <v-icon @click="removeProduct(item, index)">mdi-minus-circle-outline</v-icon>
               </td>
@@ -126,7 +126,7 @@
 
 <script>
 export default {
-  props: ["productsData"], //TODO: Общую сумму добавить в pivot таблицу
+  props: ["productsData"],
 
   data: () => ({
     headers: [
@@ -146,6 +146,7 @@ export default {
     valid: true,
     dialog: false,
     isDisabled: false,
+    isLoading: false,
     products: [],
     entires: [],
     search: null,
@@ -156,9 +157,7 @@ export default {
     },
     count: null,
     price: null,
-    total: null,
-    isLoading: false,
-    ids: {}
+    total: null
   }),
 
   watch: {
@@ -237,10 +236,6 @@ export default {
         axios
           .post("/product", product)
           .then(response => {
-            this.$set(this.ids, response.data.id, {
-              price: this.price,
-              count: this.count
-            });
             product.id = response.data.id;
             product.pivot = {
               price: this.price,
@@ -248,17 +243,7 @@ export default {
               total: this.total
             };
             this.productsData.push(product);
-            this.$refs.form.reset();
-            this.count = null;
-            this.price = null;
-            this.total = null;
-            this.product = {
-              article: null,
-              id: null,
-              name: null
-            };
-            this.entires = [];
-            this.dialog = false;
+            this.closeDialog();
           })
           .catch(function(error) {
             console.log(error);
@@ -268,7 +253,6 @@ export default {
 
     removeProduct(item, index) {
       this.productsData.splice(index, 1);
-      this.$delete(this.ids, item.id);
     },
 
     closeDialog() {

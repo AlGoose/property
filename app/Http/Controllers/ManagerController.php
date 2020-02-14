@@ -46,14 +46,15 @@ class ManagerController extends Controller
      */
     public function store(ManagerRequest $request)
     {
-        $user = User::create([
-            'name' => $request['name'],
-            'email' => $request['email'],
-            'password' => Hash::make(Str::random(12)),
-        ]);
+        // \Debugbar::info($request->all());
+        $user = User::withTrashed()->firstOrCreate(['email' => $request['email']], ['name' => $request['name'], 'password' => Hash::make(Str::random(12))]);
+
+        if($user->deleted_at) {
+            $user->restore();
+        }
 
         $this->sendPassword($user->id);
-        
+
         return $user;
     }
 

@@ -99,22 +99,24 @@ class ProjectController extends Controller
      */
     public function show(Project $project, Request $request)
     {
-        $project->user = $project->user()->get()->first();
+        $res = (object)[];
+        $res->project = $project->getOriginal();
+        $res->user = $project->user()->first();
 
-        $project->dealer = $project->dealer()->get()->first();
-        $project->dealer_staff = $project->dealer_staff()->get()->first();
+        $res->dealer = $project->dealer()->first();
+        $res->dealer->current_staff = $project->dealer_staff()->first();
 
-        $project->customer = $project->customer()->get()->first();
-        $project->customer_staff = $project->customer_staff()->get()->first();
+        $res->customer = $project->customer()->first();
+        $res->customer->current_staff = $project->customer_staff()->first();
 
-        $project->opponents = $project->opponents()->get();
-        $project->products = $project->products()->get();
+        $res->opponents = $project->opponents()->get();
+        $res->products = $project->products()->get();
 
-        $project->files = $project->files()->get();
+        $res->files = $project->files()->get();
 
-        if ($request->ajax()) return $project;
+        if ($request->ajax()) return json_encode($res);
 
-        return view('show')->with('project', $project);
+        return view('show')->with('project', $res);
     }
 
     /**
