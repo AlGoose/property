@@ -34,24 +34,32 @@ export default {
   components: {
     StaffComponent
   },
+
   props: ["isEdit", "dealerData"],
+
   data: () => ({
     search: "",
-    company: { inn: "" },
     isLoading: false,
+    company: { inn: "" },
     companies: [],
     dealer: ""
   }),
 
-  watch: {
-    dealerData(val) {
-      if (this.isEdit) {
-        this.company = val;
-        this.companies.push(val);
-      }
-    },
+  mounted() {
+    if (Object.keys(this.dealerData).length > 0) {
+      this.company = this.dealerData;
+      this.companies.push(this.dealerData);
+    }
+  },
 
+  watch: {
     company(val) {
+      if (!val) {
+        this.dealer = "";
+        this.dealerData.dealer_id = null;
+        return;
+      }
+
       axios
         .post("/dealer/findDealer", { inn: val.inn, kpp: val.kpp })
         .then(response => {
@@ -96,49 +104,24 @@ export default {
 
   methods: {
     saveStaff(staff) {
-      if (!this.dealer.id) {
-        if(!staff) {
-          this.$emit("dealer", {
-            dealer_id: null,
-            dealer_staff_id: null
-          });
-          return;
-        }
-
-        axios
-          .post("/dealer", { dealer: this.company, staff_id: staff })
-          .then(response => {
-            this.$emit("dealer", {
-              dealer_id: response.data.id,
-              dealer_staff_id: staff
-            });
-          });
-      } else {
-        if (!staff) {
-          this.$emit("dealer", {
-            dealer_id: this.dealer.id,
-            dealer_staff_id: null
-          });
-          return;
-        }
-
-        axios
-          .post("/dealer", {
-            dealer: {
-              inn: this.company.inn,
-              kpp: this.company.kpp,
-              address: this.company.address,
-              name: this.company.name
-            },
-            staff_id: staff
-          })
-          .then(response => {
-            this.$emit("dealer", {
-              dealer_id: response.data.id,
-              dealer_staff_id: staff
-            });
-          });
+      if (!staff) {
+        this.dealerData.staff_id = null;
+        return;
       }
+
+      let dealer = {
+        name: this.company.name,
+        address: this.company.address,
+        inn: this.company.inn,
+        kpp: this.company.kpp
+      };
+
+      axios
+        .post("/dealer", { dealer: dealer, staff_id: staff })
+        .then(response => {
+          this.dealerData.dealer_id = response.data.id;
+          this.dealerData.staff_id = staff;
+        });
     }
   }
 };

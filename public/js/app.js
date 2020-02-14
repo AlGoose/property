@@ -2012,6 +2012,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 
 
 
@@ -2033,14 +2037,13 @@ __webpack_require__.r(__webpack_exports__);
       valid: true,
       dialog: false,
       errors: [],
-      testData: {},
-      formData: {},
       project: {
         project: {
           address: null,
           date: new Date().toISOString().substr(0, 10),
           time: new Date().toISOString().substr(0, 10),
-          tender_date: null
+          tender_date: null,
+          isTenderWon: false
         },
         dealer: {},
         customer: {},
@@ -2059,21 +2062,16 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     if (this.isEdit) {
-      console.log("EDIT");
-
+      // console.log("EDIT");
       if (window.project == undefined) {
-        console.log("AXIOS");
+        // console.log("AXIOS");
         axios.get("/project/" + this.$route.params.id + "/edit").then(function (response) {
-          _this.testData = response.data; //TODO: REMOVE
-
           _this.project = response.data;
         })["catch"](function (error) {
           console.log(error);
         });
       } else {
-        console.log("BLADE");
-        this.testData = window.project; //TODO: REMOVE
-
+        // console.log("BLADE");
         this.project = window.project;
       }
     } else {
@@ -2086,9 +2084,9 @@ __webpack_require__.r(__webpack_exports__);
     addForm: function addForm() {
       var _this2 = this;
 
-      this.formData.project.kladrId = this.$route.params.kladrId;
-      axios.post("/project", this.formData).then(function (response) {
-        console.log(response.data);
+      this.project.project.kladrId = this.$route.params.kladrId;
+      axios.post("/project", this.project).then(function (response) {
+        // console.log(response.data);
         _this2.dialog = false; // this.$router.push({
         //   name: "home"
         // });
@@ -2102,25 +2100,10 @@ __webpack_require__.r(__webpack_exports__);
     editForm: function editForm() {
       var _this3 = this;
 
-      axios.put("/project/" + this.$route.params.id + "/files", this.formData).then(function (response) {
-        var dataForm = new FormData();
+      axios.put("/project/" + this.$route.params.id, this.project).then(function (response) {
+        _this3.dialog = false;
 
-        _this3.formFiles.forEach(function (file) {
-          console.log(file.name);
-          dataForm.append("files[]", file);
-        });
-
-        axios.put("/project/" + _this3.$route.params.id + "/files", dataForm, {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
-        }).then(function (response) {
-          _this3.dialog = false;
-
-          _this3.$router.go(-1);
-        })["catch"](function (error) {
-          console.log(error);
-        });
+        _this3.$router.go(-1);
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2132,12 +2115,6 @@ __webpack_require__.r(__webpack_exports__);
       if (this.validate()) {
         this.dialog = true;
       }
-    },
-    saveDealer: function saveDealer(value) {
-      this.formData.dealer = value; // console.log("FormData | ", this.formData);
-    },
-    saveCustomer: function saveCustomer(value) {
-      this.formData.customer = value; // console.log("FormData | ", this.formData);
     }
   }
 });
@@ -3300,8 +3277,7 @@ __webpack_require__.r(__webpack_exports__);
 
     if (window.project == undefined) {
       axios.get("/project/" + this.project_id).then(function (response) {
-        console.log("SHOW_COMPONENT", response.data);
-
+        // console.log("SHOW_COMPONENT", response.data);
         _this.initial(response.data);
       })["catch"](function (error) {
         console.log(error);
@@ -3533,15 +3509,21 @@ __webpack_require__.r(__webpack_exports__);
       customer: ""
     };
   },
+  mounted: function mounted() {
+    if (Object.keys(this.customerData).length > 0) {
+      this.company = this.customerData;
+      this.companies.push(this.customerData);
+    }
+  },
   watch: {
-    customerData: function customerData(val) {
-      if (this.isEdit) {
-        this.company = val;
-        this.companies.push(val);
-      }
-    },
     company: function company(val) {
       var _this = this;
+
+      if (!val) {
+        this.customer = "";
+        this.customerData.customer_id = null;
+        return;
+      }
 
       axios.post("/customer/findCustomer", {
         inn: val.inn,
@@ -3570,7 +3552,6 @@ __webpack_require__.r(__webpack_exports__);
         _this2.companies = response.data;
         _this2.isLoading = false;
       })["catch"](function (error) {
-        console.log(error);
         _this2.isLoading = false;
       });
     }
@@ -3579,48 +3560,24 @@ __webpack_require__.r(__webpack_exports__);
     saveStaff: function saveStaff(staff) {
       var _this3 = this;
 
-      if (!this.customer.id) {
-        if (!staff) {
-          this.$emit("customer", {
-            customer_id: null,
-            customer_staff_id: null
-          });
-          return;
-        }
-
-        axios.post("/customer", {
-          customer: this.company,
-          staff_id: staff
-        }).then(function (response) {
-          _this3.$emit("customer", {
-            customer_id: response.data.id,
-            customer_staff_id: staff
-          });
-        });
-      } else {
-        if (!staff) {
-          this.$emit("customer", {
-            customer_id: this.customer.id,
-            customer_staff_id: null
-          });
-          return;
-        }
-
-        axios.post("/customer", {
-          customer: {
-            inn: this.company.inn,
-            kpp: this.company.kpp,
-            address: this.company.address,
-            name: this.company.name
-          },
-          staff_id: staff
-        }).then(function (response) {
-          _this3.$emit("customer", {
-            customer_id: response.data.id,
-            customer_staff_id: staff
-          });
-        });
+      if (!staff) {
+        this.customerData.staff_id = null;
+        return;
       }
+
+      var customer = {
+        name: this.company.name,
+        address: this.company.address,
+        inn: this.company.inn,
+        kpp: this.company.kpp
+      };
+      axios.post("/customer", {
+        customer: customer,
+        staff_id: staff
+      }).then(function (response) {
+        _this3.customerData.customer_id = response.data.id;
+        _this3.customerData.staff_id = staff;
+      });
     }
   }
 });
@@ -3676,23 +3633,29 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       search: "",
+      isLoading: false,
       company: {
         inn: ""
       },
-      isLoading: false,
       companies: [],
       dealer: ""
     };
   },
+  mounted: function mounted() {
+    if (Object.keys(this.dealerData).length > 0) {
+      this.company = this.dealerData;
+      this.companies.push(this.dealerData);
+    }
+  },
   watch: {
-    dealerData: function dealerData(val) {
-      if (this.isEdit) {
-        this.company = val;
-        this.companies.push(val);
-      }
-    },
     company: function company(val) {
       var _this = this;
+
+      if (!val) {
+        this.dealer = "";
+        this.dealerData.dealer_id = null;
+        return;
+      }
 
       axios.post("/dealer/findDealer", {
         inn: val.inn,
@@ -3729,48 +3692,24 @@ __webpack_require__.r(__webpack_exports__);
     saveStaff: function saveStaff(staff) {
       var _this3 = this;
 
-      if (!this.dealer.id) {
-        if (!staff) {
-          this.$emit("dealer", {
-            dealer_id: null,
-            dealer_staff_id: null
-          });
-          return;
-        }
-
-        axios.post("/dealer", {
-          dealer: this.company,
-          staff_id: staff
-        }).then(function (response) {
-          _this3.$emit("dealer", {
-            dealer_id: response.data.id,
-            dealer_staff_id: staff
-          });
-        });
-      } else {
-        if (!staff) {
-          this.$emit("dealer", {
-            dealer_id: this.dealer.id,
-            dealer_staff_id: null
-          });
-          return;
-        }
-
-        axios.post("/dealer", {
-          dealer: {
-            inn: this.company.inn,
-            kpp: this.company.kpp,
-            address: this.company.address,
-            name: this.company.name
-          },
-          staff_id: staff
-        }).then(function (response) {
-          _this3.$emit("dealer", {
-            dealer_id: response.data.id,
-            dealer_staff_id: staff
-          });
-        });
+      if (!staff) {
+        this.dealerData.staff_id = null;
+        return;
       }
+
+      var dealer = {
+        name: this.company.name,
+        address: this.company.address,
+        inn: this.company.inn,
+        kpp: this.company.kpp
+      };
+      axios.post("/dealer", {
+        dealer: dealer,
+        staff_id: staff
+      }).then(function (response) {
+        _this3.dealerData.dealer_id = response.data.id;
+        _this3.dealerData.staff_id = staff;
+      });
     }
   }
 });
@@ -4365,6 +4304,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["isEdit", "projectData"],
   data: function data() {
@@ -4459,12 +4402,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
-
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["entity", "mode"],
-  components: {
-    TheMask: vue_the_mask__WEBPACK_IMPORTED_MODULE_0__["TheMask"]
-  },
+  props: ["entity", "mode", "staffData"],
   directives: {
     mask: vue_the_mask__WEBPACK_IMPORTED_MODULE_0__["mask"]
   },
@@ -4483,6 +4422,7 @@ __webpack_require__.r(__webpack_exports__);
       valid: true,
       dialog: false,
       isLoading: false,
+      staff: {},
       agent_id: null,
       agents: [],
       agentForm: {
@@ -4516,7 +4456,8 @@ __webpack_require__.r(__webpack_exports__);
     entity: function entity(val) {
       if (this.entity.contacts === undefined) {
         this.agent_id = null;
-        this.agents = [], this.dialog = true;
+        this.agents = [];
+        this.dialog = true;
       } else {
         this.agents = this.entity.contacts;
       }
@@ -4531,7 +4472,7 @@ __webpack_require__.r(__webpack_exports__);
 
       if (this.$refs.form.validate()) {
         this.dialog = false;
-        this.agentForm.phone = this.agentForm.phone.replace(/[^\d]/ig, '');
+        this.agentForm.phone = this.agentForm.phone.replace(/[^\d]/gi, "");
         axios.post("/staff", this.agentForm).then(function (request) {
           _this2.agents.push(request.data);
 
@@ -40847,13 +40788,14 @@ var render = function() {
                 "v-col",
                 { attrs: { cols: "12", md: "6" } },
                 [
-                  _c("DealerComponent", {
-                    attrs: {
-                      dealerData: _vm.testData.dealer,
-                      isEdit: _vm.isEdit
-                    },
-                    on: { dealer: _vm.saveDealer }
-                  })
+                  (_vm.isEdit && _vm.project.dealer.id) || !_vm.isEdit
+                    ? _c("DealerComponent", {
+                        attrs: {
+                          dealerData: _vm.project.dealer,
+                          isEdit: _vm.isEdit
+                        }
+                      })
+                    : _vm._e()
                 ],
                 1
               ),
@@ -40862,13 +40804,14 @@ var render = function() {
                 "v-col",
                 { attrs: { cols: "12", md: "6" } },
                 [
-                  _c("CustomerComponent", {
-                    attrs: {
-                      customerData: _vm.testData.customer,
-                      isEdit: _vm.isEdit
-                    },
-                    on: { customer: _vm.saveCustomer }
-                  })
+                  (_vm.isEdit && _vm.project.customer.id) || !_vm.isEdit
+                    ? _c("CustomerComponent", {
+                        attrs: {
+                          customerData: _vm.project.customer,
+                          isEdit: _vm.isEdit
+                        }
+                      })
+                    : _vm._e()
                 ],
                 1
               ),
@@ -43855,7 +43798,7 @@ var render = function() {
                 [
                   _c(
                     "v-col",
-                    { attrs: { cols: "12", md: "4" } },
+                    { attrs: { cols: "6", md: "3" } },
                     [
                       _c(
                         "v-menu",
@@ -43949,7 +43892,7 @@ var render = function() {
                   _vm._v(" "),
                   _c(
                     "v-col",
-                    { attrs: { cols: "12", md: "4" } },
+                    { attrs: { cols: "6", md: "3" } },
                     [
                       _c(
                         "v-menu",
@@ -44044,7 +43987,7 @@ var render = function() {
                   _vm._v(" "),
                   _c(
                     "v-col",
-                    { attrs: { cols: "12", md: "4" } },
+                    { attrs: { cols: "6", md: "3" } },
                     [
                       _c(
                         "v-menu",
@@ -44129,6 +44072,24 @@ var render = function() {
                         ],
                         1
                       )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { cols: "6", md: "3" } },
+                    [
+                      _c("v-checkbox", {
+                        attrs: { label: "Победа?" },
+                        model: {
+                          value: _vm.projectData.isTenderWon,
+                          callback: function($$v) {
+                            _vm.$set(_vm.projectData, "isTenderWon", $$v)
+                          },
+                          expression: "projectData.isTenderWon"
+                        }
+                      })
                     ],
                     1
                   )

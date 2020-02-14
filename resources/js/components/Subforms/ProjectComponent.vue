@@ -26,7 +26,7 @@
       <!-- @change="sendData" -->
 
       <v-row>
-        <v-col cols="12" md="4">
+        <v-col cols="6" md="3">
           <v-menu
             v-model="dateMenu"
             :close-on-content-click="false"
@@ -55,7 +55,7 @@
           </v-menu>
         </v-col>
 
-        <v-col cols="12" md="4">
+        <v-col cols="6" md="3">
           <v-menu
             v-model="timeMenu"
             :close-on-content-click="false"
@@ -85,7 +85,7 @@
           </v-menu>
         </v-col>
 
-        <v-col cols="12" md="4">
+        <v-col cols="6" md="3">
           <v-menu
             v-model="tenderMenu"
             :close-on-content-click="false"
@@ -112,6 +112,10 @@
               @input="tenderMenu = false"
             ></v-date-picker>
           </v-menu>
+        </v-col>
+
+        <v-col cols="6" md="3">
+          <v-checkbox label="Победа?" v-model="projectData.isTenderWon"></v-checkbox>
         </v-col>
       </v-row>
     </v-card-text>

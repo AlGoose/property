@@ -211,7 +211,7 @@ export default {
       axios
         .get("/project/" + this.project_id)
         .then(response => {
-          console.log("SHOW_COMPONENT", response.data);
+          // console.log("SHOW_COMPONENT", response.data);
           this.initial(response.data);
         })
         .catch(error => {

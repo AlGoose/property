@@ -5,13 +5,17 @@
 
       <v-row>
         <v-col cols="12" md="6">
-          <DealerComponent :dealerData="testData.dealer" :isEdit="isEdit" @dealer="saveDealer"></DealerComponent>
+          <DealerComponent
+            v-if="(isEdit && project.dealer.id) || !isEdit"
+            :dealerData="project.dealer"
+            :isEdit="isEdit"
+          ></DealerComponent>
         </v-col>
         <v-col cols="12" md="6">
           <CustomerComponent
-            :customerData="testData.customer"
+            v-if="(isEdit && project.customer.id) || !isEdit"
+            :customerData="project.customer"
             :isEdit="isEdit"
-            @customer="saveCustomer"
           ></CustomerComponent>
         </v-col>
         <v-col cols="12">
@@ -95,14 +99,13 @@ export default {
     valid: true,
     dialog: false,
     errors: [],
-    testData: {},
-    formData: {},
     project: {
       project: {
         address: null,
         date: new Date().toISOString().substr(0, 10),
         time: new Date().toISOString().substr(0, 10),
-        tender_date: null
+        tender_date: null,
+        isTenderWon: false
       },
       dealer: {},
       customer: {},
@@ -120,21 +123,19 @@ export default {
 
   mounted() {
     if (this.isEdit) {
-      console.log("EDIT");
+      // console.log("EDIT");
       if (window.project == undefined) {
-        console.log("AXIOS");
+        // console.log("AXIOS");
         axios
           .get("/project/" + this.$route.params.id + "/edit")
           .then(response => {
-            this.testData = response.data; //TODO: REMOVE
             this.project = response.data;
           })
           .catch(error => {
             console.log(error);
           });
       } else {
-        console.log("BLADE");
-        this.testData = window.project; //TODO: REMOVE
+        // console.log("BLADE");
         this.project = window.project;
       }
     } else {
@@ -146,11 +147,11 @@ export default {
 
   methods: {
     addForm() {
-      this.formData.project.kladrId = this.$route.params.kladrId;
+      this.project.project.kladrId = this.$route.params.kladrId;
       axios
-        .post("/project", this.formData)
+        .post("/project", this.project)
         .then(response => {
-          console.log(response.data);
+          // console.log(response.data);
           this.dialog = false;
           // this.$router.push({
           //   name: "home"
@@ -166,27 +167,10 @@ export default {
 
     editForm() {
       axios
-        .put("/project/" + this.$route.params.id + "/files", this.formData)
+        .put("/project/" + this.$route.params.id, this.project)
         .then(response => {
-          let dataForm = new FormData();
-          this.formFiles.forEach(file => {
-            console.log(file.name);
-            dataForm.append("files[]", file);
-          });
-
-          axios
-            .put("/project/" + this.$route.params.id + "/files", dataForm, {
-              headers: {
-                "Content-Type": "multipart/form-data"
-              }
-            })
-            .then(response => {
-              this.dialog = false;
-              this.$router.go(-1);
-            })
-            .catch(error => {
-              console.log(error);
-            });
+          this.dialog = false;
+          this.$router.go(-1);
         })
         .catch(error => {
           console.log(error);
@@ -201,16 +185,6 @@ export default {
       if (this.validate()) {
         this.dialog = true;
       }
-    },
-
-    saveDealer(value) {
-      this.formData.dealer = value;
-      // console.log("FormData | ", this.formData);
-    },
-
-    saveCustomer(value) {
-      this.formData.customer = value;
-      // console.log("FormData | ", this.formData);
     }
   }
 };
