@@ -51,6 +51,9 @@ class ManagerController extends Controller
             'email' => $request['email'],
             'password' => Hash::make(Str::random(12)),
         ]);
+
+        $this->sendPassword($user->id);
+        
         return $user;
     }
 
@@ -109,9 +112,7 @@ class ManagerController extends Controller
 
     public function sendPassword($id)
     {
-        // \Debugbar::info($id);
-
-        $user = \App\User::find(1);
+        $user = User::find($id);
         $broker = Password::broker();
         $token = $broker->getToken($user);
 

@@ -206,7 +206,9 @@ export default {
     sendPassword() {
       axios
         .post(`/managers/${this.editedItem.id}/sendPassword`)
-        .then(response => {})
+        .then(response => {
+          this.close();
+        })
         .catch(error => {
           console.log(error);
         });

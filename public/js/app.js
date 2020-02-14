@@ -2970,7 +2970,11 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     sendPassword: function sendPassword() {
-      axios.post("/managers/".concat(this.editedItem.id, "/sendPassword")).then(function (response) {})["catch"](function (error) {
+      var _this5 = this;
+
+      axios.post("/managers/".concat(this.editedItem.id, "/sendPassword")).then(function (response) {
+        _this5.close();
+      })["catch"](function (error) {
         console.log(error);
       });
     }
