@@ -22,7 +22,7 @@
           <ProjectComponent :isEdit="isEdit" :projectData="project.project"></ProjectComponent>
         </v-col>
         <v-col cols="12">
-          <FileComponent :filesData="project.files"></FileComponent>
+          <FileComponent :documentsData="project.documents"></FileComponent>
         </v-col>
         <v-col cols="12" md="5">
           <OpponentComponent :opponentsData="project.opponents"></OpponentComponent>
@@ -111,7 +111,7 @@ export default {
       customer: {},
       opponents: [],
       products: [],
-      files: []
+      documents: []
     }
   }),
 
@@ -179,7 +179,7 @@ export default {
       request.project.kladrId = this.$route.params.kladrId;
       request.customer = this.project.customer;
       request.dealer = this.project.dealer;
-      request.documents = this.project.files.map(item => {
+      request.documents = this.project.documents.map(item => {
         return item.id;
       });
       request.opponents = this.project.opponents.map(item => {

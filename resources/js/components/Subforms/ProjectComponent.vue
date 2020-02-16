@@ -9,6 +9,7 @@
         :readonly="isEdit"
         :rules="[v => !!v || 'Введите название']"
       ></v-text-field>
+
       <v-text-field
         v-model="projectData.address"
         label="Адрес"
@@ -16,6 +17,7 @@
         :rules="[v => !!v || 'Введите адрес']"
         readonly
       ></v-text-field>
+
       <v-textarea
         v-model="projectData.work"
         height="200"
@@ -23,7 +25,6 @@
         outlined
         label="Проделанная работа"
       ></v-textarea>
-      <!-- @change="sendData" -->
 
       <v-row>
         <v-col cols="6" md="3">

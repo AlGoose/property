@@ -3,7 +3,7 @@
     <v-card-title>Документы</v-card-title>
     <v-card-text>
       <v-file-input
-        v-model="tempFiles"
+        v-model="files"
         label="Добавить файл(-ы)"
         multiple
         outlined
@@ -12,9 +12,9 @@
         @change="addFiles"
       ></v-file-input>
 
-      <v-list flat v-if="filesData != undefined && filesData.length != 0">
+      <v-list flat v-if="documentsData != undefined && documentsData.length != 0">
         <v-list-item-group>
-          <v-list-item v-for="(file, index) in filesData" :key="index">
+          <v-list-item v-for="(file, index) in documentsData" :key="index">
             <v-list-item-title v-text="file.name"></v-list-item-title>
             <v-icon @click="removeFile(index)">mdi-minus-circle-outline</v-icon>
           </v-list-item>
@@ -26,27 +26,26 @@
 
 <script>
 export default {
-  props: ["filesData"],
+  props: ["documentsData"],
 
   data: () => ({
-    tempFiles: [],
-    files: [],
+    files: []
   }),
 
   methods: {
     removeFile(index) {
-      this.filesData.splice(index, 1);
+      this.documentsData.splice(index, 1);
     },
 
-    addFiles(files) {
-      if (files.length === 0) return;
+    addFiles(documents) {
+      if (documents.length === 0) return;
 
       let counter = 0;
       let formData = new FormData();
 
-      files.forEach(file => {
-        for (let i = 0; i < this.filesData.length; i++) {
-          if (this.filesData[i].name === file.name) {
+      documents.forEach(file => {
+        for (let i = 0; i < this.documentsData.length; i++) {
+          if (this.documentsData[i].name === file.name) {
             return;
           }
         }
@@ -55,7 +54,7 @@ export default {
       });
 
       if (counter === 0) {
-        this.tempFiles = [];
+        this.files = [];
         return;
       }
 
@@ -67,9 +66,9 @@ export default {
         })
         .then(response => {
           response.data.forEach(file => {
-            this.filesData.push(file);
+            this.documentsData.push(file);
           });
-          this.tempFiles = [];
+          this.files = [];
         })
         .catch(error => {
           console.log(error);

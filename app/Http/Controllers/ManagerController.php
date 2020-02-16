@@ -47,13 +47,19 @@ class ManagerController extends Controller
     public function store(ManagerRequest $request)
     {
         // \Debugbar::info($request->all());
-        $user = User::withTrashed()->firstOrCreate(['email' => $request['email']], ['name' => $request['name'], 'password' => Hash::make(Str::random(12))]);
+        $user = User::withTrashed()->where(['email' => $request['email']])->first();
 
-        if($user->deleted_at) {
+        if ($user->deleted_at) {
             $user->restore();
+        } else {
+            $user = User::create([
+                'email' => $request['email'],
+                'name' => $request['name'],
+                'password' => Hash::make(Str::random(12))
+            ]);
         }
 
-        $this->sendPassword($user->id);
+        // $this->sendPassword($user->id);
 
         return $user;
     }
@@ -106,7 +112,7 @@ class ManagerController extends Controller
     public function destroy($id)
     {
         if ($id == 1) {
-            abort(403);
+            abort(403, "Нельзя просто так взять и удалить Админа!");
         }
         User::destroy($id);
     }

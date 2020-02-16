@@ -9,7 +9,6 @@ use App\Customer;
 use App\FileProject;
 use Illuminate\Http\Request;
 use App\Http\Requests\ProjectRequest;
-use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller
 {
@@ -112,7 +111,7 @@ class ProjectController extends Controller
         $res->opponents = $project->opponents()->get();
         $res->products = $project->products()->get();
 
-        $res->files = $project->files()->get();
+        $res->documents = $project->files()->get();
 
         if ($request->ajax()) return json_encode($res);
 
@@ -144,7 +143,7 @@ class ProjectController extends Controller
         $res->opponents = $project->opponents()->get();
         $res->products = $project->products()->get();
 
-        $res->files = $project->files()->get();
+        $res->documents = $project->files()->get();
 
         if ($request->ajax()) return json_encode($res);
 
@@ -191,6 +190,6 @@ class ProjectController extends Controller
      */
     public function destroy($id)
     {
-        Project::destroy($id);
+        $res = Project::destroy($id);
     }
 }

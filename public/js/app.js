@@ -2049,7 +2049,7 @@ __webpack_require__.r(__webpack_exports__);
         customer: {},
         opponents: [],
         products: [],
-        files: []
+        documents: []
       }
     };
   },
@@ -2111,7 +2111,7 @@ __webpack_require__.r(__webpack_exports__);
       request.project.kladrId = this.$route.params.kladrId;
       request.customer = this.project.customer;
       request.dealer = this.project.dealer;
-      request.documents = this.project.files.map(function (item) {
+      request.documents = this.project.documents.map(function (item) {
         return item.id;
       });
       request.opponents = this.project.opponents.map(function (item) {
@@ -2926,6 +2926,7 @@ __webpack_require__.r(__webpack_exports__);
     close: function close() {
       var _this2 = this;
 
+      this.removeDialog = false;
       this.editDialog = false;
       setTimeout(function () {
         _this2.editedItem = {};
@@ -2933,56 +2934,47 @@ __webpack_require__.r(__webpack_exports__);
       }, 300);
     },
     save: function save() {
-      var _this3 = this;
-
       if (this.editedIndex > -1) {
-        axios.put("/managers/" + this.editedItem.id, this.editedItem).then(function (response) {
-          Object.assign(_this3.managers[_this3.editedIndex], response.data);
-        })["catch"](function (error) {
-          console.log("ERROOOOOOOR", error.response);
-          _this3.errors = error.response.data.errors;
-          _this3.alert = true;
-        }).then(function () {
-          _this3.close();
-        });
+        this.editManager();
       } else {
-        axios.post("/managers", this.editedItem).then(function (response) {
-          _this3.managers.push(response.data);
-        })["catch"](function (error) {
-          console.log("ERROOOOOOOR", error.response);
-          _this3.errors = error.response.data.errors;
-          _this3.alert = true;
-        }).then(function () {
-          _this3.close();
-        });
+        this.addManager();
       }
     },
-    remove: function remove() {
+    addManager: function addManager() {
+      var _this3 = this;
+
+      this.sendRequest("post", "/managers", this.editedItem, function (response) {
+        _this3.managers.push(response.data);
+      });
+    },
+    editManager: function editManager() {
       var _this4 = this;
 
-      axios["delete"]("/managers/" + this.editedItem.id).then(function (response) {
-        _this4.managers.splice(_this4.editedItem.index, 1);
+      this.sendRequest("put", "/managers/".concat(this.editedItem.id), this.editedItem, function (response) {
+        Object.assign(_this4.managers[_this4.editedIndex], response.data);
+      });
+    },
+    removeManager: function removeManager() {
+      var _this5 = this;
 
-        _this4.removeDialog = false;
-        setTimeout(function () {
-          _this4.editedItem = {};
-        }, 300);
-      })["catch"](function (error) {
-        console.log("ERROOOOOOOR", error.response);
-
-        _this4.errors.push(["Нельзя просто так взять и удалить админа!"]);
-
-        _this4.removeDialog = false;
-        _this4.alert = true;
+      this.sendRequest("delete", "/managers/".concat(this.editedItem.id), null, function (response) {
+        _this5.managers.splice(_this5.editedItem.index, 1);
       });
     },
     sendPassword: function sendPassword() {
-      var _this5 = this;
+      this.sendRequest("post", "/managers/".concat(this.editedItem.id, "/sendPassword"), null, function (response) {});
+    },
+    sendRequest: function sendRequest(type, path, request, callback) {
+      var _this6 = this;
 
-      axios.post("/managers/".concat(this.editedItem.id, "/sendPassword")).then(function (response) {
-        _this5.close();
+      axios[type](path, request).then(function (response) {
+        callback(response);
       })["catch"](function (error) {
-        console.log(error);
+        _this6.errors.push(error.response.data.message);
+
+        _this6.alert = true;
+      }).then(function () {
+        _this6.close();
       });
     }
   }
@@ -3333,7 +3325,7 @@ __webpack_require__.r(__webpack_exports__);
         customer: {},
         opponents: [],
         products: [],
-        files: []
+        documents: []
       }
     };
   },
@@ -3365,10 +3357,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     remove: function remove() {
-      var _this2 = this;
-
-      axios["delete"]("/project/" + this.$route.params.id).then(function (response) {
-        _this2.$router.push("/project");
+      axios["delete"]("/project/" + this.$route.params.id).then(function (response) {// this.$router.push("/project");
       })["catch"](function (error) {
         console.log(error);
       });
@@ -3685,26 +3674,25 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["filesData"],
+  props: ["documentsData"],
   data: function data() {
     return {
-      tempFiles: [],
       files: []
     };
   },
   methods: {
     removeFile: function removeFile(index) {
-      this.filesData.splice(index, 1);
+      this.documentsData.splice(index, 1);
     },
-    addFiles: function addFiles(files) {
+    addFiles: function addFiles(documents) {
       var _this = this;
 
-      if (files.length === 0) return;
+      if (documents.length === 0) return;
       var counter = 0;
       var formData = new FormData();
-      files.forEach(function (file) {
-        for (var i = 0; i < _this.filesData.length; i++) {
-          if (_this.filesData[i].name === file.name) {
+      documents.forEach(function (file) {
+        for (var i = 0; i < _this.documentsData.length; i++) {
+          if (_this.documentsData[i].name === file.name) {
             return;
           }
         }
@@ -3714,7 +3702,7 @@ __webpack_require__.r(__webpack_exports__);
       });
 
       if (counter === 0) {
-        this.tempFiles = [];
+        this.files = [];
         return;
       }
 
@@ -3724,9 +3712,9 @@ __webpack_require__.r(__webpack_exports__);
         }
       }).then(function (response) {
         response.data.forEach(function (file) {
-          _this.filesData.push(file);
+          _this.documentsData.push(file);
         });
-        _this.tempFiles = [];
+        _this.files = [];
       })["catch"](function (error) {
         console.log(error);
       });
@@ -3777,8 +3765,7 @@ __webpack_require__.r(__webpack_exports__);
   props: ["opponentsData"],
   data: function data() {
     return {
-      opponent: null,
-      model: 1
+      opponent: null
     };
   },
   methods: {
@@ -4222,6 +4209,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["isEdit", "projectData"],
   data: function data() {
@@ -4315,9 +4303,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["entity", "mode", "staffData"],
+  props: ["entity", "mode"],
   directives: {
     mask: vue_the_mask__WEBPACK_IMPORTED_MODULE_0__["mask"]
   },
@@ -40749,7 +40738,7 @@ var render = function() {
                 { attrs: { cols: "12" } },
                 [
                   _c("FileComponent", {
-                    attrs: { filesData: _vm.project.files }
+                    attrs: { documentsData: _vm.project.documents }
                   })
                 ],
                 1
@@ -41846,7 +41835,7 @@ var render = function() {
                                   "v-btn",
                                   {
                                     attrs: { color: "red", outlined: "" },
-                                    on: { click: _vm.remove }
+                                    on: { click: _vm.removeManager }
                                   },
                                   [_vm._v("Удалить")]
                                 )
@@ -41890,7 +41879,7 @@ var render = function() {
                                 "ul",
                                 _vm._l(_vm.errors, function(item, i) {
                                   return _c("li", { key: i }, [
-                                    _vm._v(_vm._s(item[0]))
+                                    _vm._v(_vm._s(item))
                                   ])
                                 }),
                                 0
@@ -41911,6 +41900,7 @@ var render = function() {
                                     on: {
                                       click: function($event) {
                                         _vm.alert = false
+                                        _vm.errors = []
                                       }
                                     }
                                   },
@@ -42734,7 +42724,7 @@ var render = function() {
                                 [
                                   _c(
                                     "v-list",
-                                    _vm._l(_vm.project.files, function(
+                                    _vm._l(_vm.project.documents, function(
                                       file,
                                       i
                                     ) {
@@ -43169,22 +43159,22 @@ var render = function() {
             },
             on: { change: _vm.addFiles },
             model: {
-              value: _vm.tempFiles,
+              value: _vm.files,
               callback: function($$v) {
-                _vm.tempFiles = $$v
+                _vm.files = $$v
               },
-              expression: "tempFiles"
+              expression: "files"
             }
           }),
           _vm._v(" "),
-          _vm.filesData != undefined && _vm.filesData.length != 0
+          _vm.documentsData != undefined && _vm.documentsData.length != 0
             ? _c(
                 "v-list",
                 { attrs: { flat: "" } },
                 [
                   _c(
                     "v-list-item-group",
-                    _vm._l(_vm.filesData, function(file, index) {
+                    _vm._l(_vm.documentsData, function(file, index) {
                       return _c(
                         "v-list-item",
                         { key: index },
@@ -43292,16 +43282,7 @@ var render = function() {
                     [
                       _c(
                         "v-list-item-group",
-                        {
-                          attrs: { mandatory: "", color: "indigo" },
-                          model: {
-                            value: _vm.model,
-                            callback: function($$v) {
-                              _vm.model = $$v
-                            },
-                            expression: "model"
-                          }
-                        },
+                        { attrs: { color: "indigo" } },
                         _vm._l(_vm.opponentsData, function(item, i) {
                           return _c(
                             "v-list-item",

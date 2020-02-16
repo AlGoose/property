@@ -14,7 +14,7 @@
         ></v-text-field>
 
         <v-list flat v-if="opponentsData.length">
-          <v-list-item-group v-model="model" mandatory color="indigo">
+          <v-list-item-group color="indigo">
             <v-list-item v-for="(item, i) in opponentsData" :key="i">
               <v-list-item-title v-text="item.name"></v-list-item-title>
               <v-icon @click="remove(item,i)">mdi-minus-circle-outline</v-icon>
@@ -29,9 +29,9 @@
 <script>
 export default {
   props: ["opponentsData"],
+  
   data: () => ({
-    opponent: null,
-    model: 1
+    opponent: null
   }),
 
   methods: {
@@ -39,7 +39,7 @@ export default {
       if (value == null || /^\s*$/.test(value)) return;
 
       for (let i = 0; i < this.opponentsData.length; i++) {
-        if(this.opponentsData[i].name === value) {
+        if (this.opponentsData[i].name === value) {
           return;
         }
       }

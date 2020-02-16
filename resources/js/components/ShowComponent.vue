@@ -155,7 +155,7 @@
               <v-expansion-panel-header class="title">Документы</v-expansion-panel-header>
               <v-expansion-panel-content>
                 <v-list>
-                  <v-list-item v-for="(file, i) in project.files" :key="'C'+ i">
+                  <v-list-item v-for="(file, i) in project.documents" :key="'C'+ i">
                     <v-list-item-content>
                       <v-list-item-title>{{file.name}}</v-list-item-title>
                     </v-list-item-content>
@@ -229,7 +229,7 @@ export default {
         customer: {},
         opponents: [],
         products: [],
-        files: []
+        documents: []
       }
     };
   },
@@ -265,7 +265,7 @@ export default {
       axios
         .delete("/project/" + this.$route.params.id)
         .then(response => {
-          this.$router.push("/project");
+          // this.$router.push("/project");
         })
         .catch(function(error) {
           console.log(error);

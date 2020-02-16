@@ -15,6 +15,7 @@
       <p class="subtitle">Телефон: {{agent ? agent.phone : ''}}</p>
       <p class="subtitle">Почта: {{agent ? agent.email : ''}}</p>
     </template>
+
     <v-row justify="center">
       <v-dialog v-model="dialog" persistent max-width="600px">
         <template v-slot:activator="{ on }">
@@ -71,7 +72,7 @@
 import { mask } from "vue-the-mask";
 
 export default {
-  props: ["entity", "mode", "staffData"],
+  props: ["entity", "mode"],
 
   directives: { mask },
 
