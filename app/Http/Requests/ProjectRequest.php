@@ -29,9 +29,9 @@ class ProjectRequest extends FormRequest
             'project.date' => 'required|date|after:today',
             'project.time' => 'required|date|before:tomorrow',
             'dealer.dealer_id' => 'required|exists:dealers,id',
-            'dealer.dealer_staff_id' => 'required|exists:staff,id',
+            'dealer.staff_id' => 'required|exists:staff,id',
             'customer.customer_id' => 'required|exists:customers,id',
-            'customer.customer_staff_id' => 'required|exists:staff,id',
+            'customer.staff_id' => 'required|exists:staff,id',
         ];
     }
 
@@ -52,13 +52,13 @@ class ProjectRequest extends FormRequest
 
             'dealer.dealer_id.required'=>'Дилер не указан',
             'dealer.dealer_id.exists'=>'Дилер указан неверно',
-            'dealer.dealer_staff_id.required'=>'Представитель дилера не указан',
-            'dealer.dealer_staff_id.exists'=>'Представитель дилера указан неверно',
+            'dealer.staff_id.required'=>'Представитель дилера не указан',
+            'dealer.staff_id.exists'=>'Представитель дилера указан неверно',
 
             'customer.customer_id.required'=>'Заказчик не указан',
             'customer.customer_id.exists'=>'Заказчик указан неверно',
-            'customer.customer_staff_id.required'=>'Представитель заказчика не указан',
-            'customer.customer_staff_id.exists'=>'Представитель заказчика указан неверно',
+            'customer.staff_id.required'=>'Представитель заказчика не указан',
+            'customer.staff_id.exists'=>'Представитель заказчика указан неверно',
         ];
     }
 }

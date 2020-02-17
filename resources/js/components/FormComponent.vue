@@ -5,28 +5,30 @@
 
       <v-row>
         <v-col cols="12" md="6">
-          <DealerComponent :dealerData="testData.dealer" :isEdit="isEdit" @dealer="saveDealer"></DealerComponent>
+          <DealerComponent
+            v-if="(isEdit && project.dealer.id) || !isEdit"
+            :dealerData="project.dealer"
+            :isEdit="isEdit"
+          ></DealerComponent>
         </v-col>
         <v-col cols="12" md="6">
           <CustomerComponent
-            :customerData="testData.customer"
+            v-if="(isEdit && project.customer.id) || !isEdit"
+            :customerData="project.customer"
             :isEdit="isEdit"
-            @customer="saveCustomer"
           ></CustomerComponent>
         </v-col>
         <v-col cols="12">
-          <ProjectComponent
-            :address_prop="address"
-            :isEdit="isEdit"
-            :projectData="testData"
-            @project="saveProject"
-          ></ProjectComponent>
+          <ProjectComponent :isEdit="isEdit" :projectData="project.project"></ProjectComponent>
+        </v-col>
+        <v-col cols="12">
+          <FileComponent :documentsData="project.documents"></FileComponent>
         </v-col>
         <v-col cols="12" md="5">
-          <OpponentComponent :opponentsData="testData.opponents" @opponents="saveOpponents"></OpponentComponent>
+          <OpponentComponent :opponentsData="project.opponents"></OpponentComponent>
         </v-col>
         <v-col cols="12" md="7">
-          <ProductComponent :productsData="testData.products" @products="saveProducts"></ProductComponent>
+          <ProductComponent :productsData="project.products"></ProductComponent>
         </v-col>
       </v-row>
 
@@ -34,7 +36,7 @@
         block
         color="indigo"
         outlined
-        @click="validate"
+        @click="openDialog"
       >{{isEdit ? 'Изменить проект' : 'Добавить проект'}}</v-btn>
 
       <v-row justify="center">
@@ -43,7 +45,11 @@
             <v-card-title>Все верно?</v-card-title>
             <v-card-actions class="justify-center">
               <v-btn depressed color="error" @click="dialog = false">Отмена</v-btn>
-              <v-btn depressed color="success" @click="isEdit ? editForm() : addForm()">{{isEdit ? 'Изменить' : 'Добавить'}}</v-btn>
+              <v-btn
+                depressed
+                color="success"
+                @click="isEdit ? editForm() : addForm()"
+              >{{isEdit ? 'Изменить' : 'Добавить'}}</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -71,12 +77,12 @@
 </template>
 
 <script>
-import { mask } from "vue-the-mask";
 import DealerComponent from "./Subforms/DealerComponent";
 import CustomerComponent from "./Subforms/CustomerComponent";
 import OpponentComponent from "./Subforms/OpponentComponent";
 import ProductComponent from "./Subforms/ProductComponent";
 import ProjectComponent from "./Subforms/ProjectComponent";
+import FileComponent from "./Subforms/FileComponent";
 
 export default {
   components: {
@@ -84,110 +90,132 @@ export default {
     CustomerComponent,
     OpponentComponent,
     ProductComponent,
-    ProjectComponent
+    ProjectComponent,
+    FileComponent
   },
-  directives: { mask },
+
+  data: () => ({
+    alert: false,
+    valid: true,
+    dialog: false,
+    errors: [],
+    project: {
+      project: {
+        address: null,
+        date: new Date().toISOString().substr(0, 10),
+        time: new Date().toISOString().substr(0, 10),
+        tender_date: null,
+        isTenderWon: false
+      },
+      dealer: {},
+      customer: {},
+      opponents: [],
+      products: [],
+      documents: []
+    }
+  }),
+
+  computed: {
+    isEdit() {
+      return this.$route.name === "edit";
+    }
+  },
 
   mounted() {
-    if (this.$route.name === "edit") {
-      this.isEdit = true;
+    if (this.isEdit) {
       if (window.project == undefined) {
         axios
           .get("/project/" + this.$route.params.id + "/edit")
           .then(response => {
-            this.testData = response.data;
+            this.project = response.data;
+            this.project.products.forEach(item => {
+              item.pivot.total = item.pivot.count * item.pivot.price;
+            });
           })
           .catch(error => {
             console.log(error);
           });
       } else {
-        this.testData = window.project;
+        this.project = window.project;
+        this.project.products.forEach(item => {
+          item.pivot.total = item.pivot.count * item.pivot.price;
+        });
       }
     } else {
       if (this.$route.params.address) {
-        this.address = this.$route.params.address;
+        this.project.project.address = this.$route.params.address;
       }
     }
   },
 
-  data: () => ({
-    alert: false,
-    errors: [],
-    testData: {
-      date: new Date().toISOString().substr(0, 10),
-      time: new Date().toISOString().substr(0, 10),
-      tender_date: null,
-    },
-    isEdit: false,
-    dialog: false,
-    address: null,
-    formData: {},
-    valid: true
-  }),
-
   methods: {
     addForm() {
-      // console.log('ADDFORM');
-      this.formData.project.kladrId = this.$route.params.kladrId;
-      axios
-        .post("/project", this.formData)
+      let request = this.prepareProject();
+      this.sendRequest("post", "/project", request, () => {
+        this.$router.push({
+          name: "home"
+        });
+      });
+    },
+
+    editForm() {
+      let request = this.prepareProject();
+      this.sendRequest(
+        "put",
+        "/project/" + this.$route.params.id,
+        request,
+        () => {
+          this.$router.go(-1);
+        }
+      );
+    },
+
+    prepareProject() {
+      let request = {
+        products: {}
+      };
+
+      request.project = this.project.project;
+      request.project.kladrId = this.$route.params.kladrId;
+      request.customer = this.project.customer;
+      request.dealer = this.project.dealer;
+      request.documents = this.project.documents.map(item => {
+        return item.id;
+      });
+      request.opponents = this.project.opponents.map(item => {
+        return item.id;
+      });
+      this.project.products.forEach(item => {
+        request.products[item.id] = {
+          count: item.pivot.count,
+          price: item.pivot.price
+        };
+      });
+
+      return request;
+    },
+
+    sendRequest(type, path, request, callback) {
+      axios[type](path, request)
         .then(response => {
-          // console.log(response);
           this.dialog = false;
-          this.$router.push({
-            name: "home"
-          });
+          callback();
         })
         .catch(error => {
-          console.log("ERROOOOOOOR", error.response);
           this.errors = error.response.data.errors;
           this.dialog = false;
           this.alert = true;
         });
     },
 
-    editForm() {
-      // console.log('EDITFORM');
-      axios
-        .put("/project/" + this.$route.params.id, this.formData)
-        .then(response => {
-          this.dialog = false;
-          this.$router.go(-1);
-        })
-        .catch(error => {
-          console.log(error);
-        });
+    validate() {
+      return this.$refs.form.validate();
     },
 
-    validate() {
-      if (this.$refs.form.validate()) {
+    openDialog() {
+      if (this.validate()) {
         this.dialog = true;
       }
-    },
-
-    saveDealer(value) {
-      this.formData.dealer = value;
-      // console.log("FormData | ", this.formData);
-    },
-
-    saveCustomer(value) {
-      this.formData.customer = value;
-      // console.log("FormData | ", this.formData);
-    },
-
-    saveProject(value) {
-      this.formData.project = value;
-      // console.log("FormData | ", this.formData);
-    },
-
-    saveOpponents(value) {
-      this.formData.opponents = value;
-      // console.log("FormData | ", this.formData);
-    },
-
-    saveProducts(value) {
-      this.formData.products = value;
-      // console.log("FormData | ", this.formData);
     }
   }
 };

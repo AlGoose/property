@@ -6,29 +6,28 @@
         v-model="projectData.name"
         label="Название"
         outlined
-        @change="sendData"
         :readonly="isEdit"
         :rules="[v => !!v || 'Введите название']"
       ></v-text-field>
+
       <v-text-field
         v-model="projectData.address"
         label="Адрес"
         outlined
         :rules="[v => !!v || 'Введите адрес']"
-        @change="sendData"
         readonly
       ></v-text-field>
+
       <v-textarea
         v-model="projectData.work"
         height="200"
         no-resize
         outlined
         label="Проделанная работа"
-        @change="sendData"
       ></v-textarea>
 
       <v-row>
-        <v-col cols="12" md="4">
+        <v-col cols="6" md="3">
           <v-menu
             v-model="dateMenu"
             :close-on-content-click="false"
@@ -53,12 +52,11 @@
               locale="Rus"
               v-model="projectData.date"
               @input="dateMenu = false"
-              @change="sendData"
             ></v-date-picker>
           </v-menu>
         </v-col>
 
-        <v-col cols="12" md="4">
+        <v-col cols="6" md="3">
           <v-menu
             v-model="timeMenu"
             :close-on-content-click="false"
@@ -84,12 +82,11 @@
               locale="Rus"
               v-model="projectData.time"
               @input="timeMenu = false"
-              @change="sendData"
             ></v-date-picker>
           </v-menu>
         </v-col>
 
-        <v-col cols="12" md="4">
+        <v-col cols="6" md="3">
           <v-menu
             v-model="tenderMenu"
             :close-on-content-click="false"
@@ -114,11 +111,13 @@
               locale="Rus"
               v-model="projectData.tender_date"
               @input="tenderMenu = false"
-              @change="sendData"
             ></v-date-picker>
           </v-menu>
         </v-col>
 
+        <v-col cols="6" md="3">
+          <v-checkbox label="Победа?" v-model="projectData.isTenderWon"></v-checkbox>
+        </v-col>
       </v-row>
     </v-card-text>
   </v-card>
@@ -126,32 +125,12 @@
 
 <script>
 export default {
-  props: ["address_prop", "isEdit", "projectData"],
+  props: ["isEdit", "projectData"],
 
   data: () => ({
     dateMenu: false,
     timeMenu: false,
     tenderMenu: false
-  }),
-
-  watch: {
-    address_prop(value) {
-      this.$set(this.projectData, 'address', this.address_prop);
-      this.sendData();
-    }
-  },
-
-  methods: {
-    sendData() {
-      this.$emit("project", {
-        name: this.projectData.name,
-        address: this.projectData.address,
-        work: this.projectData.work,
-        date: this.projectData.date,
-        time: this.projectData.time,
-        tender_date: this.projectData.tender_date
-      });
-    }
-  }
+  })
 };
 </script>

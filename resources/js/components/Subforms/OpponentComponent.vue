@@ -8,15 +8,15 @@
           label="Конкуренты"
           outlined
           clearable
-          v-on:keyup.enter="input(opponent)"
+          v-on:keyup.enter="addOpponent(opponent)"
           append-icon="mdi-plus"
-          @click:append="input(opponent)"
+          @click:append="addOpponent(opponent)"
         ></v-text-field>
 
-        <v-list flat v-if="opponents.length">
-          <v-list-item-group v-model="model" mandatory color="indigo">
-            <v-list-item v-for="(item, i) in opponents" :key="i">
-              <v-list-item-title v-text="item"></v-list-item-title>
+        <v-list flat v-if="opponentsData.length">
+          <v-list-item-group color="indigo">
+            <v-list-item v-for="(item, i) in opponentsData" :key="i">
+              <v-list-item-title v-text="item.name"></v-list-item-title>
               <v-icon @click="remove(item,i)">mdi-minus-circle-outline</v-icon>
             </v-list-item>
           </v-list-item-group>
@@ -29,33 +29,19 @@
 <script>
 export default {
   props: ["opponentsData"],
+  
   data: () => ({
-    opponent: null,
-    opponents: [],
-    ids: [],
-    model: 1
+    opponent: null
   }),
 
-  watch: {
-    opponentsData(val) {
-      val.forEach(item => {
-        this.opponents.push(item.name);
-        this.ids.push(item.id);
-      });
-    },
-
-    ids(val) {
-      this.$emit("opponents", val);
-    }
-  },
-
   methods: {
-    input(value) {
+    addOpponent(value) {
       if (value == null || /^\s*$/.test(value)) return;
 
-      if (this.opponents.includes(value)) {
-        this.opponent = "";
-        return;
+      for (let i = 0; i < this.opponentsData.length; i++) {
+        if (this.opponentsData[i].name === value) {
+          return;
+        }
       }
 
       let opponent = {
@@ -65,19 +51,16 @@ export default {
       axios
         .post("/opponent", opponent)
         .then(response => {
-          this.ids.push(response.data.id);
+          this.opponentsData.push(response.data);
+          this.opponent = "";
         })
         .catch(error => {
           console.log(error);
         });
-
-      this.opponents.push(value);
-      this.opponent = "";
     },
 
-    remove(item, i) {
-      this.opponents.splice(i, 1);
-      this.ids.splice(i, 1);
+    remove(i) {
+      this.opponentsData.splice(i, 1);
     }
   }
 };

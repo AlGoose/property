@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Dealer;
-use App\Staff;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use App\FileProject;
 
-class DealerController extends Controller
+class FileController extends Controller
 {
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->middleware('auth');
@@ -37,45 +40,37 @@ class DealerController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        // \Debugbar::info($request->all());
-        $dealer = Dealer::firstOrCreate($request->dealer);
-        $staff = Staff::find($request->staff_id);
-        $staff->entity()->associate($dealer)->save();
-        return $dealer;
+        $filesCollection = [];
+        if ($request->hasFile('files')) {
+            $uploadFiles = $request->allFiles()['files'];
+            /**@var \Illuminate\Http\UploadedFile $uploadFile */
+            foreach ($uploadFiles as $uploadFile) {
+                $filesCollection[] = FileProject::store($uploadFile);
+            }
+        }
+        return $filesCollection;
     }
 
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Dealer $dealer)
+    public function show($id)
     {
-        return $dealer;
         //
-    }
-
-    public function findDealer(Request $request)
-    {
-        // \Debugbar::info($request->all());
-        try {
-            $result = Dealer::where(['inn' => $request->inn, 'kpp' => $request->kpp])->with('contacts')->firstOrFail();
-        } catch (ModelNotFoundException $exception) {
-            return null;
-        }
-        return $result;
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -86,8 +81,8 @@ class DealerController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -98,7 +93,7 @@ class DealerController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

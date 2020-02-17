@@ -29,7 +29,8 @@ class Project extends Model
         'time',
         'tender_date',
         'work',
-        'kladrId'
+        'kladrId',
+        'isTenderWon'
     ];
 
     public function user()
@@ -64,7 +65,11 @@ class Project extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class)->withTimestamps()->withPivot('count','price');
+        return $this->belongsToMany(Product::class)->withTimestamps()->withPivot('count', 'price');
     }
 
+    public function files()
+    {
+        return $this->belongsToMany(FileProject::class)->withTimestamps();
+    }
 }

@@ -15,6 +15,7 @@
       <p class="subtitle">Телефон: {{agent ? agent.phone : ''}}</p>
       <p class="subtitle">Почта: {{agent ? agent.email : ''}}</p>
     </template>
+
     <v-row justify="center">
       <v-dialog v-model="dialog" persistent max-width="600px">
         <template v-slot:activator="{ on }">
@@ -68,12 +69,13 @@
 </template>
 
 <script>
-import { TheMask } from "vue-the-mask";
 import { mask } from "vue-the-mask";
+
 export default {
   props: ["entity", "mode"],
-  components: { TheMask },
+
   directives: { mask },
+
   data: () => ({
     phoneRules: [
       v => !!v || "Введите номер телефона",
@@ -89,6 +91,7 @@ export default {
     valid: true,
     dialog: false,
     isLoading: false,
+    staff: {},
     agent_id: null,
     agents: [],
     agentForm: {
@@ -97,11 +100,13 @@ export default {
       email: null
     }
   }),
+
   computed: {
     agent() {
       return this.agents.filter(item => this.agent_id === item.id).pop();
     }
   },
+
   mounted() {
     if (this.entity.contacts === undefined) {
       this.dialog = true;
@@ -112,11 +117,13 @@ export default {
       }
     }
   },
+
   watch: {
     entity(val) {
       if (this.entity.contacts === undefined) {
         this.agent_id = null;
-        (this.agents = []), (this.dialog = true);
+        this.agents = [];
+        this.dialog = true;
       } else {
         this.agents = this.entity.contacts;
       }
@@ -131,7 +138,7 @@ export default {
     addAgent() {
       if (this.$refs.form.validate()) {
         this.dialog = false;
-        this.agentForm.phone =  this.agentForm.phone.replace(/[^\d]/ig, '');
+        this.agentForm.phone = this.agentForm.phone.replace(/[^\d]/gi, "");
         axios.post("/staff", this.agentForm).then(request => {
           this.agents.push(request.data);
           this.agent_id = request.data.id;

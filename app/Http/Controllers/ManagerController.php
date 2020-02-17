@@ -13,7 +13,7 @@ class ManagerController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware(['auth', 'admin']);
     }
     /**
      * Display a listing of the resource.
@@ -22,10 +22,6 @@ class ManagerController extends Controller
      */
     public function index(Request $request)
     {
-        if (\Auth::user()->id != 1) {
-            abort(403);
-        }
-
         $managers = User::all();
         if ($request->ajax()) return $managers;
 
@@ -50,11 +46,21 @@ class ManagerController extends Controller
      */
     public function store(ManagerRequest $request)
     {
-        $user = User::create([
-            'name' => $request['name'],
-            'email' => $request['email'],
-            'password' => Hash::make(Str::random(12)),
-        ]);
+        // \Debugbar::info($request->all());
+        $user = User::withTrashed()->where(['email' => $request['email']])->first();
+
+        if ($user && $user->deleted_at) {
+            $user->restore();
+        } else {
+            $user = User::create([
+                'email' => $request['email'],
+                'name' => $request['name'],
+                'password' => Hash::make(Str::random(12))
+            ]);
+        }
+
+         $this->sendPassword($user->id);
+
         return $user;
     }
 
@@ -105,21 +111,15 @@ class ManagerController extends Controller
      */
     public function destroy($id)
     {
-        if (\Auth::user()->id != 1) {
-            abort(403);
-        }
-
         if ($id == 1) {
-            abort(403);
+            abort(403, "Нельзя просто так взять и удалить Админа!");
         }
         User::destroy($id);
     }
 
     public function sendPassword($id)
     {
-        // \Debugbar::info($id);
-
-        $user = \App\User::find(1);
+        $user = User::find($id);
         $broker = Password::broker();
         $token = $broker->getToken($user);
 

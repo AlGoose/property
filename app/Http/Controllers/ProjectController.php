@@ -6,6 +6,7 @@ use App\Dealer;
 use App\Project;
 use App\Staff;
 use App\Customer;
+use App\FileProject;
 use Illuminate\Http\Request;
 use App\Http\Requests\ProjectRequest;
 
@@ -75,15 +76,18 @@ class ProjectController extends Controller
         $project->user()->associate(\Auth::user());
 
         $project->customer()->associate(Customer::find($request->customer['customer_id']));
-        $project->customer_staff()->associate(Staff::find($request->customer['customer_staff_id']));
+        $project->customer_staff()->associate(Staff::find($request->customer['staff_id']));
 
         $project->dealer()->associate(Dealer::find($request->dealer['dealer_id']));
-        $project->dealer_staff()->associate(Staff::find($request->dealer['dealer_staff_id']));
+        $project->dealer_staff()->associate(Staff::find($request->dealer['staff_id']));
 
         $project->save();
 
         $project->opponents()->attach($request->opponents);
-        $project->products()->attach($request->products);   
+        $project->products()->attach($request->products);
+        $project->files()->attach($request->documents);
+
+        return $project->id;
     }
 
     /**
@@ -92,22 +96,26 @@ class ProjectController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, Project $project)
+    public function show(Project $project, Request $request)
     {
-        $project->user = $project->user()->get()[0];
+        $res = (object)[];
+        $res->project = $project->getOriginal();
+        $res->user = $project->user()->first();
 
-        $project->dealer = $project->dealer()->get()[0];
-        $project->dealer_staff = $project->dealer_staff()->get()[0];
+        $res->dealer = $project->dealer()->first();
+        $res->dealer->current_staff = $project->dealer_staff()->first();
 
-        $project->customer = $project->customer()->get()[0];
-        $project->customer_staff = $project->customer_staff()->get()[0];
+        $res->customer = $project->customer()->first();
+        $res->customer->current_staff = $project->customer_staff()->first();
 
-        $project->opponents = $project->opponents()->get();
-        $project->products = $project->products()->get();
+        $res->opponents = $project->opponents()->get();
+        $res->products = $project->products()->get();
 
-        if ($request->ajax()) return $project;
+        $res->documents = $project->files()->get();
 
-        return view('show')->with('project', $project);
+        if ($request->ajax()) return json_encode($res);
+
+        return view('show')->with('project', $res);
     }
 
     /**
@@ -116,26 +124,30 @@ class ProjectController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request, Project $project)
+    public function edit(Project $project, Request $request)
     {
-        if($project->user_id != \Auth::user()->id) {
+        if ($project->user_id != \Auth::user()->id) {
             abort(403);
         }
 
-        $project->user = $project->user()->first();
+        $res = (object)[];
+        $res->project = $project->getOriginal();
+        $res->user = $project->user()->first();
 
-        $project->dealer = $project->dealer()->first();
-        $project->dealer->current_staff = $project->dealer_staff()->first();
+        $res->dealer = $project->dealer()->first();
+        $res->dealer->current_staff = $project->dealer_staff()->first();
 
-        $project->customer = $project->customer()->first();
-        $project->customer->current_staff = $project->customer_staff()->first();
+        $res->customer = $project->customer()->first();
+        $res->customer->current_staff = $project->customer_staff()->first();
 
-        $project->opponents = $project->opponents()->get();
-        $project->products = $project->products()->get();
+        $res->opponents = $project->opponents()->get();
+        $res->products = $project->products()->get();
 
-        if ($request->ajax()) return $project;
+        $res->documents = $project->files()->get();
 
-        return view('form')->with('project', $project);
+        if ($request->ajax()) return json_encode($res);
+
+        return view('form')->with('project', $res);
     }
 
     /**
@@ -148,16 +160,26 @@ class ProjectController extends Controller
     public function update(Request $request, Project $project)
     {
         // \Debugbar::info($request->all());
-
         $project->work = $request->project['work'];
         $project->date = $request->project['date'];
-        $project->time = $request->project['time'];
-        $project->customer_staff()->associate(Staff::find($request->customer['customer_staff_id']));
-        $project->dealer_staff()->associate(Staff::find($request->dealer['dealer_staff_id']));
+        $project->tender_date = $request->project['tender_date'];
+        $project->customer_staff()->associate(Staff::find($request->customer['staff_id']));
+        $project->dealer_staff()->associate(Staff::find($request->dealer['staff_id']));
         $project->save();
 
         $project->opponents()->sync($request->opponents);
         $project->products()->sync($request->products);
+
+        $res = $project->files()->sync($request->documents);
+
+        if ($res['detached']) {
+            foreach ($res['detached'] as $id) {
+                $file = FileProject::find($id);
+                if (!count($file->projects)) {
+                    $file->delete();
+                }
+            }
+        }
     }
 
     /**
@@ -168,6 +190,6 @@ class ProjectController extends Controller
      */
     public function destroy($id)
     {
-        Project::destroy($id);
+        $res = Project::destroy($id);
     }
 }

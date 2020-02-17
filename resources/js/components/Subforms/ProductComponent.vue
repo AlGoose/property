@@ -101,9 +101,9 @@
         </v-row>
 
         <v-data-table
-          v-if="products.length"
+          v-if="productsData.length"
           :headers="headers"
-          :items="products"
+          :items="productsData"
           item-key="name"
           class="elevation-1"
         >
@@ -112,7 +112,7 @@
               <td>{{ item.name }}</td>
               <td>{{ item.pivot.count }}</td>
               <td>{{ item.pivot.price }}</td>
-              <td>{{ item.pivot.total }}</td>
+              <td>{{ item.pivot.count * item.pivot.price }}</td>
               <td>
                 <v-icon @click="removeProduct(item, index)">mdi-minus-circle-outline</v-icon>
               </td>
@@ -146,6 +146,7 @@ export default {
     valid: true,
     dialog: false,
     isDisabled: false,
+    isLoading: false,
     products: [],
     entires: [],
     search: null,
@@ -156,29 +157,12 @@ export default {
     },
     count: null,
     price: null,
-    total: null,
-    isLoading: false,
-    ids: {}
+    total: null
   }),
 
   watch: {
-    productsData(val) {
-      this.products = val;
-      this.products.forEach(item => {
-        item.pivot.total = item.pivot.count * item.pivot.price;
-        this.$set(this.ids, item.id, {
-          price: item.pivot.price,
-          count: item.pivot.count
-        });
-      });
-    },
-
     search() {
       this.inputArticle();
-    },
-
-    ids(value) {
-      this.$emit("products", value);
     }
   },
 
@@ -237,8 +221,8 @@ export default {
 
     addProduct() {
       if (this.$refs.form.validate()) {
-        for (let i = 0; i < this.products.length; i++) {
-          if (this.product.article == this.products[i].article) {
+        for (let i = 0; i < this.productsData.length; i++) {
+          if (this.product.article == this.productsData[i].article) {
             return;
           }
         }
@@ -252,28 +236,14 @@ export default {
         axios
           .post("/product", product)
           .then(response => {
-            this.$set(this.ids, response.data.id, {
-              price: this.price,
-              count: this.count
-            });
             product.id = response.data.id;
             product.pivot = {
               price: this.price,
               count: this.count,
               total: this.total
             };
-            this.products.push(product);
-            this.$refs.form.reset();
-            this.count = null;
-            this.price = null;
-            this.total = null;
-            this.product = {
-              article: null,
-              id: null,
-              name: null
-            };
-            this.entires = [];
-            this.dialog = false;
+            this.productsData.push(product);
+            this.closeDialog();
           })
           .catch(function(error) {
             console.log(error);
@@ -282,8 +252,7 @@ export default {
     },
 
     removeProduct(item, index) {
-      this.products.splice(index, 1);
-      this.$delete(this.ids, item.id);
+      this.productsData.splice(index, 1);
     },
 
     closeDialog() {

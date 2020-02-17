@@ -11,16 +11,7 @@
 |
 */
 
-use Illuminate\Support\Facades\Password;
-
 Auth::routes();
-// Route::get('/test', function () {
-//     // $user = \App\User::find(1);
-//     // $broker = Password::broker();
-//     // $token = $broker->getToken($user);
-
-//     // \Mail::to($user)->send((new \App\Mail\NewUser($user,$token)));
-// });
 
 Route::post('/addresses', 'AddressController@addresses');
 Route::post('/kladr', 'AddressController@search');
@@ -35,6 +26,10 @@ Route::resource('/project', 'ProjectController');
 Route::resource('/managers', 'ManagerController');
 Route::post('/managers/{id}/sendPassword', 'ManagerController@sendPassword');
 
+Route::post('/project/{project}/files', 'ProjectController@saveFile');
+Route::put('/project/{project}/files', 'ProjectController@updateFile');
+Route::delete('/project/{project}/files/{fileProject}', 'ProjectController@deleteFile');
+Route::resource('/file', 'FileController');
 
 Route::get('/{any}', 'SinglePageController@index')->middleware('auth')->where(['any' => '.*']);
 

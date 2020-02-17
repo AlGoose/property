@@ -34,6 +34,7 @@ export default {
   components: {
     StaffComponent
   },
+
   props: ["isEdit", "customerData"],
 
   data: () => ({
@@ -44,15 +45,21 @@ export default {
     customer: ""
   }),
 
-  watch: {
-    customerData(val) {
-      if (this.isEdit) {
-        this.company = val;
-        this.companies.push(val);
-      }
-    },
+  mounted() {
+    if (Object.keys(this.customerData).length > 0) {
+      this.company = this.customerData;
+      this.companies.push(this.customerData);
+    }
+  },
 
+  watch: {
     company(val) {
+      if (!val) {
+        this.customer = "";
+        this.customerData.customer_id = null;
+        return;
+      }
+
       axios
         .post("/customer/findCustomer", { inn: val.inn, kpp: val.kpp })
         .then(response => {
@@ -90,7 +97,6 @@ export default {
           this.isLoading = false;
         })
         .catch(error => {
-          console.log(error);
           this.isLoading = false;
         });
     }
@@ -98,49 +104,24 @@ export default {
 
   methods: {
     saveStaff(staff) {
-      if (!this.customer.id) {
-        if (!staff) {
-          this.$emit("customer", {
-            customer_id: null,
-            customer_staff_id: null
-          });
-          return;
-        }
-
-        axios
-          .post("/customer", { customer: this.company, staff_id: staff })
-          .then(response => {
-            this.$emit("customer", {
-              customer_id: response.data.id,
-              customer_staff_id: staff
-            });
-          });
-      } else {
-        if (!staff) {
-          this.$emit("customer", {
-            customer_id: this.customer.id,
-            customer_staff_id: null
-          });
-          return;
-        }
-
-        axios
-          .post("/customer", {
-            customer: {
-              inn: this.company.inn,
-              kpp: this.company.kpp,
-              address: this.company.address,
-              name: this.company.name
-            },
-            staff_id: staff
-          })
-          .then(response => {
-            this.$emit("customer", {
-              customer_id: response.data.id,
-              customer_staff_id: staff
-            });
-          });
+      if (!staff) {
+        this.customerData.staff_id = null;
+        return;
       }
+
+      let customer = {
+        name: this.company.name,
+        address: this.company.address,
+        inn: this.company.inn,
+        kpp: this.company.kpp
+      };
+
+      axios
+        .post("/customer", { customer: customer, staff_id: staff })
+        .then(response => {
+          this.customerData.customer_id = response.data.id;
+          this.customerData.staff_id = staff;
+        });
     }
   }
 };

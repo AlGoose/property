@@ -50,7 +50,7 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="indigo" @click="removeDialog = false" outlined>Отмена</v-btn>
-                <v-btn color="red" @click="remove" outlined>Удалить</v-btn>
+                <v-btn color="red" @click="removeManager" outlined>Удалить</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -60,13 +60,13 @@
               <v-card-title class="headline red lighten-2" primary-title>Ошибка</v-card-title>
               <v-card-text>
                 <ul>
-                  <li v-for="(item, i) in errors" :key="i">{{item[0]}}</li>
+                  <li v-for="(item, i) in errors" :key="i">{{item}}</li>
                 </ul>
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="primary" text @click="alert = false">I accept</v-btn>
+                <v-btn color="primary" text @click="alert = false; errors = []">I accept</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -146,6 +146,7 @@ export default {
     },
 
     close() {
+      this.removeDialog = false;
       this.editDialog = false;
       setTimeout(() => {
         this.editedItem = {};
@@ -155,60 +156,60 @@ export default {
 
     save() {
       if (this.editedIndex > -1) {
-        axios
-          .put("/managers/" + this.editedItem.id, this.editedItem)
-          .then(response => {
-            Object.assign(this.managers[this.editedIndex], response.data);
-          })
-          .catch(error => {
-            console.log("ERROOOOOOOR", error.response);
-            this.errors = error.response.data.errors;
-            this.alert = true;
-          })
-          .then(() => {
-            this.close();
-          });
+        this.editManager();
       } else {
-        axios
-          .post("/managers", this.editedItem)
-          .then(response => {
-            this.managers.push(response.data);
-          })
-          .catch(error => {
-            console.log("ERROOOOOOOR", error.response);
-            this.errors = error.response.data.errors;
-            this.alert = true;
-          })
-          .then(() => {
-            this.close();
-          });
+        this.addManager();
       }
     },
 
-    remove() {
-      axios
-        .delete("/managers/" + this.editedItem.id)
-        .then(response => {
+    addManager() {
+      this.sendRequest("post", "/managers", this.editedItem, response => {
+        this.managers.push(response.data);
+      });
+    },
+
+    editManager() {
+      this.sendRequest(
+        "put",
+        `/managers/${this.editedItem.id}`,
+        this.editedItem,
+        response => {
+          Object.assign(this.managers[this.editedIndex], response.data);
+        }
+      );
+    },
+
+    removeManager() {
+      this.sendRequest(
+        "delete",
+        `/managers/${this.editedItem.id}`,
+        null,
+        response => {
           this.managers.splice(this.editedItem.index, 1);
-          this.removeDialog = false;
-          setTimeout(() => {
-            this.editedItem = {};
-          }, 300);
-        })
-        .catch(error => {
-          console.log("ERROOOOOOOR", error.response);
-          this.errors.push(["Нельзя просто так взять и удалить админа!"]);
-          this.removeDialog = false;
-          this.alert = true;
-        });
+        }
+      );
     },
 
     sendPassword() {
-      axios
-        .post(`/managers/${this.editedItem.id}/sendPassword`)
-        .then(response => {})
+      this.sendRequest(
+        "post",
+        `/managers/${this.editedItem.id}/sendPassword`,
+        null,
+        response => {}
+      );
+    },
+
+    sendRequest(type, path, request, callback) {
+      axios[type](path, request)
+        .then(response => {
+          callback(response);
+        })
         .catch(error => {
-          console.log(error);
+          this.errors.push(error.response.data.message);
+          this.alert = true;
+        })
+        .then(() => {
+          this.close();
         });
     }
   }
