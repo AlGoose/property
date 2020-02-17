@@ -49,7 +49,7 @@ class ManagerController extends Controller
         // \Debugbar::info($request->all());
         $user = User::withTrashed()->where(['email' => $request['email']])->first();
 
-        if ($user->deleted_at) {
+        if ($user && $user->deleted_at) {
             $user->restore();
         } else {
             $user = User::create([
@@ -59,7 +59,7 @@ class ManagerController extends Controller
             ]);
         }
 
-        // $this->sendPassword($user->id);
+         $this->sendPassword($user->id);
 
         return $user;
     }

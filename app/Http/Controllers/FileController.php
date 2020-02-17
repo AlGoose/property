@@ -47,9 +47,7 @@ class FileController extends Controller
     {
         $filesCollection = [];
         if ($request->hasFile('files')) {
-            // \Debugbar::info('OK');
             $uploadFiles = $request->allFiles()['files'];
-
             /**@var \Illuminate\Http\UploadedFile $uploadFile */
             foreach ($uploadFiles as $uploadFile) {
                 $filesCollection[] = FileProject::store($uploadFile);
