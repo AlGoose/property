@@ -105,7 +105,9 @@ export default {
         date: new Date().toISOString().substr(0, 10),
         time: new Date().toISOString().substr(0, 10),
         tender_date: null,
-        isTenderWon: false
+        isTenderWon: false,
+        isClosed: false,
+        close_date: null
       },
       dealer: {},
       customer: {},

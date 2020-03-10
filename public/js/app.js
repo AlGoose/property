@@ -2043,7 +2043,9 @@ __webpack_require__.r(__webpack_exports__);
           date: new Date().toISOString().substr(0, 10),
           time: new Date().toISOString().substr(0, 10),
           tender_date: null,
-          isTenderWon: false
+          isTenderWon: false,
+          isClosed: false,
+          close_date: null
         },
         dealer: {},
         customer: {},
@@ -3008,6 +3010,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     var _this = this;
@@ -3017,6 +3022,10 @@ __webpack_require__.r(__webpack_exports__);
         _this.itemsPerPage = response.data.per_page;
         _this.length = Math.ceil(response.data.total / response.data.per_page);
         _this.fruits = response.data.data;
+
+        _this.countFullPrice();
+
+        console.log(_this.fruits);
       })["catch"](function (error) {
         console.log(error);
       });
@@ -3024,6 +3033,8 @@ __webpack_require__.r(__webpack_exports__);
       this.itemsPerPage = window.projects.per_page;
       this.length = Math.ceil(window.projects.total / window.projects.per_page);
       this.fruits = window.projects.data;
+      this.countFullPrice();
+      console.log(this.fruits);
       window.projects = undefined;
     }
   },
@@ -3033,23 +3044,37 @@ __webpack_require__.r(__webpack_exports__);
       page: 1,
       length: 1,
       headers: [{
-        text: "Name",
-        align: "left",
+        text: "Название",
         value: "name"
       }, {
-        text: "Address",
+        text: "Адрес",
         value: "address"
       }, {
-        text: "Dealer",
+        text: "Дилер",
         value: "dealer"
       }, {
-        text: "Date",
+        text: "Срок реализации",
         value: "date"
       }, {
-        text: "Time",
+        text: "Дата заключения",
         value: "time"
       }, {
-        text: "Manager",
+        text: "Дата тендера",
+        value: "tender_date"
+      }, {
+        text: "Победа",
+        value: "isTenderWon"
+      }, {
+        text: "Закрыто",
+        value: "isClosed"
+      }, {
+        text: "Дата закрытия",
+        value: "close_date"
+      }, {
+        text: "Общая стоимость (₽)",
+        value: "total"
+      }, {
+        text: "Менеджер",
         value: "manager"
       }],
       fruits: []
@@ -3063,6 +3088,8 @@ __webpack_require__.r(__webpack_exports__);
         _this2.itemsPerPage = response.data.per_page;
         _this2.length = Math.ceil(response.data.total / response.data.per_page);
         _this2.fruits = response.data.data;
+
+        _this2.countFullPrice();
       })["catch"](function (error) {
         console.log(error);
       });
@@ -3075,6 +3102,13 @@ __webpack_require__.r(__webpack_exports__);
         params: {
           id: value.id
         }
+      });
+    },
+    countFullPrice: function countFullPrice() {
+      this.fruits.forEach(function (item) {
+        item.total = item.products.reduce(function (accumulator, item) {
+          return accumulator + item.pivot.price * item.pivot.count;
+        }, 0);
       });
     }
   }
@@ -4210,13 +4244,47 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ["isEdit", "projectData"],
   data: function data() {
     return {
       dateMenu: false,
       timeMenu: false,
-      tenderMenu: false
+      tenderMenu: false,
+      closeMenu: false
     };
   }
 });
@@ -8962,7 +9030,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n*[data-v-20cb5d70] {\r\n  padding-bottom: 14px;\n}\r\n", ""]);
+exports.push([module.i, "\n*[data-v-20cb5d70] {\r\n  padding-bottom: 14px;\n}\n.container[data-v-20cb5d70] {\r\n  max-width: 80%;\n}\r\n", ""]);
 
 // exports
 
@@ -41993,7 +42061,23 @@ var render = function() {
           "items-per-page": _vm.itemsPerPage,
           "hide-default-footer": ""
         },
-        on: { "click:row": _vm.openProject }
+        on: { "click:row": _vm.openProject },
+        scopedSlots: _vm._u([
+          {
+            key: "item.isTenderWon",
+            fn: function(ref) {
+              var item = ref.item
+              return [_vm._v(_vm._s(item.isTenderWon ? "Да" : "Нет"))]
+            }
+          },
+          {
+            key: "item.isClosed",
+            fn: function(ref) {
+              var item = ref.item
+              return [_vm._v(_vm._s(item.isClosed ? "Да" : "Нет"))]
+            }
+          }
+        ])
       }),
       _vm._v(" "),
       _c(
@@ -44187,7 +44271,127 @@ var render = function() {
                       })
                     ],
                     1
-                  )
+                  ),
+                  _vm._v(" "),
+                  _vm.isEdit
+                    ? _c(
+                        "v-col",
+                        { attrs: { cols: "6", md: "3" } },
+                        [
+                          _c("v-checkbox", {
+                            attrs: { label: "Проект закрыт?" },
+                            model: {
+                              value: _vm.projectData.isClosed,
+                              callback: function($$v) {
+                                _vm.$set(_vm.projectData, "isClosed", $$v)
+                              },
+                              expression: "projectData.isClosed"
+                            }
+                          })
+                        ],
+                        1
+                      )
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.projectData.isClosed
+                    ? _c(
+                        "v-col",
+                        { attrs: { cols: "6", md: "3" } },
+                        [
+                          _c(
+                            "v-menu",
+                            {
+                              attrs: {
+                                "close-on-content-click": false,
+                                "nudge-right": 20,
+                                transition: "scale-transition",
+                                "offset-y": "",
+                                "min-width": "290px"
+                              },
+                              scopedSlots: _vm._u(
+                                [
+                                  {
+                                    key: "activator",
+                                    fn: function(ref) {
+                                      var on = ref.on
+                                      return [
+                                        _c(
+                                          "v-text-field",
+                                          _vm._g(
+                                            {
+                                              attrs: {
+                                                label: "Дата закрытия",
+                                                readonly: "",
+                                                outlined: "",
+                                                rules: [
+                                                  function(v) {
+                                                    return (
+                                                      !!v || "Выберите дату"
+                                                    )
+                                                  }
+                                                ]
+                                              },
+                                              model: {
+                                                value:
+                                                  _vm.projectData.close_date,
+                                                callback: function($$v) {
+                                                  _vm.$set(
+                                                    _vm.projectData,
+                                                    "close_date",
+                                                    $$v
+                                                  )
+                                                },
+                                                expression:
+                                                  "projectData.close_date"
+                                              }
+                                            },
+                                            on
+                                          )
+                                        )
+                                      ]
+                                    }
+                                  }
+                                ],
+                                null,
+                                false,
+                                311414581
+                              ),
+                              model: {
+                                value: _vm.closeMenu,
+                                callback: function($$v) {
+                                  _vm.closeMenu = $$v
+                                },
+                                expression: "closeMenu"
+                              }
+                            },
+                            [
+                              _vm._v(" "),
+                              _c("v-date-picker", {
+                                attrs: {
+                                  "no-title": "",
+                                  scrollable: "",
+                                  locale: "Rus"
+                                },
+                                on: {
+                                  input: function($event) {
+                                    _vm.closeMenu = false
+                                  }
+                                },
+                                model: {
+                                  value: _vm.projectData.close_date,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.projectData, "close_date", $$v)
+                                  },
+                                  expression: "projectData.close_date"
+                                }
+                              })
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      )
+                    : _vm._e()
                 ],
                 1
               )

@@ -30,7 +30,9 @@ class Project extends Model
         'tender_date',
         'work',
         'kladrId',
-        'isTenderWon'
+        'isTenderWon',
+        'isClosed',
+        'close_date'
     ];
 
     public function user()

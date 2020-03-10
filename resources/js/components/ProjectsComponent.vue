@@ -7,7 +7,10 @@
       hide-default-footer
       class="elevation-3"
       @click:row="openProject"
-    ></v-data-table>
+    >
+      <template v-slot:item.isTenderWon="{ item }">{{ item.isTenderWon ? "Да" : "Нет" }}</template>
+      <template v-slot:item.isClosed="{ item }">{{ item.isClosed ? "Да" : "Нет" }}</template>
+    </v-data-table>
     <div class="text-center">
       <v-pagination v-model="page" :length="length" :total-visible="7"></v-pagination>
     </div>
@@ -25,6 +28,9 @@ export default {
           this.itemsPerPage = response.data.per_page;
           this.length = Math.ceil(response.data.total / response.data.per_page);
           this.fruits = response.data.data;
+          this.countFullPrice();
+
+          console.log(this.fruits);
         })
         .catch(function(error) {
           console.log(error);
@@ -33,6 +39,9 @@ export default {
       this.itemsPerPage = window.projects.per_page;
       this.length = Math.ceil(window.projects.total / window.projects.per_page);
       this.fruits = window.projects.data;
+      this.countFullPrice();
+
+      console.log(this.fruits);
       window.projects = undefined;
     }
   },
@@ -43,16 +52,17 @@ export default {
       page: 1,
       length: 1,
       headers: [
-        {
-          text: "Name",
-          align: "left",
-          value: "name"
-        },
-        { text: "Address", value: "address" },
-        { text: "Dealer", value: "dealer" },
-        { text: "Date", value: "date" },
-        { text: "Time", value: "time" },
-        { text: "Manager", value: "manager" }
+        { text: "Название", value: "name" },
+        { text: "Адрес", value: "address" },
+        { text: "Дилер", value: "dealer" },
+        { text: "Срок реализации", value: "date" },
+        { text: "Дата заключения", value: "time" },
+        { text: "Дата тендера", value: "tender_date" },
+        { text: "Победа", value: "isTenderWon" },
+        { text: "Закрыто", value: "isClosed" },
+        { text: "Дата закрытия", value: "close_date" },
+        { text: "Общая стоимость (₽)", value: "total" },
+        { text: "Менеджер", value: "manager" }
       ],
       fruits: []
     };
@@ -66,6 +76,7 @@ export default {
           this.itemsPerPage = response.data.per_page;
           this.length = Math.ceil(response.data.total / response.data.per_page);
           this.fruits = response.data.data;
+          this.countFullPrice();
         })
         .catch(function(error) {
           console.log(error);
@@ -79,6 +90,14 @@ export default {
         name: "show",
         params: { id: value.id }
       });
+    },
+
+    countFullPrice() {
+      this.fruits.forEach(item => {
+        item.total = item.products.reduce((accumulator, item) => {
+          return accumulator + item.pivot.price * item.pivot.count;
+        }, 0);
+      });
     }
   }
 };
@@ -87,5 +106,8 @@ export default {
 <style scoped>
 * {
   padding-bottom: 14px;
+}
+.container {
+  max-width: 80%;
 }
 </style>

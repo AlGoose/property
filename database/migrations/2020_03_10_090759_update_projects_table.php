@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddRowsToProjectsTable extends Migration
+class UpdateProjectsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,8 @@ class AddRowsToProjectsTable extends Migration
     public function up()
     {
         Schema::table('projects', function (Blueprint $table) {
-            $table->date('tender_date')->nullable();
+            $table->boolean('isClosed');
+            $table->date('close_date')->nullable();
         });
     }
 
@@ -26,7 +27,8 @@ class AddRowsToProjectsTable extends Migration
     public function down()
     {
         Schema::table('projects', function (Blueprint $table) {
-            $table->dropColumn('tender_date');
+            $table->dropColumn('isClosed');
+            $table->dropColumn('close_date');
         });
     }
 }
