@@ -274,8 +274,6 @@ export default {
     },
 
     test(e) {
-      console.log("TEST");
-      console.log(e.target.files);
       let formData = new FormData();
       formData.append("excel", e.target.files[0]);
 

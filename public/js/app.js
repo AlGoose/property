@@ -4202,8 +4202,6 @@ __webpack_require__.r(__webpack_exports__);
       this.dialog = false;
     },
     test: function test(e) {
-      console.log("TEST");
-      console.log(e.target.files);
       var formData = new FormData();
       formData.append("excel", e.target.files[0]);
       axios.post("/file/import", formData, {

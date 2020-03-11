@@ -1,22 +1,19 @@
 <?php
 
 namespace App\Imports;
+use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\ToCollection;
 
-use App\Product;
-use Maatwebsite\Excel\Concerns\ToModel;
-
-class ProductsImport implements ToModel
+class ProductsImport implements ToCollection
 {
-    /**
-    * @param array $row
-    *
-    * @return \Illuminate\Database\Eloquent\Model|null
-    */
-    public function model(array $row)
+    public function collection(Collection $rows)
     {
-        \DebugBar::info($row);
-        // return new Product([
-        //     //
-        // ]);
+        \DebugBar::info($rows);
+        \DebugBar::info($rows[31]);
+
+        // foreach ($rows as $row) 
+        // {
+            
+        // }
     }
 }
