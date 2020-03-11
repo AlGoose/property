@@ -30,6 +30,7 @@ Route::post('/project/{project}/files', 'ProjectController@saveFile');
 Route::put('/project/{project}/files', 'ProjectController@updateFile');
 Route::delete('/project/{project}/files/{fileProject}', 'ProjectController@deleteFile');
 Route::resource('/file', 'FileController');
+Route::post('/file/import', 'FileController@importExcel');
 
 Route::get('/{any}', 'SinglePageController@index')->middleware('auth')->where(['any' => '.*']);
 

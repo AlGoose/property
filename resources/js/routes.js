@@ -8,6 +8,7 @@ import Show from './components/ShowComponent'
 import Form from './components/FormComponent'
 import Projects from './components/ProjectsComponent'
 import Managers from './components/ManagersComponent'
+import NotFound from './components/NotFoundComponent'
 
 const router = new VueRouter({
     mode: 'history',
@@ -44,6 +45,14 @@ const router = new VueRouter({
             name: 'managers',
             component: Managers,
         },
+        {
+            path: '/404',
+            name: '404',
+            component: NotFound,
+        }, {
+            path: '*',
+            redirect: '/404'
+        }
     ],
 });
 

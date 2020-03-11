@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\FileProject;
+use App\Imports\ProductsImport;
 
 class FileController extends Controller
 {
@@ -101,5 +102,22 @@ class FileController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function importExcel(Request $request)
+    {
+        $this->validate($request, [
+            'excel' => 'required|mimes:xls,xlsx'
+        ]);
+
+        // \Debugbar::info($request->all());
+        // \Debugbar::info($request['excel']);
+        if ($request->hasFile('excel')) {
+            \Debugbar::info('OK');
+            $path = $request->file('excel')->getRealPath();
+            \Excel::import(new ProductsImport, $path);
+        } else {
+            \Debugbar::info('BAD');
+        }
     }
 }
