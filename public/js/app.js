@@ -3119,8 +3119,6 @@ __webpack_require__.r(__webpack_exports__);
         _this.fruits = response.data.data;
 
         _this.countFullPrice();
-
-        console.log(_this.fruits);
       })["catch"](function (error) {
         console.log(error);
       });
@@ -3129,7 +3127,6 @@ __webpack_require__.r(__webpack_exports__);
       this.length = Math.ceil(window.projects.total / window.projects.per_page);
       this.fruits = window.projects.data;
       this.countFullPrice();
-      console.log(this.fruits);
       window.projects = undefined;
     }
   },

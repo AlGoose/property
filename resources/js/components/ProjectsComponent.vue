@@ -29,8 +29,6 @@ export default {
           this.length = Math.ceil(response.data.total / response.data.per_page);
           this.fruits = response.data.data;
           this.countFullPrice();
-
-          console.log(this.fruits);
         })
         .catch(function(error) {
           console.log(error);
@@ -40,8 +38,6 @@ export default {
       this.length = Math.ceil(window.projects.total / window.projects.per_page);
       this.fruits = window.projects.data;
       this.countFullPrice();
-
-      console.log(this.fruits);
       window.projects = undefined;
     }
   },
