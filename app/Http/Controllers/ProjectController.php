@@ -41,7 +41,7 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
-        $projects = Project::paginate(5);
+        $projects = Project::paginate(10);
         foreach ($projects as $item) {
             $item->manager = $item->user()->get()[0]->name;
             $item->dealer = $item->dealer()->get()[0]->name;
