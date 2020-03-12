@@ -45,6 +45,7 @@ class ProjectController extends Controller
         foreach ($projects as $item) {
             $item->manager = $item->user()->get()[0]->name;
             $item->dealer = $item->dealer()->get()[0]->name;
+            $item->products = $item->products()->get();
         }
 
         if ($request->ajax()) return $projects;
@@ -98,7 +99,7 @@ class ProjectController extends Controller
      */
     public function show(Project $project, Request $request)
     {
-        $res = (object)[];
+        $res = (object) [];
         $res->project = $project->getOriginal();
         $res->user = $project->user()->first();
 
@@ -130,7 +131,7 @@ class ProjectController extends Controller
             abort(403);
         }
 
-        $res = (object)[];
+        $res = (object) [];
         $res->project = $project->getOriginal();
         $res->user = $project->user()->first();
 
@@ -159,10 +160,17 @@ class ProjectController extends Controller
      */
     public function update(Request $request, Project $project)
     {
-        // \Debugbar::info($request->all());
+        \Debugbar::info($request->all());
         $project->work = $request->project['work'];
         $project->date = $request->project['date'];
         $project->tender_date = $request->project['tender_date'];
+        $project->isTenderWon = $request->project['isTenderWon'];
+        $project->isClosed = $request->project['isClosed'];
+        if ($request->project['isClosed'] == 0) {
+            $project->close_date = null;
+        } else {
+            $project->close_date = $request->project['close_date'];
+        }
         $project->customer_staff()->associate(Staff::find($request->customer['staff_id']));
         $project->dealer_staff()->associate(Staff::find($request->dealer['staff_id']));
         $project->save();

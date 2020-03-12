@@ -1,0 +1,558 @@
+[33mcommit 48081f50b919fceefd13963a8ade90aae6adc36c[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m
+Author: Marat Ahtyamov <68@7899.ru>
+Date:   Thu Mar 12 14:25:54 2020 +0700
+
+    second commit add to the table
+
+[33mcommit d6dc1a7470bf69273ec4e95df4b5c37678ce9943[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: e0eeea3 9eaa878
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Mon Feb 17 10:59:46 2020 +0700
+
+    Merge branch 'dev'
+    
+    # Conflicts:
+    #       public/mix-manifest.json
+
+[33mcommit 9eaa878bf6b33cdf092355556b72ceef18923ea4[m
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Mon Feb 17 10:59:11 2020 +0700
+
+    hotfix
+
+[33mcommit 1eb101454c4863e00d6dc46c6a29a922adc722e3[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Sun Feb 16 14:01:42 2020 +0700
+
+    Global Refactoring. Part V
+
+[33mcommit 5497d4bb1797da42534e03b8039fbd21a27819bc[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Fri Feb 14 19:12:40 2020 +0700
+
+    Global Refactoring. Part IV
+
+[33mcommit 8aedc95025991d545f7d509c38adadcb7982c06e[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Fri Feb 14 17:28:53 2020 +0700
+
+    little fix
+
+[33mcommit 8a5f3ee7d6ecb2b63039b9aa420c285dc3cae192[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Fri Feb 14 17:02:49 2020 +0700
+
+    gitignore update
+
+[33mcommit 0fba1f743b5f71df0f65858df87cf6434aafbea0[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Fri Feb 14 17:00:24 2020 +0700
+
+    Global Refactoring. Part III
+
+[33mcommit 0bd8373262648b7d5006555634ea03f7bf18781d[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Fri Feb 14 13:19:07 2020 +0700
+
+    Global Refactoring. Part II
+
+[33mcommit e0eeea3f339d8bfeada34de530ac1b2aa382678a[m
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Fri Feb 14 11:52:59 2020 +0700
+
+    hotfix
+
+[33mcommit 6581aa8e670b3bf504bdea983fc861fbfac696fb[m
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Fri Feb 14 11:18:30 2020 +0700
+
+    hotfix
+
+[33mcommit 5eba204d67f7e75a6ec3719353424bba290da495[m
+Merge: 17db1b3 b7597cd
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Fri Feb 14 11:14:12 2020 +0700
+
+    Merge branch 'prod'
+    
+    # Conflicts:
+    #       app/Mail/ResetPassword.php
+    #       public/mix-manifest.json
+
+[33mcommit 65f4df9bf88c246c5d53d5321756029ba50c2399[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Thu Feb 13 18:48:01 2020 +0700
+
+    Global Refactoring. Part I
+
+[33mcommit f22c5cc2770447f6ebc6744bd05949cc737e1aa5[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Thu Feb 13 10:53:05 2020 +0700
+
+    Still not working (
+
+[33mcommit bb94684d70683f4b55829e264755c65a5a76ecaa[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Wed Feb 12 18:06:19 2020 +0700
+
+    Неработающая хрень! Не трогать!
+
+[33mcommit b0505c02997f195e8cbf607a352762e5684ff85a[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Tue Feb 11 18:40:19 2020 +0700
+
+    commit
+
+[33mcommit 23d575d23abe33febfa6d1781c0a630a34530af5[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Tue Feb 11 18:34:09 2020 +0700
+
+    Add File Upload v0.1
+
+[33mcommit b7597cd822c8574034e93b115319854168b311b4[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Tue Feb 11 14:12:56 2020 +0700
+
+    Add tender_date, send email + some fix
+
+[33mcommit 17db1b36ab9c61c91b60072922c20e6d508798cf[m
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Tue Feb 11 10:56:28 2020 +0700
+
+    rewiew
+
+[33mcommit cc7872db32478075d59607257bc305a911ea7b4d[m
+Merge: 8d80e8b 21f8507
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Mon Feb 10 21:02:39 2020 +0700
+
+    Merge branch 'dev' of https://github.com/AlGoose/property into dev
+
+[33mcommit 8d80e8bb034660d2d922af962c77443e3143421b[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Mon Feb 10 20:58:10 2020 +0700
+
+    test
+
+[33mcommit ceac639effad48bae76df9faa4782f503ead4a77[m
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Mon Feb 10 17:01:26 2020 +0700
+
+    rewiew
+
+[33mcommit 21f850784bff7bcb7529b140d08ffbe186f0be60[m
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Mon Feb 10 16:33:34 2020 +0700
+
+    rewiew
+
+[33mcommit 8251847737699d0b0e06f2a433c637ccc1f54cbe[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Sat Feb 8 14:27:42 2020 +0700
+
+    test
+
+[33mcommit 65681743195e15649cf5cce70abc1c2e3ca6e781[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Fri Feb 7 17:28:03 2020 +0700
+
+    commit
+
+[33mcommit 85342a962bb94bbea4d61bdf19fd708720f70e88[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Fri Feb 7 14:37:07 2020 +0700
+
+    Managers CRUD v0.1
+
+[33mcommit 171e21d18bfde2cab177945f5b7086682270a221[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Thu Feb 6 18:44:58 2020 +0700
+
+    Kladr v0.3
+
+[33mcommit 4136a169dddf281c195ea1b8804c93e7edb334b2[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Thu Feb 6 18:07:14 2020 +0700
+
+    Minor bugs fix + refactoring
+
+[33mcommit 02884efe5552686612d4d870d8d5289ea217ab5d[m
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Thu Feb 6 13:26:54 2020 +0700
+
+    rewiew
+
+[33mcommit 0a08c261d29d7514e3a570fdb7d2960542a95249[m
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Thu Feb 6 12:10:20 2020 +0700
+
+    rewiew
+
+[33mcommit 0112f4dd242c5c4e3d034c1a7af94f9bd46f1513[m
+Merge: e16316e 2beffd8
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Thu Feb 6 11:05:55 2020 +0700
+
+    Merge branch 'dev'
+
+[33mcommit 2beffd843f7b39fb6c7f84ede4639dc16f1870c4[m
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Thu Feb 6 11:03:40 2020 +0700
+
+    rewiew
+
+[33mcommit d99e52a0aabcbdba7f7d5e5188b881dc5e8d6e2b[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Wed Feb 5 18:11:09 2020 +0700
+
+    Some fix
+
+[33mcommit 9b5ae1d55442e62340c3377745819326f319365a[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Wed Feb 5 17:32:38 2020 +0700
+
+    Kladr v0.2
+
+[33mcommit 78733596d11c53c29740f828abc4feadd8957112[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Wed Feb 5 16:21:14 2020 +0700
+
+    commit
+
+[33mcommit e16316e1251ddc53b388a9409913bce940a4c3fc[m
+Merge: 4da073f 7124b6e
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Wed Feb 5 14:54:57 2020 +0700
+
+    Merge pull request #2 from AlGoose/dev
+    
+    Dev
+
+[33mcommit 7124b6ece2b75de7e8e3fcb5318a174f4b03b0ca[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Wed Feb 5 14:54:12 2020 +0700
+
+    Clean code
+
+[33mcommit b0047a5986d2e0ed1dcdbc4da329020fb4b4dfe4[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Wed Feb 5 14:32:14 2020 +0700
+
+    Fixed bugs, added new. Refactoring.
+
+[33mcommit 16de69c60aacb5af9c0ebdba53eab952ffd6399f[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Tue Feb 4 21:32:40 2020 +0700
+
+    Some fix
+
+[33mcommit f849d390f950c80bfcdea5e22982a4e68b7374d0[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Tue Feb 4 16:18:38 2020 +0700
+
+    Add kladr v0.1
+
+[33mcommit 4da073f9ae291ff9680e28c36efba1c57016f9a6[m
+Merge: be89e67 fc27899
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Mon Feb 3 23:20:00 2020 +0700
+
+    Merge pull request #1 from AlGoose/dev
+    
+    Dev
+
+[33mcommit fc27899680eb83d234cfd7be5d6bfa2e290b239c[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Mon Feb 3 23:17:07 2020 +0700
+
+    Add address search + fix bugs + refactoring
+
+[33mcommit 301603a89b9f97243a20fad734a8d8a119879bb0[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Mon Feb 3 19:03:07 2020 +0700
+
+    Add simple back'end validation + refactoring
+
+[33mcommit 0efb1656a047c42b7efd8ef3590268b7c947744b[m
+Merge: 14d8e23 c0f7647
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Mon Feb 3 18:06:57 2020 +0700
+
+    Merge branch 'dev' of https://github.com/AlGoose/property into dev
+
+[33mcommit 14d8e23016dd022320e57a0ee3e281b2d222345d[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Mon Feb 3 18:06:52 2020 +0700
+
+    Refactoring + add address kostyl
+
+[33mcommit c0f7647c4f91c6b28c3d8f1387b6f726f11941f7[m
+Merge: 8762e03 b05ee39
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Mon Feb 3 16:34:58 2020 +0700
+
+    Merge remote-tracking branch 'origin/dev' into dev
+
+[33mcommit 8762e03d5e29e57e8af785b69953fad2dc34026e[m
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Mon Feb 3 16:34:42 2020 +0700
+
+    rewiew
+
+[33mcommit b05ee3985a3afdc1e34b02aa4534252dfd476b2d[m
+Merge: bc14660 da2783c
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Mon Feb 3 14:21:24 2020 +0700
+
+    Merge branch 'dev' of https://github.com/AlGoose/property into dev
+
+[33mcommit bc14660495f38dd866357359dcd4c1637be5681b[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Mon Feb 3 14:19:58 2020 +0700
+
+    Update .gitignore
+
+[33mcommit da2783c83e5c7154e1fe6b3179f4a4b8a5272620[m
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Mon Feb 3 14:17:48 2020 +0700
+
+    rewiew
+
+[33mcommit a0ecf0f0b7252b0aa31351e5216848c8335676c4[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Sat Feb 1 17:15:53 2020 +0700
+
+    EditMode v0.1
+
+[33mcommit d6f655642760f5dab6c16ca954603224a37239fe[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Fri Jan 31 20:14:46 2020 +0700
+
+    New UI in ShowComponent
+
+[33mcommit c2df057dc671f286f105460531491307d3e16da8[m
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Fri Jan 31 13:05:59 2020 +0700
+
+    rewiew
+
+[33mcommit a5beb4bd50c61f941133f9c3437facc3fcc8e236[m
+Merge: 19ad206 6c1815f
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Fri Jan 31 10:15:47 2020 +0700
+
+    Merge remote-tracking branch 'origin/dev' into dev
+    
+    # Conflicts:
+    #       public/js/app.js
+    #       public/mix-manifest.json
+
+[33mcommit 19ad20623117bd63c61b9eb328009891d9cbbf38[m
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Fri Jan 31 10:15:36 2020 +0700
+
+    Merge branch 'dev' of C:\laragon\www\property with conflicts.
+
+[33mcommit 6c1815fa79ac71de6f84c721b086b225cddf5cf7[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Thu Jan 30 18:48:07 2020 +0700
+
+    Refactoring
+
+[33mcommit 2517b2c64b48e797963ceb2ad447c1ecc8e5e583[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Thu Jan 30 18:23:33 2020 +0700
+
+    Refactoring
+
+[33mcommit e6ec93b4282e6075c792ac872ed2937b4cbe47b2[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Thu Jan 30 18:09:12 2020 +0700
+
+    Fix ShowComponent
+
+[33mcommit b6f2025f5deda1e938f3d0cde71f8695239381b6[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Thu Jan 30 16:07:07 2020 +0700
+
+    just a commit
+
+[33mcommit 8db266bdbd4733fb5d226db2d787546bd3ff05ab[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Thu Jan 30 14:10:37 2020 +0700
+
+    Refactoring data collecting
+
+[33mcommit ceb814a7bb1b848031552233aaf341d8304c62f5[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Thu Jan 30 12:49:04 2020 +0700
+
+    Collect data from components in main component
+
+[33mcommit c0de9bd821a2b2fbf9d564efa09dbb69f31bc24b[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Wed Jan 29 19:35:13 2020 +0700
+
+    Refactoring
+
+[33mcommit b025285ca115947e3b1ba34dcc1d7e34e6ed90e8[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Wed Jan 29 16:41:27 2020 +0700
+
+    Add DataController
+
+[33mcommit 39a13a5f0e7fbdaf83135d08c65998b8d4d67a4e[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Wed Jan 29 16:11:05 2020 +0700
+
+    panic commit
+
+[33mcommit 5606c23441fb925ef295f72fc720ac88e1898032[m
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Tue Jan 28 17:01:46 2020 +0700
+
+    rewiew
+
+[33mcommit 5f94cd61d97cb161de543fe332b1258f81428695[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Mon Jan 27 18:53:34 2020 +0700
+
+    UI fix + refactoring
+
+[33mcommit 89690d0fd679ef3167b610fa0771421cabc479f7[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Mon Jan 27 17:28:25 2020 +0700
+
+    Refactoring
+
+[33mcommit be89e67614ff8f218b8055ea5668a0fada6073f2[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Mon Jan 27 15:31:12 2020 +0700
+
+    Update staff component + some fix
+
+[33mcommit d6156fa45d6085ba6210160c01284b3779878afb[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Mon Jan 27 13:42:01 2020 +0700
+
+    Add guzzle
+
+[33mcommit dbde93edf4c6b46355674029e5d237351ede8f16[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Sun Jan 26 18:39:54 2020 +0700
+
+    Add another subforms
+
+[33mcommit fa916ce4dd7601bbf46354897c580306a79dbe9b[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Fri Jan 24 19:04:03 2020 +0700
+
+    DealerComponent v0.2
+
+[33mcommit 36aeb47045b4f917e7753148c1c74b456fad92fd[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Fri Jan 24 16:41:05 2020 +0700
+
+    Commit
+
+[33mcommit 990824701746dc3c0af1210d48d79718ce252dfa[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Thu Jan 23 17:08:12 2020 +0700
+
+    Prosto commit
+
+[33mcommit 421793f41efb239dfdda1404bb179df897881735[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Thu Jan 23 16:38:38 2020 +0700
+
+    FormComponent refactoring
+
+[33mcommit d0b10617196dbf5d0c73e7a560e1e99e764ba3da[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Thu Jan 23 14:19:22 2020 +0700
+
+    ShowComponent some fix
+
+[33mcommit e51db72f15b4ea6afb3110ea2b1c8373416251e3[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Thu Jan 23 10:59:14 2020 +0700
+
+    Add pagination
+
+[33mcommit 83901ca1f9114b03a566c24d59a64695372d4ac4[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Wed Jan 22 18:56:57 2020 +0700
+
+    FormComponent update
+
+[33mcommit cf1081aad71dce9cb46f3dd61bffe0faae9cea2e[m
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Wed Jan 22 14:20:29 2020 +0700
+
+    rewiew
+
+[33mcommit f71b47333ab0b6974dfeeb30a4c1c47997ede73c[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Tue Jan 21 19:12:31 2020 +0700
+
+    Show Component v0.1
+
+[33mcommit 26b061c02edd850c65464a69f50b53812d1aeec1[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Tue Jan 21 18:03:06 2020 +0700
+
+    Add edit form
+
+[33mcommit f6f075caf2a312436c828a4e9630fcb3b24e09c4[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Tue Jan 21 14:58:35 2020 +0700
+
+    DB update
+
+[33mcommit a7f64d49f612b9c1f647b8954a9a8cce3ae1de1c[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Mon Jan 20 18:57:02 2020 +0700
+
+    vue router refactoring
+
+[33mcommit 75304aa0ab3bb36e8c77087313fb3f2cf987d25e[m
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Mon Jan 20 15:35:22 2020 +0700
+
+    rewiew
+
+[33mcommit 1284c70109b0500ef058a64a62634b8cf0d71622[m
+Author: zeta_kabel <yaroslav.zeta@gmail.com>
+Date:   Mon Jan 20 15:17:16 2020 +0700
+
+    rewiew
+
+[33mcommit 55a38d516ef1142456444981decf05e0db778feb[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Mon Jan 20 11:51:22 2020 +0700
+
+    vue-router
+
+[33mcommit bf8b17075214600bc2aa16b36d0142caf9f88d8d[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Sat Jan 18 15:23:59 2020 +0700
+
+    Add address search
+
+[33mcommit 7a657b040e0ea989ac8d90da2124c3cf5484fe84[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Fri Jan 17 18:59:19 2020 +0700
+
+    Refactoring
+
+[33mcommit b5ee690710f45a0af994b3dc149b7db6ef4aa8da[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Thu Jan 16 18:31:41 2020 +0700
+
+    add datepicker
+
+[33mcommit 85f080557af6172f5deef0d00a1cb84679777d29[m
+Author: Александр Гусев <alex1232131@mail.ru>
+Date:   Thu Jan 16 18:10:20 2020 +0700
+
+    refactoring
