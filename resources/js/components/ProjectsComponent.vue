@@ -9,7 +9,7 @@
       @click:row="openProject"
     >
       <template v-slot:item.isTenderWon="{ item }">{{ item.isTenderWon ? "Да" : "Нет" }}</template>
-      <template v-slot:item.isClosed="{ item }">{{ item.isClosed ? "Да" : "Нет" }}</template>
+      <template v-slot:item.isClosed="{ item }">{{ item.isClosed ? "Закрыт" : "В работе" }}</template>
     </v-data-table>
     <div class="text-center">
       <v-pagination v-model="page" :length="length" :total-visible="7"></v-pagination>
@@ -51,11 +51,10 @@ export default {
         { text: "Название", value: "name" },
         { text: "Адрес", value: "address" },
         { text: "Дилер", value: "dealer" },
-        { text: "Срок реализации", value: "date" },
         { text: "Дата заключения", value: "time" },
         { text: "Дата тендера", value: "tender_date" },
         { text: "Победа", value: "isTenderWon" },
-        { text: "Закрыто", value: "isClosed" },
+        { text: "Статус", value: "isClosed" },
         { text: "Дата закрытия", value: "close_date" },
         { text: "Общая стоимость (₽)", value: "total" },
         { text: "Менеджер", value: "manager" }

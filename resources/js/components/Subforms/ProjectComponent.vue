@@ -94,7 +94,6 @@
             transition="scale-transition"
             offset-y
             min-width="290px"
-            :disabled="isEdit"
           >
             <template v-slot:activator="{ on }">
               <v-text-field

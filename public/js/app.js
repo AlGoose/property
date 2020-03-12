@@ -3145,9 +3145,6 @@ __webpack_require__.r(__webpack_exports__);
         text: "Дилер",
         value: "dealer"
       }, {
-        text: "Срок реализации",
-        value: "date"
-      }, {
         text: "Дата заключения",
         value: "time"
       }, {
@@ -3157,7 +3154,7 @@ __webpack_require__.r(__webpack_exports__);
         text: "Победа",
         value: "isTenderWon"
       }, {
-        text: "Закрыто",
+        text: "Статус",
         value: "isClosed"
       }, {
         text: "Дата закрытия",
@@ -4228,7 +4225,6 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//
 //
 //
 //
@@ -42441,7 +42437,7 @@ var render = function() {
             key: "item.isClosed",
             fn: function(ref) {
               var item = ref.item
-              return [_vm._v(_vm._s(item.isClosed ? "Да" : "Нет"))]
+              return [_vm._v(_vm._s(item.isClosed ? "Закрыт" : "В работе"))]
             }
           }
         ])
@@ -43822,33 +43818,6 @@ var render = function() {
               ),
               _vm._v(" "),
               _c(
-                "v-btn",
-                {
-                  attrs: { color: "indigo", dark: "", outlined: "" },
-                  on: {
-                    click: function($event) {
-                      return _vm.$refs.inputUpload.click()
-                    }
-                  }
-                },
-                [_vm._v("Импортировать")]
-              ),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "show",
-                    rawName: "v-show",
-                    value: false,
-                    expression: "false"
-                  }
-                ],
-                ref: "inputUpload",
-                attrs: { type: "file" },
-                on: { change: _vm.test }
-              }),
-              _vm._v(" "),
-              _c(
                 "v-row",
                 { attrs: { justify: "center" } },
                 [
@@ -44558,8 +44527,7 @@ var render = function() {
                             "nudge-right": 20,
                             transition: "scale-transition",
                             "offset-y": "",
-                            "min-width": "290px",
-                            disabled: _vm.isEdit
+                            "min-width": "290px"
                           },
                           scopedSlots: _vm._u(
                             [
@@ -102422,8 +102390,8 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! D:\SOFT\laragon\www\property\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! D:\SOFT\laragon\www\property\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! D:\Programms\OSPanel\domains\property\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! D:\Programms\OSPanel\domains\property\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

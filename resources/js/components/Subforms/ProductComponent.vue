@@ -4,8 +4,8 @@
       <v-card-title>Товары</v-card-title>
       <v-card-text>
         <v-btn color="indigo" dark outlined @click="dialog = true">Добавить товар</v-btn>
-        <v-btn color="indigo" dark outlined @click="$refs.inputUpload.click()">Импортировать</v-btn>
-        <input v-show="false" ref="inputUpload" type="file" @change="test" />
+        <!--<v-btn color="indigo" dark outlined @click="$refs.inputUpload.click()">Импортировать</v-btn>
+        <input v-show="false" ref="inputUpload" type="file" @change="test" />-->
 
         <v-row justify="center">
           <v-dialog v-model="dialog" persistent max-width="600px">
