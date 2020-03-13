@@ -94,7 +94,6 @@
             transition="scale-transition"
             offset-y
             min-width="290px"
-            :disabled="isEdit"
           >
             <template v-slot:activator="{ on }">
               <v-text-field
@@ -118,6 +117,39 @@
         <v-col cols="6" md="3">
           <v-checkbox label="Победа?" v-model="projectData.isTenderWon"></v-checkbox>
         </v-col>
+
+        <v-col cols="6" md="3" v-if="isEdit">
+          <v-checkbox label="Проект закрыт?" v-model="projectData.isClosed"></v-checkbox>
+        </v-col>
+
+        <v-col cols="6" md="3" v-if="projectData.isClosed">
+          <v-menu
+            v-model="closeMenu"
+            :close-on-content-click="false"
+            :nudge-right="20"
+            transition="scale-transition"
+            offset-y
+            min-width="290px"
+          >
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                v-model="projectData.close_date"
+                label="Дата закрытия"
+                readonly
+                outlined
+                v-on="on"
+                :rules="[v => !!v || 'Выберите дату']"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              no-title
+              scrollable
+              locale="Rus"
+              v-model="projectData.close_date"
+              @input="closeMenu = false"
+            ></v-date-picker>
+          </v-menu>
+        </v-col>
       </v-row>
     </v-card-text>
   </v-card>
@@ -130,7 +162,8 @@ export default {
   data: () => ({
     dateMenu: false,
     timeMenu: false,
-    tenderMenu: false
+    tenderMenu: false,
+    closeMenu: false
   })
 };
 </script>
