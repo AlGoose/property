@@ -48,16 +48,16 @@ export default {
       page: 1,
       length: 1,
       headers: [
-        { text: "Название", value: "name" },
-        { text: "Адрес", value: "address" },
-        { text: "Дилер", value: "dealer" },
-        { text: "Дата заключения", value: "time" },
-        { text: "Дата тендера", value: "tender_date" },
-        { text: "Победа", value: "isTenderWon" },
-        { text: "Статус", value: "isClosed" },
-        { text: "Дата закрытия", value: "close_date" },
-        { text: "Общая стоимость (₽)", value: "total" },
-        { text: "Менеджер", value: "manager" }
+        { text: "Название", value: "name", width: "20%"},
+        { text: "Адрес", value: "address", width: "15%"},
+        { text: "Дилер", value: "dealer", width: "10%" },
+        { text: "Дата заключения", value: "time", width: "10%" },
+        { text: "Дата тендера", value: "tender_date", width: "10%" },
+        { text: "Победа", value: "isTenderWon", width: "7%"},
+        { text: "Статус", value: "isClosed", width: "5%" },
+        { text: "Дата закрытия", value: "close_date", width: "10%" },
+        { text: "Общая стоимость (₽)", value: "total", width: "10%" },
+        { text: "Менеджер", value: "manager"}
       ],
       fruits: []
     };
@@ -89,9 +89,9 @@ export default {
 
     countFullPrice() {
       this.fruits.forEach(item => {
-        item.total = item.products.reduce((accumulator, item) => {
+        item.total = (item.products.reduce((accumulator, item) => {
           return accumulator + item.pivot.price * item.pivot.count;
-        }, 0);
+        }, 0)).toFixed(2);
       });
     }
   }
@@ -103,6 +103,6 @@ export default {
   padding-bottom: 14px;
 }
 .container {
-  max-width: 80%;
+  max-width: 100%;
 }
 </style>
