@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Debugbar;
 use App\FileProject;
+use Illuminate\Http\Request;
 use App\Imports\ProductsImport;
+use App\Http\Requests\ExcelRequest;
 
 class FileController extends Controller
 {
@@ -102,20 +104,9 @@ class FileController extends Controller
         //
     }
 
-    public function importExcel(Request $request)
+    public function importExcel(ExcelRequest $request)
     {
-        $this->validate($request, [
-            'excel' => 'required|mimes:xls,xlsx'
-        ]);
-
-        // \Debugbar::info($request->all());
-        // \Debugbar::info($request['excel']);
-        if ($request->hasFile('excel')) {
-            \Debugbar::info('OK');
-            $path = $request->file('excel')->getRealPath();
-            \Excel::import(new ProductsImport, $path);
-        } else {
-            \Debugbar::info('BAD');
-        }
+        $path = $request->file('excel')->getRealPath();
+        \Excel::import(new ProductsImport($request->id), $path);
     }
 }
