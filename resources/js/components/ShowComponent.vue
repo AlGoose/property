@@ -274,9 +274,12 @@ export default {
   },
 
   mounted: function() {
+    console.log("CREATED");
     this.auth_id = window.current_user.id;
 
     if (window.project == undefined) {
+      console.log("AXIOS");
+
       axios
         .get("/project/" + this.$route.params.id)
         .then(response => {
@@ -290,6 +293,8 @@ export default {
           console.log(error);
         });
     } else {
+      console.log("BLADE");
+
       this.project = window.project;
       this.project.products.forEach(item => {
         item.pivot.total = item.pivot.count * item.pivot.price;

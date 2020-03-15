@@ -102,7 +102,11 @@ export default {
   }),
 
   mounted() {
+    console.log("MANAGERS");
+
     if (window.managers == undefined) {
+      console.log("AXIOS");
+
       axios
         .get("/managers")
         .then(response => {
@@ -112,6 +116,8 @@ export default {
           console.log(error);
         });
     } else {
+      console.log("BLADE");
+
       this.managers = window.managers;
       window.managers = undefined;
     }

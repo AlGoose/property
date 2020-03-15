@@ -21,7 +21,10 @@
 <script>
 export default {
   mounted: function() {
+    console.log("PROJECTS");
     if (window.projects == undefined) {
+      console.log("AXIOS");
+
       axios
         .get("/project")
         .then(response => {
@@ -34,6 +37,8 @@ export default {
           console.log(error);
         });
     } else {
+      console.log("BLADE");
+
       this.itemsPerPage = window.projects.per_page;
       this.length = Math.ceil(window.projects.total / window.projects.per_page);
       this.fruits = window.projects.data;
@@ -48,16 +53,16 @@ export default {
       page: 1,
       length: 1,
       headers: [
-        { text: "Название", value: "name", width: "20%"},
-        { text: "Адрес", value: "address", width: "15%"},
+        { text: "Название", value: "name", width: "20%" },
+        { text: "Адрес", value: "address", width: "15%" },
         { text: "Дилер", value: "dealer", width: "10%" },
         { text: "Дата заключения", value: "time", width: "10%" },
         { text: "Дата тендера", value: "tender_date", width: "10%" },
-        { text: "Победа", value: "isTenderWon", width: "7%"},
+        { text: "Победа", value: "isTenderWon", width: "7%" },
         { text: "Статус", value: "isClosed", width: "5%" },
         { text: "Дата закрытия", value: "close_date", width: "10%" },
         { text: "Общая стоимость (₽)", value: "total", width: "10%" },
-        { text: "Менеджер", value: "manager"}
+        { text: "Менеджер", value: "manager" }
       ],
       fruits: []
     };
@@ -89,9 +94,11 @@ export default {
 
     countFullPrice() {
       this.fruits.forEach(item => {
-        item.total = (item.products.reduce((accumulator, item) => {
-          return accumulator + item.pivot.price * item.pivot.count;
-        }, 0)).toFixed(2);
+        item.total = item.products
+          .reduce((accumulator, item) => {
+            return accumulator + item.pivot.price * item.pivot.count;
+          }, 0)
+          .toFixed(2);
       });
     }
   }
