@@ -185,7 +185,6 @@ export default {
       axios
         .get("/data/findProductById/" + this.search)
         .then(response => {
-          // console.log(response);
           this.entires = response.data.result;
           this.isLoading = false;
         })

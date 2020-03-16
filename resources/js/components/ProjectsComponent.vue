@@ -21,10 +21,7 @@
 <script>
 export default {
   mounted: function() {
-    console.log("PROJECTS");
     if (window.projects == undefined) {
-      console.log("AXIOS");
-
       axios
         .get("/project")
         .then(response => {
@@ -37,8 +34,6 @@ export default {
           console.log(error);
         });
     } else {
-      console.log("BLADE");
-
       this.itemsPerPage = window.projects.per_page;
       this.length = Math.ceil(window.projects.total / window.projects.per_page);
       this.fruits = window.projects.data;

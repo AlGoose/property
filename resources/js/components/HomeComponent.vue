@@ -514,7 +514,6 @@ export default {
     },
 
     searchRegion() {
-      // console.log("REGION");
       if (this.regionSearch === null) return;
 
       axios
@@ -526,7 +525,6 @@ export default {
           }
         })
         .then(response => {
-          // console.log(response.data.result);
           this.regionData.regions = response.data.result;
           this.regionData.regions.splice(0, 1);
         })
@@ -536,7 +534,6 @@ export default {
     },
 
     searchDistrict() {
-      // console.log("DISTRICT");
       if (this.districtSearch === null) return;
 
       let requestParams = {
@@ -557,7 +554,6 @@ export default {
       axios
         .post("/kladr", requestParams)
         .then(response => {
-          // console.log(response.data.result);
           this.districtData.districts = response.data.result;
           this.districtData.districts.splice(0, 1);
         })
@@ -567,7 +563,6 @@ export default {
     },
 
     searchCity() {
-      // console.log("CITY");
       if (this.citySearch === null) return;
 
       let requestParams = {
@@ -596,7 +591,6 @@ export default {
       axios
         .post("/kladr", requestParams)
         .then(response => {
-          // console.log(response.data.result);
           this.cityData.cities = response.data.result;
           this.cityData.cities.splice(0, 1);
         })
@@ -606,7 +600,6 @@ export default {
     },
 
     searchStreet() {
-      // console.log("STREET");
       if (
         this.streetSearch === null ||
         this.cityData.selected === null ||
@@ -624,7 +617,6 @@ export default {
           }
         })
         .then(response => {
-          // console.log(response.data.result);
           this.streetData.streets = response.data.result;
           this.streetData.streets.splice(0, 1);
         })
@@ -634,7 +626,6 @@ export default {
     },
 
     searchBuilding() {
-      // console.log("BUILDING");
       if (
         this.buildingSearch === null ||
         this.streetData.selected === null ||
@@ -652,7 +643,6 @@ export default {
           }
         })
         .then(response => {
-          // console.log(response.data.result);
           this.buildingData.buildings = response.data.result;
           this.buildingData.buildings.splice(0, 1);
         })

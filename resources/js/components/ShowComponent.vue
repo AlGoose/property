@@ -19,10 +19,12 @@
                         <p class="body-1">{{project.project.name}}</p>
                         <p class="title">Адрес</p>
                         <p class="body-1">{{project.project.address}}</p>
-                        <p class="title">Дата</p>
+                        <p class="title">Срок реализации</p>
                         <p class="body-1">{{project.project.date}}</p>
-                        <p class="title">Время</p>
+                        <p class="title">Дата заключения</p>
                         <p class="body-1">{{project.project.time}}</p>
+                        <p class="title">Дата тендера</p>
+                        <p class="body-1">{{project.project.tender_date}}</p>
                       </v-card-text>
                     </v-card>
                   </v-col>
@@ -274,12 +276,9 @@ export default {
   },
 
   mounted: function() {
-    console.log("CREATED");
     this.auth_id = window.current_user.id;
 
     if (window.project == undefined) {
-      console.log("AXIOS");
-
       axios
         .get("/project/" + this.$route.params.id)
         .then(response => {
@@ -293,8 +292,6 @@ export default {
           console.log(error);
         });
     } else {
-      console.log("BLADE");
-
       this.project = window.project;
       this.project.products.forEach(item => {
         item.pivot.total = item.pivot.count * item.pivot.price;
@@ -309,7 +306,7 @@ export default {
       axios
         .delete("/project/" + this.$route.params.id)
         .then(response => {
-          // this.$router.push("/project");
+          this.$router.push("/project");
         })
         .catch(function(error) {
           console.log(error);
@@ -342,7 +339,6 @@ export default {
           this.$router.go();
         })
         .catch(error => {
-          console.log(error.response.data.errors);
           this.errors = error.response.data.errors;
           this.overlay = false;
           this.alert = true;
