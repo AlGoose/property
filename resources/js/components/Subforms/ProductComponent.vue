@@ -67,7 +67,6 @@
                         @change="onChangeCount"
                         :rules="[v => !!v || 'Введите количество', v => /^\d+(\.\d+)?$/.test(v) || 'Неверный формат данных']"
                       ></v-text-field>
-                      <!-- /^\d+(\.\d+)?$/ -->
                     </v-col>
                     <v-col cols="12" md="4">
                       <v-text-field

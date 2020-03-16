@@ -146,7 +146,7 @@
                   ref="inputUpload"
                   type="file"
                   accept=".xlsx, .xls"
-                  @change="test"
+                  @change="importExcel"
                 />
                 <v-data-table
                   v-if="project.products.length"
@@ -323,7 +323,7 @@ export default {
       this.$router.push("/project");
     },
 
-    test(event) {
+    importExcel(event) {
       this.overlay = true;
       let formData = new FormData();
       formData.append("excel", event.target.files[0]);
