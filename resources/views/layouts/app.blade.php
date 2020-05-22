@@ -72,6 +72,7 @@
                         @else
                             <router-link class="link" to="/">Домой</router-link>
                             <router-link class="link" to="/project">Проекты</router-link>
+                            <router-link class="link" to="/reports">Отчеты</router-link>
                             @if (Auth::user()->id == 1)
                                 <router-link class="link" to="/managers">Манагеры</router-link>
                             @endif

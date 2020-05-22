@@ -27,6 +27,9 @@ Route::resource('/managers', 'ManagerController');
 Route::post('/managers/{id}/sendPassword', 'ManagerController@sendPassword');
 
 Route::post('/project/{project}/files', 'ProjectController@saveFile');
+// 
+Route::post('/project/report', 'ProjectController@searchReport');
+// 
 Route::put('/project/{project}/files', 'ProjectController@updateFile');
 Route::delete('/project/{project}/files/{fileProject}', 'ProjectController@deleteFile');
 Route::resource('/file', 'FileController');

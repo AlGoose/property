@@ -200,4 +200,13 @@ class ProjectController extends Controller
     {
         Project::destroy($id);
     }
+
+    public function searchReport(Request $request)
+    {
+        // $dates = $request->dates;
+        $projects = Project::whereBetween('time', $request->dates);
+        // \Debugbar::info($projects[0]->products()->get());
+
+        return $projects->with('products')->get();
+    }
 }
