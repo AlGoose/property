@@ -19,10 +19,12 @@
                         <p class="body-1">{{project.project.name}}</p>
                         <p class="title">Адрес</p>
                         <p class="body-1">{{project.project.address}}</p>
-                        <p class="title">Дата</p>
+                        <p class="title">Срок реализации</p>
                         <p class="body-1">{{project.project.date}}</p>
-                        <p class="title">Время</p>
+                        <p class="title">Дата заключения</p>
                         <p class="body-1">{{project.project.time}}</p>
+                        <p class="title">Дата тендера</p>
+                        <p class="body-1">{{project.project.tender_date}}</p>
                       </v-card-text>
                     </v-card>
                   </v-col>
@@ -132,6 +134,20 @@
             <v-expansion-panel>
               <v-expansion-panel-header class="title">Детали</v-expansion-panel-header>
               <v-expansion-panel-content>
+                <v-btn
+                  class="importButton"
+                  color="indigo"
+                  dark
+                  outlined
+                  @click="$refs.inputUpload.click()"
+                >Импортировать</v-btn>
+                <input
+                  v-show="false"
+                  ref="inputUpload"
+                  type="file"
+                  accept=".xlsx, .xls"
+                  @change="importExcel"
+                />
                 <v-data-table
                   v-if="project.products.length"
                   :headers="headers"
@@ -202,6 +218,28 @@
         </v-card>
       </v-dialog>
     </v-row>
+
+    <v-overlay :value="overlay">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
+
+    <div class="text-center">
+      <v-dialog v-model="alert" width="500">
+        <v-card>
+          <v-card-title class="headline red lighten-2" primary-title>Ошибка</v-card-title>
+          <v-card-text>
+            <ul>
+              <li v-for="(item, i) in errors" :key="i">{{item[0]}}</li>
+            </ul>
+          </v-card-text>
+          <v-divider></v-divider>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" text @click="$router.go()">I accept</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </div>
   </div>
 </template>
 
@@ -210,8 +248,11 @@
 export default {
   data() {
     return {
+      overlay: false,
+      alert: false,
       isReady: false,
       dialog: false,
+      errors: [],
       headers: [
         {
           text: "Название продукта",
@@ -265,7 +306,7 @@ export default {
       axios
         .delete("/project/" + this.$route.params.id)
         .then(response => {
-          // this.$router.push("/project");
+          this.$router.push("/project");
         })
         .catch(function(error) {
           console.log(error);
@@ -280,6 +321,28 @@ export default {
 
     back() {
       this.$router.push("/project");
+    },
+
+    importExcel(event) {
+      this.overlay = true;
+      let formData = new FormData();
+      formData.append("excel", event.target.files[0]);
+      formData.append("id", this.project.project.id);
+
+      axios
+        .post("/file/import", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        })
+        .then(response => {
+          this.$router.go();
+        })
+        .catch(error => {
+          this.errors = error.response.data.errors;
+          this.overlay = false;
+          this.alert = true;
+        });
     }
   }
 };
@@ -289,5 +352,9 @@ export default {
 p {
   color: black;
   margin-bottom: 0;
+}
+
+.importButton {
+  margin: 10px;
 }
 </style>

@@ -9,6 +9,7 @@ import Form from './components/FormComponent'
 import Projects from './components/ProjectsComponent'
 import Managers from './components/ManagersComponent'
 import NotFound from './components/NotFoundComponent'
+import Report from './components/ReportComponent'
 
 const router = new VueRouter({
     mode: 'history',
@@ -45,6 +46,13 @@ const router = new VueRouter({
             name: 'managers',
             component: Managers,
         },
+
+        {
+            path: '/reports',
+            name: 'reports',
+            component: Report,
+        },
+
         {
             path: '/404',
             name: '404',

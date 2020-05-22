@@ -3,15 +3,11 @@
     <v-card class="mx-auto card" height="100%">
       <v-card-title>Товары</v-card-title>
       <v-card-text>
-        <v-btn color="indigo" dark outlined @click="dialog = true">Добавить товар</v-btn>
-        <!--<v-btn color="indigo" dark outlined @click="$refs.inputUpload.click()">Импортировать</v-btn>
-        <input v-show="false" ref="inputUpload" type="file" @change="test" />-->
-
         <v-row justify="center">
           <v-dialog v-model="dialog" persistent max-width="600px">
-            <!-- <template v-slot:activator="{ on }">
+            <template v-slot:activator="{ on }">
               <v-btn color="indigo" dark v-on="on" outlined>Добавить товар</v-btn>
-            </template>-->
+            </template>
             <v-card>
               <v-card-title>
                 <span class="headline">Добавить товар</span>
@@ -71,7 +67,6 @@
                         @change="onChangeCount"
                         :rules="[v => !!v || 'Введите количество', v => /^\d+(\.\d+)?$/.test(v) || 'Неверный формат данных']"
                       ></v-text-field>
-                      <!-- /^\d+(\.\d+)?$/ -->
                     </v-col>
                     <v-col cols="12" md="4">
                       <v-text-field
@@ -189,7 +184,6 @@ export default {
       axios
         .get("/data/findProductById/" + this.search)
         .then(response => {
-          // console.log(response);
           this.entires = response.data.result;
           this.isLoading = false;
         })
@@ -271,24 +265,6 @@ export default {
       };
       this.entires = [];
       this.dialog = false;
-    },
-
-    test(e) {
-      let formData = new FormData();
-      formData.append("excel", e.target.files[0]);
-
-      axios
-        .post("/file/import", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
-        })
-        .then(response => {
-          console.log(response.data);
-        })
-        .catch(error => {
-          console.log(error);
-        });
     }
   }
 };
