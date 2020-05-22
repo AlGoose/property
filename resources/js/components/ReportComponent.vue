@@ -51,7 +51,7 @@ export default {
   }),
   computed: {
     dateRangeText() {
-      return this.dates.join(" ~ ");
+      return this.dates.sort().join(" ~ ");
     },
 
     totalMoney() {
@@ -81,7 +81,7 @@ export default {
 
   methods: {
     searchReport() {
-      console.log("Click");
+      // console.log("Click");
       axios
         .post("/project/report", {
           dates: this.dates
