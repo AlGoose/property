@@ -39,7 +39,7 @@
 <script>
 export default {
   data: () => ({
-    dates: ["2020-03-18", "2020-03-20"],
+    dates: [],
     projects: [],
     headers: [
       { text: "Название проекта", value: "name" },
