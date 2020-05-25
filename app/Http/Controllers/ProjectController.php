@@ -10,6 +10,8 @@ use App\FileProject;
 use Illuminate\Http\Request;
 use App\Http\Requests\ProjectRequest;
 
+use Illuminate\Support\Facades\Response;
+
 class ProjectController extends Controller
 {
     /**
@@ -48,7 +50,10 @@ class ProjectController extends Controller
             $item->products = $item->products()->get();
         }
 
-        if ($request->ajax()) return $projects;
+        if ($request->ajax()) {
+            return Response::json($projects, 200)->header('Cache-Control', 'no-store, no-cache, private');
+            // return $projects;
+        }
 
         return view('projects')->with('projects', $projects);
     }
@@ -114,7 +119,10 @@ class ProjectController extends Controller
 
         $res->documents = $project->files()->get();
 
-        if ($request->ajax()) return json_encode($res);
+        if ($request->ajax()) {
+            return Response::json($res, 200)->header('Cache-Control', 'no-store, no-cache, private');
+            // return json_encode($res);
+        }
 
         return view('show')->with('project', $res);
     }
@@ -146,7 +154,10 @@ class ProjectController extends Controller
 
         $res->documents = $project->files()->get();
 
-        if ($request->ajax()) return json_encode($res);
+        if ($request->ajax()) {
+            return Response::json($res, 200)->header('Cache-Control', 'no-store, no-cache, private');
+            // return json_encode($res);
+        }
 
         return view('form')->with('project', $res);
     }

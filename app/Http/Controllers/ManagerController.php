@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Response;
+
 
 class ManagerController extends Controller
 {
@@ -23,7 +25,10 @@ class ManagerController extends Controller
     public function index(Request $request)
     {
         $managers = User::all();
-        if ($request->ajax()) return $managers;
+        if ($request->ajax()) {
+            return Response::json($managers, 200)->header('Cache-Control', 'no-store, no-cache, private');
+            // return $managers;
+        }
 
         return view('managers')->with('managers', $managers);
     }
