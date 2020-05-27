@@ -14,7 +14,7 @@
         <v-btn color="primary" depressed @click="searchReport(1)">Поиск</v-btn>
       </v-col>
     </v-row>
-    <p class="title">Всего проектов: {{ this.projects.length }}</p>
+    <p class="title">Всего проектов: {{ total }}</p>
     <v-row>
       <v-col cols="12">
         <v-data-table
@@ -52,6 +52,7 @@ export default {
     itemsPerPage: 20,
     page: 1,
     length: 1,
+    total: 0,
     dates: [],
     projects: [],
     headers: [
@@ -101,7 +102,7 @@ export default {
 
   watch: {
     page(val) {
-      this.searchReport(page);
+      this.searchReport(val);
     }
   },
 
@@ -117,6 +118,7 @@ export default {
           this.page = response.data.current_page;
           this.itemsPerPage = response.data.per_page;
           this.length = Math.ceil(response.data.total / response.data.per_page);
+          this.total = response.data.total;
           this.projects = response.data.data;
           this.countMoney();
         })
