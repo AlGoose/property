@@ -14,14 +14,14 @@
         <v-btn color="primary" depressed @click="searchReport(1)">Поиск</v-btn>
       </v-col>
     </v-row>
-    <p class="title">Всего проектов: {{ total }}</p>
+    <p class="title">Всего проектов: {{ projects.length }}</p>
     <v-row>
       <v-col cols="12">
         <v-data-table
-          hide-default-footer
           :headers="headers"
           :items="projects"
-          :items-per-page="itemsPerPage"
+          :options="options"
+          :footer-props="footerProps"
           item-key="id"
           class="elevation-1"
         >
@@ -29,7 +29,7 @@
           <template v-slot:item.wonMoney="{ item }">{{ item.wonMoney.toLocaleString() }}</template>
           <template v-slot:item.loseMoney="{ item }">{{ item.loseMoney.toLocaleString() }}</template>
         </v-data-table>
-        <v-pagination v-model="page" :length="length" :total-visible="7"></v-pagination>
+        <!-- <v-pagination v-model="page" :length="length" :total-visible="7"></v-pagination> -->
       </v-col>
     </v-row>
     <v-row>
@@ -49,10 +49,16 @@
 <script>
 export default {
   data: () => ({
-    itemsPerPage: 20,
-    page: 1,
-    length: 1,
-    total: 0,
+    options: {
+      itemsPerPage: 20
+    },
+    footerProps: {
+      itemsPerPageOptions: []
+    },
+    // itemsPerPage: 20,
+    // page: 1,
+    // length: 1,
+    // total: 0,
     dates: [],
     projects: [],
     headers: [
@@ -100,26 +106,28 @@ export default {
     }
   },
 
-  watch: {
-    page(val) {
-      this.searchReport(val);
-    }
-  },
+  // watch: {
+    // page(val) {
+    //   this.searchReport(val);
+    // }
+  // },
 
   methods: {
     searchReport(page) {
       // console.log("Click", val);
       axios
-        .post("/project/report?page=" + page, {
+        // .post("/project/report?page=" + page, {
+        .post("/project/report", {
           dates: this.dates
         })
         .then(response => {
           // console.log(response);
-          this.page = response.data.current_page;
-          this.itemsPerPage = response.data.per_page;
-          this.length = Math.ceil(response.data.total / response.data.per_page);
-          this.total = response.data.total;
-          this.projects = response.data.data;
+          // this.page = response.data.current_page;
+          // this.itemsPerPage = response.data.per_page;
+          // this.length = Math.ceil(response.data.total / response.data.per_page);
+          // this.total = response.data.total;
+          // this.projects = response.data.data;
+          this.projects = response.data;
           this.countMoney();
         })
         .catch(error => {
@@ -136,7 +144,7 @@ export default {
           .toFixed(2);
 
         item.total = parseFloat(summa);
-        
+
         if (item.isClosed) {
           if (item.isTenderWon) {
             item.wonMoney = parseFloat(summa);
