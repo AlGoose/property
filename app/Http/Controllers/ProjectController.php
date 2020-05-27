@@ -216,6 +216,7 @@ class ProjectController extends Controller
     {
         $projects = Project::whereBetween('time', $request->dates);
 
-        return $projects->with('products')->with('dealer')->paginate(20);
+        // return $projects->with('products')->with('dealer')->paginate(20);
+        return $projects->with('products')->with('dealer')->get();
     }
 }
