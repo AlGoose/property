@@ -11,15 +11,25 @@
           prepend-icon="mdi-calendar"
           readonly
         ></v-text-field>
-        <v-btn color="primary" depressed @click="searchReport">Поиск</v-btn>
+        <v-btn color="primary" depressed @click="searchReport(1)">Поиск</v-btn>
       </v-col>
     </v-row>
     <p class="title">Всего проектов: {{ this.projects.length }}</p>
     <v-row>
       <v-col cols="12">
-        <v-data-table dense :headers="headers" :items="projects" item-key="id" class="elevation-1">
+        <v-data-table
+          hide-default-footer
+          :headers="headers"
+          :items="projects"
+          :items-per-page="itemsPerPage"
+          item-key="id"
+          class="elevation-1"
+        >
           <template v-slot:item.isClosed="{ item }">{{ item.isClosed ? "Закрыт" : "В работе" }}</template>
+          <template v-slot:item.wonMoney="{ item }">{{ item.wonMoney.toLocaleString() }}</template>
+          <template v-slot:item.loseMoney="{ item }">{{ item.loseMoney.toLocaleString() }}</template>
         </v-data-table>
+        <v-pagination v-model="page" :length="length" :total-visible="7"></v-pagination>
       </v-col>
     </v-row>
     <v-row>
@@ -39,10 +49,14 @@
 <script>
 export default {
   data: () => ({
+    itemsPerPage: 20,
+    page: 1,
+    length: 1,
     dates: [],
     projects: [],
     headers: [
       { text: "Название проекта", value: "name" },
+      { text: "Дилер", value: "dealer.name" },
       { text: "Дата открытия", value: "time" },
       { text: "Статус", value: "isClosed" },
       { text: "Сумма выигрыша", value: "wonMoney" },
@@ -55,40 +69,55 @@ export default {
     },
 
     totalMoney() {
-      return this.projects
-        .reduce((accumulator, item) => {
-          return accumulator + item.total;
-        }, 0)
-        .toFixed(2);
+      return parseFloat(
+        this.projects
+          .reduce((accumulator, item) => {
+            return accumulator + item.total;
+          }, 0)
+          .toFixed(2)
+      ).toLocaleString();
     },
 
     totalWon() {
-      return this.projects
-        .reduce((accumulator, item) => {
-          return accumulator + item.wonMoney;
-        }, 0)
-        .toFixed(2);
+      return parseFloat(
+        this.projects
+          .reduce((accumulator, item) => {
+            return accumulator + item.wonMoney;
+          }, 0)
+          .toFixed(2)
+      ).toLocaleString();
     },
 
     totalLose() {
-      return this.projects
-        .reduce((accumulator, item) => {
-          return accumulator + item.loseMoney;
-        }, 0)
-        .toFixed(2);
+      return parseFloat(
+        this.projects
+          .reduce((accumulator, item) => {
+            return accumulator + item.loseMoney;
+          }, 0)
+          .toFixed(2)
+      ).toLocaleString();
+    }
+  },
+
+  watch: {
+    page(val) {
+      this.searchReport(page);
     }
   },
 
   methods: {
-    searchReport() {
-      // console.log("Click");
+    searchReport(page) {
+      // console.log("Click", val);
       axios
-        .post("/project/report", {
+        .post("/project/report?page=" + page, {
           dates: this.dates
         })
         .then(response => {
-          console.log(response);
-          this.projects = response.data;
+          // console.log(response);
+          this.page = response.data.current_page;
+          this.itemsPerPage = response.data.per_page;
+          this.length = Math.ceil(response.data.total / response.data.per_page);
+          this.projects = response.data.data;
           this.countMoney();
         })
         .catch(error => {
@@ -105,6 +134,7 @@ export default {
           .toFixed(2);
 
         item.total = parseFloat(summa);
+        
         if (item.isClosed) {
           if (item.isTenderWon) {
             item.wonMoney = parseFloat(summa);

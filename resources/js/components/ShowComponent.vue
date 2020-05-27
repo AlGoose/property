@@ -277,11 +277,11 @@ export default {
 
   mounted: function() {
     this.auth_id = window.current_user.id;
-
     if (window.project == undefined) {
       axios
         .get("/project/" + this.$route.params.id)
         .then(response => {
+          // console.log(response);
           this.project = response.data;
           this.project.products.forEach(item => {
             item.pivot.total = item.pivot.count * item.pivot.price;
@@ -324,25 +324,25 @@ export default {
     },
 
     importExcel(event) {
-      this.overlay = true;
-      let formData = new FormData();
-      formData.append("excel", event.target.files[0]);
-      formData.append("id", this.project.project.id);
+      // this.overlay = true;
+      // let formData = new FormData();
+      // formData.append("excel", event.target.files[0]);
+      // formData.append("id", this.project.project.id);
 
-      axios
-        .post("/file/import", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
-        })
-        .then(response => {
-          this.$router.go();
-        })
-        .catch(error => {
-          this.errors = error.response.data.errors;
-          this.overlay = false;
-          this.alert = true;
-        });
+      // axios
+      //   .post("/file/import", formData, {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data"
+      //     }
+      //   })
+      //   .then(response => {
+      //     this.$router.go();
+      //   })
+      //   .catch(error => {
+      //     this.errors = error.response.data.errors;
+      //     this.overlay = false;
+      //     this.alert = true;
+      //   });
     }
   }
 };

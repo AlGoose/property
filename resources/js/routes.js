@@ -19,20 +19,23 @@ const router = new VueRouter({
             name: 'home',
             component: Home
         },
-        {
-            path: '/project/create',
-            name: 'form',
-            component: Form,
-        },
+
         {
             path: '/project/:id/edit',
             name: 'edit',
             component: Form,
         },
+
         {
             path: '/project/:id',
             name: 'show',
             component: Show,
+        },
+
+        {
+            path: '/project/create',
+            name: 'form',
+            component: Form,
         },
 
         {
