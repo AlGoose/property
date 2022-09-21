@@ -11,7 +11,7 @@
     },
     "devDependencies": {
         "@mdi/font": "^4.7.95",
-        "vuetify": "^2.2.4",
+        "vuetify": "^2.6.10",
         "axios": "^0.19",
         "bootstrap": "^4.0.0",
         "cross-env": "^5.1",
